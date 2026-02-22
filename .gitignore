@@ -1,0 +1,12 @@
+*.csv
+*.xlsx
+*.xls
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.vscode/
+.idea/
+node_modules/
+*.pdf
+.venv/

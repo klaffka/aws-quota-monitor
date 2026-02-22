@@ -29,21 +29,6 @@ class QuotaLogDb:
             return items[0]
         return None
     
-    # Aktualisiert den neuesten Quota Eintrag mit einem neuen SK
-    def update_latest_quota_entry(self, pk, new_sk):
-        latest_entry = self.get_latest_quota_entry(pk)
-        if latest_entry:
-            collected_at = latest_entry['collectedAt']
-            self.table.update_item(
-                Key={
-                    'PK': pk,
-                    'SK': f'TS#{collected_at}'
-                },
-                UpdateExpression='SET SK = :new_sk',
-                ExpressionAttributeValues={
-                    ':new_sk': new_sk
-                }
-            )
     # Fügt einen neuen Quota Eintrag in die Tabelle ein
     def put_quota_entry(self, quota_entry):
         quota_entry = self._to_dynamodb_compatible(quota_entry)

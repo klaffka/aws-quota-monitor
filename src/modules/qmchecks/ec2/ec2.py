@@ -1,39 +1,12 @@
 import boto3
 import time
 
-def get_current_quotastatus_ec2(session=None):
+def get_current_quotastatus_ec2(utalizationReport, session=None):
     ec2Quotas = []
-    accountId = session.client('sts').get_caller_identity().get('Account')
     if session is None:
         session = boto3.Session()
-    quotasClient = session.client('service-quotas')
-    utalizationReport = quota_utilization_report_ec2(session=session)
-    for quota in utalizationReport['Quotas']:
-        quota_entry = {
-            "PK": f"QUOTA#{accountId}#{quota['ServiceCode']}#{quota['QuotaCode']}",
-            "SK": f"TS#{utalizationReport['GeneratedAt'].strftime('%Y-%m-%dT%H:%M:%SZ')}",
-            "accountId": accountId,
-            "region": session.region_name,
-            "serviceCode": quota['ServiceCode'],
-            "quotaCode": quota['QuotaCode'],
-            "quotaName": quota['QuotaName'],
-            "scopeType": "ACCOUNT_REGION",
-            "limitValue": quota['AppliedValue'],
-            "usageValue": quota['Utilization']/100 * quota['AppliedValue'] if quota['AppliedValue'] > 0 else 0,
-            "utilizationPct": quota['Utilization'],
-            "unit": None,
-            "maxResourceType": None,
-            "maxResourceId": None,
-            "maxResourceMeta": None,
-            "collectorType": "QUOTA_UTILIZATION_REPORT",
-            "dataSource": "service-quotas: GetQuotaUtilizationReport",
-            "calculationMethod": "QUOTA_UTILIZATION_REPORT",
-            "collectedAt": utalizationReport['GeneratedAt'].strftime('%Y-%m-%dT%H:%M:%SZ'),
-            "ttl": int(time.time()) + 64 * 24 * 3600  # 64 days TTL
-
-        }
-
-        ec2Quotas.append(quota_entry)
+    
+    accountId = session.client('sts').get_caller_identity().get('Account')
     # L-70015FFA AMI Sharing
     quota_entry = {}
     amiSharings = AMI_Sharing_quota_check(session=session)
@@ -318,15 +291,3 @@ def AMI_Sharing_quota_check(session=None):
         quota.append(image_info)
     return quota
 
-def quota_utilization_report_ec2(session=None):
-        # Generate a quota utilization report for EC2 quotas
-        if session is None:
-            session = boto3.Session()
-        client = session.client('service-quotas')
-        response = client.start_quota_utilization_report()
-        report_id = response['ReportId']
-        while response['Status'] != 'COMPLETED':
-            time.sleep(1)
-            response = client.get_quota_utilization_report(ReportId=report_id)
-        response = client.get_quota_utilization_report(ReportId=report_id)
-        return response
