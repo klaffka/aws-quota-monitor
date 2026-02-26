@@ -1,201 +1,205 @@
 # AWS Quota Monitor
 
-AWS Service Quotas Monitoring und Alerting System mit Lambda, DynamoDB und SNS.
+AWS Service Quotas monitoring with:
+- scheduled quota collection (Quota Collector),
+- storage in DynamoDB,
+- SNS alerting on threshold breaches,
+- monthly CSV reporting to S3.
 
-## Übersicht
+## Architecture
 
-Das System erfasst AWS Service Quotas (EC2 und allgemeine Quotas) mit ihren aktuellen Nutzungswerten, speichert diese in DynamoDB und sendet Alerts über SNS, wenn Schwellwerte überschritten werden.
+The solution deploys two Lambda functions:
+- `qm-quota-collector`: collects quota and usage data and stores it in DynamoDB.
+- `qm-reporting`: generates a CSV quota report and uploads it to S3.
 
-### Architektur
+Infrastructure and scheduling are managed with Terraform (`deployment/`).
 
+## Relevant Project Structure
+
+```text
+.
+├── src/
+│   ├── functions/
+│   │   ├── quota-collector/main.py
+│   │   └── reporting/main.py
+│   └── modules/
+│       ├── qmalerting/alerting.py
+│       ├── qmchecks/ec2/ec2.py
+│       ├── qmchecks/general/utilization_report.py
+│       └── qmdb/db.py
+├── deployment/
+│   ├── main.tf
+│   ├── data.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── version.tf
+│   └── terraform.tfvars.example
+├── tests/
+│   ├── test_quota_collector.py
+│   └── test_reporting.py
+└── requirements.txt
 ```
-┌─────────────┐
-│   Lambda    │ (qm-quotacontroller)
-│  Function   │
-└──────┬──────┘
-       │
-       ├─→ Service Quotas API
-       ├─→ EC2 API (für spezifische Checks)
-       ├─→ DynamoDB (Speicherung)
-       └─→ SNS Topic (Alerts)
-```
 
-## Struktur
+## Prerequisites
 
-### `/src` — Python-Code
-
-- **`main.py`**: Lambda Handler, orchestriert Quotas-Erfassung, Speicherung und Alerting
-- **`qmchecks/`**: Quota-Check-Module
-  - `general/utilization_report.py`: Allgemeine Quotas via Service Quotas API
-  - `ec2/ec2.py`: EC2-spezifische Checks (AMI Sharing, Client VPN, etc.)
-- **`qmalerting/`**: Alert-System
-  - `alerting.py`: `QuotaAlert` Klasse für SNS-Benachrichtigungen
-- **`qmdb/`**: Datenbankzugriff
-  - `db.py`: DynamoDB-Operationen
-
-### `/deployment` — Terraform IaC
-
-Vollständige AWS-Infrastruktur als Code:
-
-- **`main.tf`**: Lambda, IAM-Rollen, Policies, SNS Topic, DynamoDB Tabelle
-- **`data.tf`**: Archive für Lambda Funktion und Dependencies Layer
-- **`variables.tf`**: Konfigurierbare Parameter
-- **`version.tf`**: Provider und Terraform-Versionen
-- **`terraform.tfvars`**: Deployment-spezifische Werte
-
-## Setup
-
-### Voraussetzungen
-
-- AWS CLI konfiguriert mit Credentials/Profil (z.B. `BA`)
+- AWS account with IAM permissions for:
+  - Lambda, IAM, EventBridge, DynamoDB, SNS, S3
+  - Service Quotas, CloudWatch metrics, EC2 read APIs
+- AWS CLI configured (`aws configure` or named profile)
 - Terraform >= 1.0
-- Python 3.11+ lokal (für Tests)
+- Python 3.14 recommended locally (Lambda runtime is `python3.14`)
 
-### Installation lokal
+## Usage (Local)
+
+### 1) Install dependencies
 
 ```bash
-# Abhängigkeiten installieren
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-
-# AWS-Profil testen
-export AWS_PROFILE=BA
-python3 src/main.py
 ```
 
-### Deployment zu AWS
+### 2) Set AWS context
 
 ```bash
-cd deployment
+export AWS_PROFILE=<your-profile>
+export AWS_REGION=eu-central-1
+```
 
-# Variablen in terraform.tfvars setzen
-cat > terraform.tfvars <<EOF
+Optional:
+- `QM_AWS_PROFILE`: alternative to `AWS_PROFILE`
+- `QM_ALERT_THRESHOLD`: alert threshold in percent (default: `80`)
+
+### 3) Run Quota Collector locally
+
+```bash
+python src/functions/quota-collector/main.py
+```
+
+### 4) Run Reporting locally
+
+For local reporting, set a target bucket:
+
+```bash
+export QM_REPORT_BUCKET=<reports-bucket-name>
+export QM_REPORT_DAYS=30
+python src/functions/reporting/main.py
+```
+
+## Deployment (Terraform)
+
+### 1) Prepare `terraform.tfvars`
+
+In `deployment/`, create `terraform.tfvars` (for example based on `terraform.tfvars.example`):
+
+```hcl
 tags = {
   scope = "BA"
   env   = "prod"
 }
 
-alert_threshold_pct = 80
-alert_email         = "alerts@example.com"
-EOF
-
-# Deployen
-terraform init
-terraform plan -var-file="terraform.tfvars"
-terraform apply -var-file="terraform.tfvars" -auto-approve
+alert_threshold_pct   = 80
+alert_email           = "alerts@example.com"
+report_bucket_name    = ""
+report_retention_days = 90
+report_days_back      = 30
 ```
 
-## Konfiguration
+Notes:
+- `alert_email` is optional. If set, SNS sends a subscription confirmation email.
+- `report_bucket_name = ""` auto-generates `qm-reports-<account-id>`.
 
-### Lambda Umgebungsvariablen (automatisch via Terraform)
-
-| Variable | Beschreibung | Standard |
-|----------|-------------|----------|
-| `QM_QUOTA_TABLE` | DynamoDB Tabellennamen | `qm-quotalog` |
-| `QM_ALERT_TOPIC_ARN` | SNS Topic für Alerts | (automatisch) |
-| `QM_ALERT_THRESHOLD` | Utilization % für Alerts | 80 |
-
-### Terraform Variablen
-
-| Variable | Beschreibung | Standard |
-|----------|-------------|----------|
-| `tags` | Tags für alle Ressourcen | `{}` |
-| `alert_threshold_pct` | Schwellwert für Alerts | 80 |
-| `alert_email` | E-Mail für SNS Subscription | `` |
-
-## Nutzung
-
-### Lokal testen mit BA-Profil
-
-```bash
-export AWS_PROFILE=BA
-export QM_ALERT_THRESHOLD=75  # Optional
-python3 src/main.py
-```
-
-### Lambda manuell triggern
-
-```bash
-aws lambda invoke \
-  --function-name qm-quotacontroller \
-  --profile BA \
-  response.json
-
-cat response.json
-```
-
-### CloudWatch Logs anschauen
-
-```bash
-aws logs tail /aws/lambda/qm-quotacontroller \
-  --follow \
-  --profile BA
-```
-
-## Datenmodell
-
-### DynamoDB Tabelle: `qm-quotalog`
-
-Partition Key: `PK` (String)  
-Sort Key: `SK` (String)
-
-**Beispiel:**
-- PK: `QUOTA#123456789012#eu-central-1#quota#L-70015FFA`
-- SK: `TS#2026-02-14T12:34:56Z`
-
-**Attribute:**
-- accountId, region, serviceCode, quotaCode, quotaName
-- limitValue, usageValue, utilizationPct
-- collectorType, dataSource, calculationMethod
-- maxResourceType, maxResourceId, maxResourceMeta
-- collectedAt, ttl (für automatisches Löschen)
-
-## Erweiterungen
-
-### Neue Service-Checks hinzufügen
-
-1. Neues Modul in `src/qmchecks/<service>/` erstellen
-2. Funktionen analog zu `ec2.py` implementieren
-3. In `src/main.py` importieren und aufrufen
-
-### Alert-Logik anpassen
-
-Die `QuotaAlert` Klasse in `src/qmalerting/alerting.py` kann erweitert werden:
-- Andere Notification-Kanäle (E-Mail, Slack, etc.)
-- Unterschiedliche Schwellwerte pro Quota
-- Historische Datenanalyse
-
-## Troubleshooting
-
-### Lambda Timeout
-Erhöhen Sie `timeout` und `memory_size` in `deployment/main.tf`.
-
-### IAM Berechtigungen
-Prüfen Sie die Inline-Policies in `deployment/main.tf`:
-- `lambda_service_quotas`: Service Quotas API Zugriff
-- `lambda_ec2`: EC2 API Zugriff
-- `lambda_dynamodb`: DynamoDB Zugriff
-- `lambda_sns`: SNS Publish Zugriff
-
-### Layer-Abhängigkeiten
-Der Layer wird automatisch gebaut mit `pip install -r requirements.txt`. Falls Fehler auftreten:
+### 2) Initialize and deploy
 
 ```bash
 cd deployment
-terraform apply -var-file="terraform.tfvars" -auto-approve
+terraform init
+terraform plan -var-file=terraform.tfvars
+terraform apply -var-file=terraform.tfvars
 ```
 
-## Requirements
+### 3) Validate outputs
 
-Siehe `requirements.txt`:
-- boto3 >= 1.42.0 (für Service Quotas API)
-- reportlab >= 3.2.4
+```bash
+terraform output
+```
 
-## Lizenz
+Key outputs:
+- `quota_collector_function_name`
+- `reporting_function_name`
+- `dynamodb_table_name`
+- `sns_topic_arn`
+- `reports_bucket_name`
 
-Internal Project
+## Runtime Behavior
 
-Pro Quota werden (falls vorhanden) auch die vollständigen Usage-Metric-Details (`Namespace`, `MetricName`, Dimensionen, Statistik-Empfehlung) ausgegeben und in die CSV übernommen. Die AWS-Credentials werden – wie bei der AWS CLI – per Umgebung bzw. Profil geladen. Das Skript respektiert außerdem `AWS_MAX_ATTEMPTS`/`AWS_RETRY_MODE`.
+- EventBridge schedules:
+  - Collector: every 10 minutes
+  - Reporting: monthly on day 1 at 00:00 UTC
+- Quota data is stored in DynamoDB table `qm-quotalog`.
+- Reports are uploaded as CSV to `s3://<bucket>/reports/`.
 
-## Lizenz
+## Manual Invocation in AWS
 
-- Frei verwendbar (keine Garantie).
+### Collector
+
+```bash
+aws lambda invoke \
+  --function-name qm-quota-collector \
+  --payload '{}' \
+  collector-response.json
+cat collector-response.json
+```
+
+### Reporting
+
+```bash
+aws lambda invoke \
+  --function-name qm-reporting \
+  --payload '{"days_back":30}' \
+  reporting-response.json
+cat reporting-response.json
+```
+
+### View logs
+
+```bash
+aws logs tail /aws/lambda/qm-quota-collector --follow
+aws logs tail /aws/lambda/qm-reporting --follow
+```
+
+## Important Configuration
+
+Lambda environment variables (set by Terraform):
+- `QM_QUOTA_TABLE`
+- `QM_ALERT_TOPIC_ARN`
+- `QM_ALERT_THRESHOLD`
+- `QM_REPORT_BUCKET`
+- `QM_REPORT_DAYS`
+
+Terraform variables (`deployment/variables.tf`):
+- `tags`
+- `alert_threshold_pct`
+- `alert_email`
+- `report_bucket_name`
+- `report_retention_days`
+- `report_days_back`
+
+## Tests
+
+```bash
+pytest -q
+```
+
+## Troubleshooting
+
+- No SNS email received:
+  - Confirm the subscription via the SNS confirmation email.
+- Reporting returns no output:
+  - Check `QM_REPORT_BUCKET` and Lambda logs.
+- Terraform layer build fails:
+  - Verify local Python/pip setup, then run `terraform apply` again.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

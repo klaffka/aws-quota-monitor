@@ -84,7 +84,8 @@ resource "aws_iam_role_policy" "lambda_service_quotas" {
           "servicequotas:GetQuotaUtilizationReport",
           "servicequotas:GetServiceQuota",
           "servicequotas:ListServiceQuotas",
-          "servicequotas:ListServices"
+          "servicequotas:ListServices",
+          "cloudwatch:GetMetricData"
         ],
         Resource = "*"
       }

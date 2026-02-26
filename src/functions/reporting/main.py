@@ -50,8 +50,8 @@ def lambda_handler(event, context):
     all_quotas = fetch_all_service_quotas(sqs_client)
     logger.info(f"Fetched {len(all_quotas)} service quotas")
     
-    # Enrich with DynamoDB data
-    enriched_quotas = enrich_quotas_with_db(all_quotas, db, days_back, sqs_client)
+    # Enrich with CloudWatch (metric quotas) and DynamoDB (non-metric quotas)
+    enriched_quotas = enrich_quotas_with_db(all_quotas, db, days_back, session)
     
     # Generate CSV
     csv_content = generate_csv_report(enriched_quotas)
@@ -133,46 +133,49 @@ def fetch_all_service_quotas(client):
     return quotas
 
 
-def enrich_quotas_with_db(quotas, db, days_back, sqs_client):
+def enrich_quotas_with_db(quotas, db, days_back, session):
     """
     Enrich quotas with max usage from the reporting period.
-    
-    Logic:
-    1. Scan DynamoDB once to build a max-usage map
-    2. For each quota:
-       - If DynamoDB has usage data: use max value
-       - If no DB data but UsageMetric exists in quota: set to "0" (trackable, no usage)
-       - If no metric at all: "NOT SUPPORTED"
-    
-    No additional API calls needed — UsageMetric is already in the
-    list_service_quotas response.
-    """
-    cutoff_date = 'TS#' + (datetime.utcnow() - timedelta(days=days_back)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    enriched = []
 
-    # Single DynamoDB scan for all usage data
-    usage_map = build_usage_max_map(db, cutoff_date)
-    logger.info(f"Usage records aggregated for {len(usage_map)} quotas from DynamoDB")
-    
+    Strategy:
+    1. Quotas WITH UsageMetric → CloudWatch get_metric_data (batch, cheap)
+    2. Quotas WITHOUT UsageMetric → DynamoDB scan (custom collector data)
+    3. No metric and no DB data → "NOT SUPPORTED"
+    """
+    # Split quotas into metric vs non-metric
+    metric_quotas = [q for q in quotas if q.get('UsageMetric')]
+    non_metric_quotas = [q for q in quotas if not q.get('UsageMetric')]
+    logger.info(f"Quotas split: {len(metric_quotas)} with CloudWatch metric, {len(non_metric_quotas)} without")
+
+    # 1) CloudWatch for metric quotas (batch query, 1 datapoint per quota)
+    cw_usage = fetch_cloudwatch_max_usage(session, metric_quotas, days_back)
+    logger.info(f"CloudWatch returned usage for {len(cw_usage)} quotas")
+
+    # 2) DynamoDB only for non-metric quotas
+    cutoff_date = 'TS#' + (datetime.utcnow() - timedelta(days=days_back)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    db_usage_map = build_usage_max_map(db, cutoff_date)
+    logger.info(f"DynamoDB returned usage for {len(db_usage_map)} quotas")
+
+    enriched = []
     for quota in quotas:
         service_code = quota.get('ServiceCode')
         quota_code = quota.get('QuotaCode')
         quota_name = quota.get('QuotaName')
-        api_value = quota.get('Value')  # Value from Service Quotas API
-        
-        # Step 1: Check DynamoDB for max usage and limit
-        db_entry = usage_map.get((service_code, quota_code))
-        
-        if db_entry is not None:
-            status = db_entry['max_usage']
-            # Prefer limitValue from DB (what collector actually saw)
-            applied_value = db_entry.get('limit_value', api_value)
+        applied_value = quota.get('Value')  # from Service Quotas API
+
+        if quota.get('UsageMetric'):
+            # CloudWatch path
+            cw_val = cw_usage.get((service_code, quota_code))
+            status = cw_val if cw_val is not None else 0
         else:
-            applied_value = api_value
-            # Step 2: Check if quota has a metric (already in list_service_quotas response)
-            has_metric = quota.get('UsageMetric') is not None
-            status = "0" if has_metric else "NOT SUPPORTED"
-        
+            # DynamoDB path
+            db_entry = db_usage_map.get((service_code, quota_code))
+            if db_entry is not None:
+                status = db_entry['max_usage']
+                applied_value = db_entry.get('limit_value') or applied_value
+            else:
+                status = "NOT SUPPORTED"
+
         enriched.append({
             'quotaName': quota_name,
             'serviceCode': service_code,
@@ -180,8 +183,91 @@ def enrich_quotas_with_db(quotas, db, days_back, sqs_client):
             'appliedValue': applied_value,
             'maxUsage': status
         })
-    
+
     return enriched
+
+
+def fetch_cloudwatch_max_usage(session, metric_quotas, days_back):
+    """
+    Batch-query CloudWatch for max usage of quotas with UsageMetric.
+
+    Uses get_metric_data with up to 500 metrics per call.
+    Period = entire reporting window → 1 datapoint per metric = minimal cost.
+    """
+    if not metric_quotas:
+        return {}
+
+    cw_client = session.client('cloudwatch')
+    end_time = datetime.utcnow()
+    start_time = end_time - timedelta(days=days_back)
+    # Entire period as one datapoint; must be multiple of 60
+    period = max(60, days_back * 86400)
+    period = period - (period % 60)  # round down to multiple of 60
+
+    usage_map = {}
+    batch_size = 500  # CloudWatch limit per get_metric_data call
+
+    for batch_start in range(0, len(metric_quotas), batch_size):
+        batch = metric_quotas[batch_start:batch_start + batch_size]
+        queries = []
+        id_to_key = {}
+
+        for i, quota in enumerate(batch):
+            metric = quota['UsageMetric']
+            query_id = f"m{batch_start + i}"
+
+            # Convert MetricDimensions dict to CloudWatch Dimensions list
+            dims = [
+                {'Name': k, 'Value': v}
+                for k, v in metric.get('MetricDimensions', {}).items()
+            ]
+
+            queries.append({
+                'Id': query_id,
+                'MetricStat': {
+                    'Metric': {
+                        'Namespace': metric.get('MetricNamespace', 'AWS/Usage'),
+                        'MetricName': metric.get('MetricName', 'ResourceCount'),
+                        'Dimensions': dims
+                    },
+                    'Period': period,
+                    'Stat': 'Maximum'
+                },
+                'ReturnData': True
+            })
+            id_to_key[query_id] = (quota['ServiceCode'], quota['QuotaCode'])
+
+        try:
+            # Handle pagination (NextToken)
+            next_token = None
+            while True:
+                kwargs = {
+                    'MetricDataQueries': queries,
+                    'StartTime': start_time,
+                    'EndTime': end_time
+                }
+                if next_token:
+                    kwargs['NextToken'] = next_token
+
+                response = cw_client.get_metric_data(**kwargs)
+
+                for result in response.get('MetricDataResults', []):
+                    query_id = result['Id']
+                    values = result.get('Values', [])
+                    if values:
+                        key = id_to_key[query_id]
+                        usage_map[key] = max(values)
+
+                next_token = response.get('NextToken')
+                if not next_token:
+                    break
+
+            logger.info(f"CloudWatch batch {batch_start // batch_size + 1}: "
+                        f"{len(batch)} metrics queried, {sum(1 for r in response.get('MetricDataResults', []) if r.get('Values'))} with data")
+        except Exception as e:
+            logger.warning(f"CloudWatch batch query failed (batch {batch_start // batch_size + 1}): {e}")
+
+    return usage_map
 
 
 def build_usage_max_map(db, cutoff_date):
