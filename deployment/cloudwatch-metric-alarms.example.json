@@ -1,0 +1,38 @@
+{
+  "alarms": [
+    {
+      "alarm_name": "qm-official-vpc-endpoints-usage-high",
+      "alarm_description": "Interface VPC endpoints per VPC nearing quota",
+      "namespace": "AWS/Usage",
+      "metric_name": "ResourceCount",
+      "dimensions": {
+        "Service": "EC2",
+        "Type": "Resource",
+        "Resource": "InterfaceVPCEndpointsPerVPC",
+        "Class": "None"
+      },
+      "statistic": "Maximum",
+      "period": 300,
+      "evaluation_periods": 1,
+      "threshold": 80,
+      "comparison_operator": "GreaterThanOrEqualToThreshold",
+      "treat_missing_data": "notBreaching",
+      "unit": "Count",
+      "ok_to_sns": false
+    },
+    {
+      "alarm_name": "qm-official-lambda-concurrent-executions-high",
+      "alarm_description": "Lambda concurrent executions approaching account limit",
+      "namespace": "AWS/Lambda",
+      "metric_name": "ConcurrentExecutions",
+      "statistic": "Maximum",
+      "period": 300,
+      "evaluation_periods": 1,
+      "threshold": 800,
+      "comparison_operator": "GreaterThanOrEqualToThreshold",
+      "treat_missing_data": "notBreaching",
+      "unit": "Count",
+      "ok_to_sns": false
+    }
+  ]
+}

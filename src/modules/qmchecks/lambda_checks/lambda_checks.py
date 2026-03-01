@@ -268,7 +268,7 @@ def get_current_quotastatus_lambda(session=None):
         logger.warning(f"Lambda check L-C952DDE4 failed: {e}")
 
     # ══════════════════════════════════════════════════════════════════
-    #  SKIPPED QUOTAS  (not implemented in collector)
+    #  SKIPPED QUOTAS  (not implemented in collector for now, needs more investigation)
     # ══════════════════════════════════════════════════════════════════
     #
     # Covered by Reporting via official CloudWatch UsageMetric:
