@@ -15,6 +15,24 @@ def _get_limit(sq_client, quota_code):
     return resp['Quota']['Value']
 
 
+def _fetch_all_limits(sq_client, service_code='lambda'):
+    """Batch-fetch all quota limits for a service via ListServiceQuotas.
+
+    Returns a dict mapping QuotaCode → applied Value.
+    This replaces many individual GetServiceQuota calls with a single
+    paginated list call, avoiding TooManyRequestsException.
+    """
+    limits = {}
+    try:
+        paginator = sq_client.get_paginator('list_service_quotas')
+        for page in paginator.paginate(ServiceCode=service_code):
+            for q in page.get('Quotas', []):
+                limits[q['QuotaCode']] = q['Value']
+    except Exception as e:
+        logger.warning(f"Failed to batch-fetch limits for {service_code}: {e}")
+    return limits
+
+
 def _build_entry(account_id, region, collected_at, *,
                  quota_code, quota_name, limit_value, usage_value,
                  unit='Count', collector_type='REGION_TOTAL',
@@ -66,6 +84,14 @@ def get_current_quotastatus_lambda(session=None):
     lam = session.client('lambda')
     sq = session.client('service-quotas')
 
+    # ── Batch-fetch all Lambda quota limits (single paginated call) ──
+    limits = _fetch_all_limits(sq, 'lambda')
+    def get_limit(quota_code):
+        """Look up limit from pre-fetched map, fall back to individual API call."""
+        if quota_code in limits:
+            return limits[quota_code]
+        return _get_limit(sq, quota_code)
+
     # ── Pre-fetch all functions (paginated) ───────────────────────────
     logger.info("Lambda collector: fetching function inventory")
     functions = []
@@ -90,7 +116,7 @@ def get_current_quotastatus_lambda(session=None):
         total_code_size_used = acct['AccountUsage']['TotalCodeSize']
         # Override with Service Quotas value if available (may be increased)
         try:
-            sq_limit = _get_limit(sq, 'L-2ACBD22F')
+            sq_limit = get_limit('L-2ACBD22F')
             # Service Quotas returns in GB, API returns bytes
             if sq_limit < 1_000_000:
                 total_code_size_limit = int(sq_limit * 1_073_741_824)  # GB → bytes
@@ -117,7 +143,7 @@ def get_current_quotastatus_lambda(session=None):
 
     # L-75F48B05  Deployment package size – direct upload (default 50 MB)
     try:
-        limit = _get_limit(sq, 'L-75F48B05')
+        limit = get_limit('L-75F48B05')
         func_sizes = {}
         for fn in functions:
             func_sizes[fn['FunctionName']] = fn.get('CodeSize', 0)
@@ -140,31 +166,9 @@ def get_current_quotastatus_lambda(session=None):
     except Exception as e:
         logger.warning(f"Lambda check L-75F48B05 failed: {e}")
 
-    # L-9FEEFFC0  Function timeout (default 900 seconds)
-    try:
-        limit = _get_limit(sq, 'L-9FEEFFC0')
-        func_timeouts = {}
-        for fn in functions:
-            func_timeouts[fn['FunctionName']] = fn.get('Timeout', 0)
-        if func_timeouts:
-            max_fn = max(func_timeouts, key=func_timeouts.get)
-            max_timeout = func_timeouts[max_fn]
-        else:
-            max_fn, max_timeout = None, 0
-        lambda_quotas.append(entry(
-            quota_code='L-9FEEFFC0',
-            quota_name='Function timeout',
-            limit_value=limit, usage_value=max_timeout,
-            unit='Seconds',
-            collector_type='PER_RESOURCE_MAX', calculation_method='PER_RESOURCE_MAX',
-            max_resource_type='Function', max_resource_id=max_fn,
-            data_source='lambda:ListFunctions'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-9FEEFFC0 failed: {e}")
-
     # L-01237738  Function layers (default 5 per function)
     try:
-        limit = _get_limit(sq, 'L-01237738')
+        limit = get_limit('L-01237738')
         func_layers = {}
         for fn in functions:
             func_layers[fn['FunctionName']] = len(fn.get('Layers', []))
@@ -185,7 +189,7 @@ def get_current_quotastatus_lambda(session=None):
 
     # L-6581F036  Environment variable size (default 4 KB per function)
     try:
-        limit = _get_limit(sq, 'L-6581F036')
+        limit = get_limit('L-6581F036')
         func_env_sizes = {}
         for fn in functions:
             env_vars = fn.get('Environment', {}).get('Variables', {})
@@ -213,7 +217,7 @@ def get_current_quotastatus_lambda(session=None):
 
     # L-07A00131  Function resource-based policy (default 20 KB)
     try:
-        limit = _get_limit(sq, 'L-07A00131')
+        limit = get_limit('L-07A00131')
         func_policy_sizes = {}
         for fn in functions:
             try:
@@ -246,7 +250,7 @@ def get_current_quotastatus_lambda(session=None):
 
     # L-C952DDE4  Kafka Event Source Mappings in default mode on Lambda Managed Instances
     try:
-        limit = _get_limit(sq, 'L-C952DDE4')
+        limit = get_limit('L-C952DDE4')
         esms = []
         esm_paginator = lam.get_paginator('list_event_source_mappings')
         for page in esm_paginator.paginate():
@@ -264,8 +268,12 @@ def get_current_quotastatus_lambda(session=None):
         logger.warning(f"Lambda check L-C952DDE4 failed: {e}")
 
     # ══════════════════════════════════════════════════════════════════
-    #  SKIPPED QUOTAS  (not measurable via point-in-time API check)
+    #  SKIPPED QUOTAS  (not implemented in collector)
     # ══════════════════════════════════════════════════════════════════
+    #
+    # Covered by Reporting via official CloudWatch UsageMetric:
+    #   L-B99A9384  Concurrent executions (AWS/Lambda, ConcurrentExecutions)
+    #     → Reporting fetches this via get_metric_data; returns 0 if no data.
     #
     # Rate limits (TPS) – can't be measured as resource counts:
     #   L-A723F9CC  Async invocation request throughput (Lambda Managed Instances)
@@ -286,6 +294,9 @@ def get_current_quotastatus_lambda(session=None):
     #   L-133D658A  Rate of SendDurableExecutionCallbackHeartbeat API requests
     #   L-B82A30EA  Rate of SendDurableExecutionCallbackSuccess API requests
     #   L-4C4550DE  Rate of StopDurableExecution API requests
+    #
+    # Configuration limits (not capacity – using max timeout is intentional):
+    #   L-9FEEFFC0  Function timeout (900 seconds)
     #
     # Per-invocation static limits:
     #   L-7C0F49F9  Asynchronous payload (256 KB)

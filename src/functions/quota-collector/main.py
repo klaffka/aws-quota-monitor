@@ -2,7 +2,8 @@ import boto3
 import sys
 import os
 from modules.qmchecks.ec2.ec2 import get_current_quotastatus_ec2
-from modules.qmchecks.general.utilization_report import quota_utilization_report, process_quota_utilization_report
+from modules.qmchecks.vpc.vpc import get_current_quotastatus_vpc
+from modules.qmchecks.lambda_checks.lambda_checks import get_current_quotastatus_lambda
 from modules.qmalerting.alerting import QuotaAlert
 from modules.qmdb.db import QuotaLogDb
 import time
@@ -28,15 +29,16 @@ def lambda_handler(event, context):
     alert_threshold = int(os.environ.get('QM_ALERT_THRESHOLD', '80'))
     alert_system = QuotaAlert(session=session, threshold_pct=alert_threshold)
     
-    # Generate utilization report
-    utalizationReport = quota_utilization_report(session=session)
+    # Get EC2-specific quotas (custom checks not covered by CloudWatch metrics)
+    current_quota = get_current_quotastatus_ec2(session=session)
     
-    # Process general quotas from report
-    current_quota = process_quota_utilization_report(utalizationReport, session=session)
+    # Get VPC-specific quotas
+    vpc_quotas = get_current_quotastatus_vpc(session=session)
+    current_quota.extend(vpc_quotas)
     
-    # Get EC2-specific quotas
-    ec2_quotas = get_current_quotastatus_ec2(utalizationReport, session=session)
-    current_quota.extend(ec2_quotas)
+    # Get Lambda-specific quotas
+    lambda_quotas = get_current_quotastatus_lambda(session=session)
+    current_quota.extend(lambda_quotas)
     
     for quota in current_quota:
         pk = f"QUOTA#{quota['accountId']}#{quota['region']}#quota#{quota['quotaCode']}"

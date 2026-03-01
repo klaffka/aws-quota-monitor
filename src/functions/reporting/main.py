@@ -167,21 +167,25 @@ def enrich_quotas_with_db(quotas, db, days_back, session):
             # CloudWatch path
             cw_val = cw_usage.get((service_code, quota_code))
             status = cw_val if cw_val is not None else 0
+            usage_source = 'official_metric'
         else:
             # DynamoDB path
             db_entry = db_usage_map.get((service_code, quota_code))
             if db_entry is not None:
                 status = db_entry['max_usage']
                 applied_value = db_entry.get('limit_value') or applied_value
+                usage_source = 'collector_implementation'
             else:
                 status = "NOT SUPPORTED"
+                usage_source = 'not_supported'
 
         enriched.append({
             'quotaName': quota_name,
             'serviceCode': service_code,
             'quotaCode': quota_code,
             'appliedValue': applied_value,
-            'maxUsage': status
+            'maxUsage': status,
+            'usageSource': usage_source
         })
 
     return enriched
@@ -326,7 +330,7 @@ def generate_csv_report(quotas):
     output = StringIO()
     writer = csv.DictWriter(
         output,
-        fieldnames=['Quota Name', 'Service', 'Quota Code', 'Applied Value', 'Max Usage (Current Month)']
+        fieldnames=['Quota Name', 'Service', 'Quota Code', 'Applied Value', 'Max Usage (Current Month)', 'Usage Source']
     )
     
     writer.writeheader()
@@ -336,7 +340,8 @@ def generate_csv_report(quotas):
             'Service': quota.get('serviceCode', 'N/A'),
             'Quota Code': quota.get('quotaCode', 'N/A'),
             'Applied Value': quota.get('appliedValue', 'N/A'),
-            'Max Usage (Current Month)': quota.get('maxUsage', 'NOT SUPPORTED')
+            'Max Usage (Current Month)': quota.get('maxUsage', 'NOT SUPPORTED'),
+            'Usage Source': quota.get('usageSource', 'unknown')
         })
     
     return output.getvalue()

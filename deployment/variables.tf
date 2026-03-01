@@ -33,3 +33,15 @@ variable "report_days_back" {
   type        = number
   default     = 30
 }
+
+variable "enable_cloudwatch_metric_alarms" {
+  description = "Enable creation of CloudWatch metric alarms from JSON config file"
+  type        = bool
+  default     = false
+}
+
+variable "cloudwatch_metric_alarms_config_file" {
+  description = "Path to JSON file with CloudWatch alarm definitions (relative to deployment/ or absolute path)"
+  type        = string
+  default     = ""
+}

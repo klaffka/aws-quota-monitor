@@ -80,12 +80,12 @@ resource "aws_iam_role_policy" "lambda_service_quotas" {
       {
         Effect = "Allow",
         Action = [
-          "servicequotas:StartQuotaUtilizationReport",
-          "servicequotas:GetQuotaUtilizationReport",
           "servicequotas:GetServiceQuota",
           "servicequotas:ListServiceQuotas",
           "servicequotas:ListServices",
-          "cloudwatch:GetMetricData"
+          "cloudwatch:GetMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "sts:GetCallerIdentity"
         ],
         Resource = "*"
       }
@@ -128,6 +128,37 @@ resource "aws_sns_topic_subscription" "qm_alerts_email" {
   topic_arn = aws_sns_topic.qm_alerts.arn
   protocol  = "email"
   endpoint  = var.alert_email
+}
+
+locals {
+  cw_alarm_config_raw = var.enable_cloudwatch_metric_alarms && var.cloudwatch_metric_alarms_config_file != "" ? jsondecode(file(var.cloudwatch_metric_alarms_config_file)) : []
+  cw_alarm_list       = can(local.cw_alarm_config_raw.alarms) ? local.cw_alarm_config_raw.alarms : local.cw_alarm_config_raw
+  cw_alarm_map        = { for alarm in local.cw_alarm_list : alarm.alarm_name => alarm }
+}
+
+resource "aws_cloudwatch_metric_alarm" "qm_metric_alarms" {
+  for_each = var.enable_cloudwatch_metric_alarms ? local.cw_alarm_map : {}
+
+  alarm_name                = each.value.alarm_name
+  alarm_description         = lookup(each.value, "alarm_description", "Quota metric alarm managed by Terraform")
+  comparison_operator       = lookup(each.value, "comparison_operator", "GreaterThanOrEqualToThreshold")
+  evaluation_periods        = lookup(each.value, "evaluation_periods", 1)
+  datapoints_to_alarm       = lookup(each.value, "datapoints_to_alarm", null)
+  threshold                 = each.value.threshold
+  treat_missing_data        = lookup(each.value, "treat_missing_data", "notBreaching")
+  insufficient_data_actions = lookup(each.value, "insufficient_data_actions", [])
+
+  namespace   = each.value.namespace
+  metric_name = each.value.metric_name
+  statistic   = lookup(each.value, "statistic", "Maximum")
+  period      = lookup(each.value, "period", 300)
+  unit        = lookup(each.value, "unit", null)
+  dimensions  = lookup(each.value, "dimensions", null)
+
+  alarm_actions = [aws_sns_topic.qm_alerts.arn]
+  ok_actions    = lookup(each.value, "ok_to_sns", false) ? [aws_sns_topic.qm_alerts.arn] : []
+
+  tags = var.tags
 }
 
 # Inline policy to allow Lambda to publish to SNS topic
@@ -243,15 +274,48 @@ resource "aws_iam_role_policy" "lambda_ec2" {
     Version = "2012-10-17",
     Statement = [
       {
+        Sid    = "EC2Checks",
         Effect = "Allow",
         Action = [
+          # EC2 collector checks
           "ec2:DescribeInstances",
           "ec2:DescribeImages",
           "ec2:DescribeImageAttribute",
           "ec2:DescribeClientVpnEndpoints",
           "ec2:DescribeClientVpnAuthorizationRules",
+          # VPC collector checks
           "ec2:DescribeVpcs",
-          "ec2:DescribeVpcAttachments"
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeNetworkAcls",
+          "ec2:DescribeRouteTables",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeInternetGateways",
+          "ec2:DescribeEgressOnlyInternetGateways",
+          "ec2:DescribeVpcEndpoints",
+          "ec2:DescribeNatGateways",
+          "ec2:DescribeVpcPeeringConnections",
+          "ec2:DescribeVpcBlockPublicAccessExclusions"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "RAMChecks",
+        Effect = "Allow",
+        Action = [
+          "ram:ListResources",
+          "ram:ListPrincipals"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "LambdaChecks",
+        Effect = "Allow",
+        Action = [
+          "lambda:GetAccountSettings",
+          "lambda:ListFunctions",
+          "lambda:GetPolicy",
+          "lambda:ListEventSourceMappings"
         ],
         Resource = "*"
       }
