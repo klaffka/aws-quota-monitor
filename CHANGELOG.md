@@ -19,6 +19,7 @@ All notable changes to this project are recorded here. Versions follow
   quotas in the retained Network Insights catalog.
 - Unique Audit Manager accounts in scope across all assessments.
 - DLM target accounts per snapshot sharing rule.
+- Recycle Bin tag key/value pairs per retention rule.
 
 ### Changed
 
@@ -28,3 +29,4 @@ All notable changes to this project are recorded here. Versions follow
 
 - Historical quota measurements and monthly reports preserve account, Region, unit, and interval boundaries.
 - Corrected the Network Firewall stateless-rule-group quota code.
+- Corrected Recycle Bin rule collection to query every supported resource type.

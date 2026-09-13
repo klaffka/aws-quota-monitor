@@ -1,5 +1,6 @@
 """Persistent-resource inventories for small service modules."""
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
+from modules.qmchecks.rbin import rule_count as rbin_rule_count, tags_per_rule
 
 def _sso_instances(c):
     return c.call('sso-admin', 'list_instances', 'Instances')
@@ -126,7 +127,10 @@ CHECKS = {
     'ssm-sap': [('L-C8103580', 'SAP applications per Region in account', lambda c: dict(usage=len(c.call('ssm-sap', 'list_applications', 'Applications')), source='ssm-sap:ListApplications', method='ACCOUNT_COUNT'))],
     'glacier': [('L-D1C67346', 'Vaults per account', lambda c: dict(usage=len(c.call('glacier', 'list_vaults', 'VaultList')), source='glacier:ListVaults', method='ACCOUNT_COUNT'))],
     'dataexchange': [('L-52E2E63A', 'Data sets per account', lambda c: dict(usage=len(c.call('dataexchange', 'list_data_sets', 'DataSets')), source='dataexchange:ListDataSets', method='ACCOUNT_COUNT'))],
-    'rbin': [('L-629917A2', 'Rules per Region', lambda c: dict(usage=len(c.call('rbin', 'list_rules', 'Rules')), source='rbin:ListRules', method='ACCOUNT_COUNT'))],
+    'rbin': [
+        ('L-629917A2', 'Rules per Region', rbin_rule_count),
+        ('L-BCC6359E', 'Tags per rule', tags_per_rule),
+    ],
     'dlm': [
         ('L-5407D8DA', 'Policies per Region', lambda c: dict(usage=len(c.call('dlm', 'get_lifecycle_policies', 'Policies')), source='dlm:GetLifecyclePolicies', method='ACCOUNT_COUNT')),
         ('L-DCA05F2F', 'Target accounts per sharing rule', dlm_share_targets),

@@ -40,7 +40,7 @@ Each deployment monitors its execution account and configured Region.
 | DLM | Lifecycle policies and target accounts per sharing rule |
 | Glacier | Vaults per account |
 | Data Exchange | Data sets per account |
-| Recycle Bin | Rules per Region |
+| Recycle Bin | Retention rules per Region and tag pairs per rule |
 | MediaLive | CloudWatch Alarm Templates and EventBridge Rule Templates |
 | EC2 networking | Transit gateways, customer gateways and virtual private gateways |
 | Direct Connect | Maximum dedicated connections per location and virtual interfaces per connection |
@@ -199,7 +199,7 @@ Each deployment monitors its execution account and configured Region.
 | Well-Architected | Workloads, lenses and review templates per Region, plus parent-scoped lenses and milestones |
 | SSM Contacts | Contacts and rotations per account |
 | Data Exchange | Data sets per account |
-| Recycle Bin | Rules per Region |
+| Recycle Bin | Retention rules per Region and tag pairs per rule |
 | Neptune Analytics | Graphs per Region |
 | Elastic Load Balancing | Classic/ALB/NLB counts, target groups, listeners, certificates, NLB target-AZ maxima, ALB rules, trust stores and revocation quotas from paginated APIs |
 
@@ -230,8 +230,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,120 of
-10,398 BA catalog quotas with an implemented measurement method (39.62%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,121 of
+10,398 BA catalog quotas with an implemented measurement method (39.63%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

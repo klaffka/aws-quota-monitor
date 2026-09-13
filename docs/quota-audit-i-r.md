@@ -1955,10 +1955,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-4A6CEE66` — **Number of resource associations** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-9EBA15DD` — **Number of custom permissions** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 
-## `rbin` (1 offene Quotas)
-
-- `L-BCC6359E` — **Tags per rule** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-
 ## `rds` (18 offene Quotas)
 
 - `L-5BC124EF` — **Read replicas per primary** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
@@ -2229,10 +2225,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **2013** Quotas aus Services I–R offen.
+Insgesamt sind **2012** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 90
 - `CONFIG_LIMIT`: 246
-- `RESOURCE_MAPPING`: 314
+- `RESOURCE_MAPPING`: 313
 - `UNSUPPORTED`: 273
 - `USAGE_METRIC`: 1090
 
