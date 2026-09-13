@@ -1,0 +1,9 @@
+target-version = "py314"
+
+[lint]
+# Start with correctness checks that can block releases without imposing a
+# repository-wide style rewrite. Broader rule sets can be enabled incrementally.
+select = ["E9", "F63", "F7", "F82"]
+
+[lint.per-file-ignores]
+"tests/*" = ["F811"]

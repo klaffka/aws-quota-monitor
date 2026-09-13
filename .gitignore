@@ -3,6 +3,12 @@
 *.xls
 __pycache__/
 *.pyc
+.pytest_cache/
+.ruff_cache/
+test-results/
+release-notes.md
+/dist/
+/data/
 .env
 .DS_Store
 .vscode/

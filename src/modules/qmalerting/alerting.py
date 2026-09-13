@@ -1,91 +1,80 @@
-import boto3
+"""Durable alert transitions protected by a DynamoDB lease and observation ordering."""
+import json
 import os
-import logging
+import time
+from uuid import uuid4
+from botocore.exceptions import ClientError
+from modules.qmcore.aws import CONFIG
+from modules.qmcore.model import number, valid_measurement
+from modules.qmdb.db import QuotaLogDb
 
-logger = logging.getLogger(__name__)
+
+class AlertBusy(RuntimeError):
+    pass
+
 
 class QuotaAlert:
-    """Alert system for quota utilization thresholds"""
-    
-    def __init__(self, session=None, sns_topic_arn=None, threshold_pct=80):
-        """
-        Initialize QuotaAlert
-        
-        Args:
-            session: boto3 session
-            sns_topic_arn: ARN of SNS topic for alerts
-            threshold_pct: Utilization percentage threshold (default 80%)
-        """
-        if session is None:
-            session = boto3.Session()
-        
-        self.session = session
-        self.sns_client = session.client('sns')
-        self.sns_topic_arn = sns_topic_arn or os.environ.get('QM_ALERT_TOPIC_ARN')
-        self.threshold_pct = threshold_pct
-    
+    def __init__(self, session, sns_topic_arn=None, threshold_pct=80, db=None, clock=time.time):
+        threshold = number(threshold_pct)
+        if threshold is None or not 0 < threshold <= 100:
+            raise ValueError('QM_ALERT_THRESHOLD must be greater than 0 and at most 100')
+        self.threshold_pct = threshold
+        self.sns_topic_arn = sns_topic_arn or os.getenv('QM_ALERT_TOPIC_ARN')
+        self.sns_client = session.client('sns', config=CONFIG)
+        self.db = db or QuotaLogDb(session)
+        self.clock = clock
+
     def check_and_alert(self, quota):
-        """
-        Check quota utilization against threshold and send alert if exceeded
-        
-        Args:
-            quota: Quota entry dict with keys like 'quotaName', 'utilizationPct', etc.
-            
-        Returns:
-            bool: True if alert was sent, False otherwise
-        """
-        if not self.sns_topic_arn:
-            logger.warning("SNS topic ARN not configured, skipping alert")
+        if not self.sns_topic_arn or not valid_measurement(quota):
             return False
-        
-        utilization = quota.get('utilizationPct', 0)
-        
-        if utilization >= self.threshold_pct:
-            self._send_alert(quota, utilization)
-            return True
-        
-        return False
-    
-    def _send_alert(self, quota, utilization):
-        """Send SNS alert for quota threshold breach"""
+        key = {'PK': f"ALERT#{quota['accountId']}#{quota['region']}#{quota['serviceCode']}#{quota['quotaCode']}", 'SK': 'STATE'}
+        table, token, now = self.db.table, uuid4().hex, int(self.clock())
         try:
-            message = self._format_alert_message(quota, utilization)
-            subject = f"⚠️ Quota Alert: {quota.get('quotaName', 'Unknown')} - {utilization:.1f}%"
-            
-            response = self.sns_client.publish(
-                TopicArn=self.sns_topic_arn,
-                Subject=subject,
-                Message=message
-            )
-            
-            logger.info(f"Alert sent for {quota.get('quotaCode')} - MessageId: {response['MessageId']}")
-        except Exception as e:
-            logger.error(f"Failed to send alert: {e}")
-    
-    def _format_alert_message(self, quota, utilization):
-        """Format alert message with quota details"""
-        return f"""
-Quota Utilization Alert
-{'=' * 50}
+            response = table.update_item(Key=key,
+                UpdateExpression='SET leaseToken = :token, leaseUntil = :until',
+                ConditionExpression='attribute_not_exists(leaseUntil) OR leaseUntil < :now',
+                ExpressionAttributeValues={':token': token, ':until': now + 1000, ':now': now},
+                ReturnValues='ALL_NEW')
+        except ClientError as exc:
+            if exc.response['Error']['Code'] == 'ConditionalCheckFailedException':
+                raise AlertBusy('Another invocation holds the alert lease') from exc
+            raise
+        state = response['Attributes']
+        try:
+            observed = quota['collectedAt']
+            if observed <= state.get('lastObservedAt', ''):
+                self._release(key, token)
+                return False
+            utilization = float(quota['usageValue']) / float(quota['limitValue']) * 100
+            breached = utilization >= self.threshold_pct
+            previous = state.get('alarmState', 'OK')
+            kind = None
+            if breached:
+                if previous != 'ALARM':
+                    kind = 'BREACH'
+                elif now - int(state.get('lastSentAt', 0)) >= 86400:
+                    kind = 'REMINDER'
+            elif previous == 'ALARM':
+                kind = 'RECOVERY'
+            if kind:
+                # Only commit the new state after SNS accepted the publication.
+                self.sns_client.publish(TopicArn=self.sns_topic_arn,
+                    Subject=f"Quota {kind}: {quota['serviceCode']} {quota['quotaCode']}"[:100],
+                    Message=json.dumps({'event': kind, 'thresholdPct': self.threshold_pct,
+                                        'quota': quota}, default=str))
+            values = {':token': token, ':observed': observed, ':state': 'ALARM' if breached else 'OK'}
+            expression = 'SET lastObservedAt = :observed, alarmState = :state'
+            if kind:
+                expression += ', lastSentAt = :sent'
+                values[':sent'] = int(self.clock())
+            table.update_item(Key=key, UpdateExpression=expression + ' REMOVE leaseToken, leaseUntil',
+                              ConditionExpression='leaseToken = :token', ExpressionAttributeValues=values)
+            return bool(kind)
+        except Exception:
+            self._release(key, token)
+            raise
 
-Quota Name:      {quota.get('quotaName', 'Unknown')}
-Quota Code:      {quota.get('quotaCode', 'Unknown')}
-Service:         {quota.get('serviceCode', 'Unknown')}
-Account ID:      {quota.get('accountId', 'Unknown')}
-Region:          {quota.get('region', 'Unknown')}
-
-Utilization:     {utilization:.1f}%
-Threshold:       {self.threshold_pct}%
-
-Current Usage:   {quota.get('usageValue', 0):.0f}
-Limit:           {quota.get('limitValue', 0):.0f}
-
-Scope Type:      {quota.get('scopeType', 'Unknown')}
-Collector Type:  {quota.get('collectorType', 'Unknown')}
-Data Source:     {quota.get('dataSource', 'Unknown')}
-
-Collected At:    {quota.get('collectedAt', 'Unknown')}
-
-{'-' * 50}
-Please review your quota usage and take appropriate action if necessary.
-""".strip()
+    def _release(self, key, token):
+        self.db.table.update_item(Key=key, UpdateExpression='REMOVE leaseToken, leaseUntil',
+                                  ConditionExpression='leaseToken = :token',
+                                  ExpressionAttributeValues={':token': token})

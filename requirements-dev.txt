@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==9.0.2
+moto[dynamodb,sns,s3]==5.1.18
+ruff==0.16.7
