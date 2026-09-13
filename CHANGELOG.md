@@ -22,6 +22,8 @@ All notable changes to this project are recorded here. Versions follow
 - Recycle Bin tag key/value pairs per retention rule.
 - AWS RAM resource/principal associations per share and customer-managed
   permissions at account and resource-type scope.
+- Complete App Runner resource coverage for connections, configuration names,
+  VPC connectors, and VPC ingress connections per service.
 
 ### Changed
 

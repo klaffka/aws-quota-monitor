@@ -262,14 +262,6 @@ Total open entries: **3204**
 - `L-8775AB18` — Backends per virtual node
 - `L-AE1D9567` — Weighted targets per route
 
-## apprunner
-
-- `L-1BDBAAB6` — Connections
-- `L-1D8C5BDD` — Auto scaling configurations
-- `L-4064914D` — VPC ingress connections
-- `L-A0B46A0C` — Observability configurations
-- `L-F7ADEB8C` — VPC connectors
-
 ## appstream2
 
 - `L-00034C26` — Graphics G6F 4xlarge streaming instances for fleets

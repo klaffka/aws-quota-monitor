@@ -1947,23 +1947,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-E9E486C4` — **Display items per sheet control** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-F1EA8033` — **Query timeout for visuals** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `rds` (18 offene Quotas)
+## `rds` (6 offene Quotas)
 
-- `L-5BC124EF` — **Read replicas per primary** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-6F3ACC36` — **Subnets per DB subnet group** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-732153D0` — **Security groups** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-78E853F4` — **Reserved DB instances** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-7ADDB58A` — **Total storage for all DB instances** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-9372BAB3` — **Custom endpoints per DB cluster** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-A399AC0B` — **Custom engine versions** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-A59F4C87` — **Event subscriptions** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-AA8B1026` — **Authorizations per DB security group** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-BDB2F348` — **Data API maximum result set size** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-C0506D15` — **Data API maximum size of JSON response string** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-CB9BE6F8` — **Integrations** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-D87A28C7` — **Data API HTTP request body size** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-DD2301CA` — **IAM roles per DB instance** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-E094F43D` — **IAM roles per DB cluster** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-E3721453` — **Data API maximum concurrent cluster-secret pairs** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
 - `L-E79969BF` — **Data API maximum concurrent requests** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
 - `L-ECDFB241` — **Data API requests per second** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -2217,11 +2205,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **2007** Quotas aus Services I–R offen.
+Insgesamt sind **1995** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 90
-- `CONFIG_LIMIT`: 246
-- `RESOURCE_MAPPING`: 308
-- `UNSUPPORTED`: 273
+- `CONFIG_LIMIT`: 245
+- `RESOURCE_MAPPING`: 304
+- `UNSUPPORTED`: 266
 - `USAGE_METRIC`: 1090
 
 Die Resource-Count-Prüfung wurde für die eindeutig zuordenbaren Fälle in den registrierten Checks ergänzt. Die verbleibenden `RESOURCE_MAPPING`-Einträge bleiben absichtlich `UNSUPPORTED`, bis eine service-spezifische API-Semantik und ein passender Quota-Code anhand der AWS-Dokumentation verifiziert werden können.

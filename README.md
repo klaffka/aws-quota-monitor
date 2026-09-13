@@ -151,7 +151,7 @@ Each deployment monitors its execution account and configured Region.
 | Mainframe Modernization | Applications and environments per Region |
 | Entity Resolution | Matching workflows, ID-mapping workflows, namespaces and schema mappings per Region |
 | DataZone | Assets, glossaries, asset types and environments per domain |
-| App Runner | Services per Region |
+| App Runner | Services, connections, auto-scaling/observability configurations, VPC connectors and per-service ingress connections |
 | Amplify | Apps, domains, branches and webhooks per app per Region |
 | Amplify UI Builder | Themes, views, components and forms per app |
 | EVS | Environments per account and hosts per environment |
@@ -230,8 +230,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,122 of
-10,398 BA catalog quotas with an implemented measurement method (39.64%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,127 of
+10,398 BA catalog quotas with an implemented measurement method (39.69%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
