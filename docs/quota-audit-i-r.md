@@ -1520,30 +1520,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-E50E3387` — **Rate of UpdateGraph API requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F4990E36` — **Rate of ListGraphSnapshots API requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 
-## `network-firewall` (22 offene Quotas)
+## `network-firewall` (2 offene Quotas)
 
-- `L-00042DEC` — **Number of firewalls that can use the same policy** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-0E2A97AD` — **Stateless rule group capacity** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-218BF7D1` — **Server certificates per TLS configuration** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-2B6C8C12` — **Network traffic bandwidth per firewall endpoint** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-3E253D9A` — **IP set references per Suricata compatible stateful rule group** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-3EF9089F` — **VPC endpoint associations** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-4BA822BD` — **Number of policies using a TLS inspection configuration** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-4F6C862E` — **TLS inspection configurations per policy** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-52ACCE4C` — **CA certificates per TLS configuration** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-53DEAFE0` — **Stateless rules per policy** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-5BF9763F` — **VPC endpoint associations per Availability Zone per Firewall** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-63BF3FE7` — **Required firewall policies per firewall** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-8B62609E` — **Stateless rule groups per policy** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-9B335747` — **Stateful rule groups per policy** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-9B5B9EFB` — **Number of policies that can use the same rule group** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-9E55B2E0` — **Suricata rules string size** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-A364946C` — **Suricata rule character length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-CEEC5053` — **Stateful rule group capacity** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-DBC1A782` — **Resource filters** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-E65239AF` — **Stateful rules per policy** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-EAE8E19E` — **Stateless rulegroups** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-EB27A72A` — **Stateless rule group custom actions** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
+- `L-2B6C8C12` — **Network traffic bandwidth per firewall endpoint** — `USAGE_METRIC`: Current traffic bandwidth is transient and cannot be derived from the persistent configuration inventory. A compatible official usage metric is required.
+- `L-A364946C` — **Suricata rule character length** — `CONFIG_LIMIT`: AWS counts expanded variable values toward each rule's character length. The API returns the unexpanded rules string and variable definitions separately, so raw line length could understate usage.
 
 ## `networkinsights` (6 offene Quotas)
 

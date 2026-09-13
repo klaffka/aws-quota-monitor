@@ -93,7 +93,7 @@ Each deployment monitors its execution account and configured Region.
 | Transcribe | Vocabularies, medical vocabularies, vocabulary filters and language models |
 | Polly | Lexicons |
 | Lex V2 | Bots and maximum versions per bot |
-| Network Firewall | Firewalls, firewall policies, stateless/stateful rule groups and TLS configurations |
+| Network Firewall | 25 account, policy, rule-group, TLS, VPC-endpoint and container quotas |
 | SES | Tenants per account |
 | Connect | Amazon Connect instances per Region |
 | Audit Manager | Custom frameworks, custom controls, running assessments and controls per framework |
@@ -229,8 +229,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,097 of
-10,398 BA catalog quotas with an implemented measurement method (39.40%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,118 of
+10,398 BA catalog quotas with an implemented measurement method (39.60%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
