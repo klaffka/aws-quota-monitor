@@ -12,6 +12,7 @@ All notable changes to this project are recorded here. Versions follow
 - Automated Python, packaging, and Terraform checks for pull requests and branches.
 - Tag-driven GitHub releases with validated versions, release notes, and SHA-256 checksums.
 - FinSpace Managed kdb measurements for 28 resource, node, and storage quotas.
+- EC2 Image Builder measurements for 20 resource and configuration quotas.
 
 ### Changed
 

@@ -29,7 +29,7 @@ def test_kinesis_analytics_application_count_is_paginated():
 
 def test_imagebuilder_and_oam_inventory_counts_use_paginated_lists():
     ctx = Mock()
-    ctx.call.return_value = [{'id': 'one'}, {'id': 'two'}]
+    ctx.call.return_value = [{'arn': 'one'}, {'arn': 'two'}]
     assert [check(ctx)['usage'] for _, _, check in IMAGEBUILDER_CHECKS] == [2, 2, 2]
     assert OAM_CHECKS[1][2](ctx)['usage'] == 2
 

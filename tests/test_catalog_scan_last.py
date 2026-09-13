@@ -17,5 +17,5 @@ def test_last_catalog_resource_counts():
             context.call.side_effect = [[{}], [{}], [{'Provisioned': {'NumberOfBrokerNodes': 1}}]]
             assert [check[2](context)['usage'] for check in checks] == [1] * len(checks)
     context = Mock()
-    context.call.return_value = [{}]
+    context.call.return_value = [{'arn': 'resource'}]
     assert IMAGEBUILDER[0][2](context)['usage'] == 1
