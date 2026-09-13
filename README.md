@@ -97,7 +97,7 @@ Each deployment monitors its execution account and configured Region.
 | Network Insights | Access scopes, paths, retained analyses and running analyses |
 | SES | Tenants per account |
 | Connect | Amazon Connect instances per Region |
-| Audit Manager | Custom frameworks, custom controls, running assessments and controls per framework |
+| Audit Manager | Custom frameworks/controls, running assessments, framework controls and scoped accounts |
 | Resilience Hub | Applications and resiliency policies |
 | Storage Gateway | Stored/cached volumes and file shares per gateway, plus maximum shares per S3 bucket |
 | Omics | Workflows, sequence stores, variant stores and annotation stores |
@@ -230,8 +230,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,118 of
-10,398 BA catalog quotas with an implemented measurement method (39.60%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,119 of
+10,398 BA catalog quotas with an implemented measurement method (39.61%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

@@ -494,10 +494,6 @@ Total open entries: **3204**
 - `L-FC5F6546` — Active DML queries
 - `L-FE3693EE` — Burst multiplier quota for ListQueryExecutions API
 
-## auditmanager
-
-- `L-BEA222D4` — Accounts in scope across all assessments
-
 ## autoscaling
 
 - `L-05CB8B12` — Target groups per Auto Scaling group

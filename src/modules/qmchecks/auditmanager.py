@@ -1,5 +1,5 @@
 """AWS Audit Manager regional resource-count quotas."""
-from modules.qmcore.aws import CheckContext, maximum, session_from_env
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 
 def custom_frameworks(ctx):
@@ -21,6 +21,40 @@ def controls_per_framework(ctx):
     return maximum(values, 'AuditManagerFramework', 'auditmanager:GetAssessmentFramework')
 
 
+def accounts_in_scope(ctx):
+    assessments = {}
+    for item in ctx.call('auditmanager', 'list_assessments', 'assessmentMetadata'):
+        if not isinstance(item, dict):
+            raise NoData('Audit Manager assessment inventory contains an invalid item')
+        assessment_id = item.get('id')
+        if not isinstance(assessment_id, str) or not assessment_id:
+            raise NoData('Audit Manager assessment is missing its ID')
+        if assessment_id in assessments and assessments[assessment_id] != item:
+            raise NoData('Audit Manager assessment inventory changed during pagination')
+        assessments[assessment_id] = item
+
+    accounts = set()
+    for assessment_id in sorted(assessments):
+        response = ctx.call('auditmanager', 'get_assessment', assessmentId=assessment_id)
+        assessment = response.get('assessment') if isinstance(response, dict) else None
+        metadata = assessment.get('metadata') if isinstance(assessment, dict) else None
+        scope = metadata.get('scope') if isinstance(metadata, dict) else None
+        if not isinstance(metadata, dict) or metadata.get('id') != assessment_id:
+            raise NoData('Audit Manager assessment detail is inconsistent')
+        scoped_accounts = scope.get('awsAccounts') if isinstance(scope, dict) else None
+        if (not isinstance(scoped_accounts, list)
+                or any(not isinstance(account, dict) for account in scoped_accounts)):
+            raise NoData('Audit Manager assessment has an invalid account scope')
+        for account in scoped_accounts:
+            account_id = account.get('id')
+            if not isinstance(account_id, str) or not account_id:
+                raise NoData('Audit Manager account scope contains an invalid account')
+            accounts.add(account_id)
+    return dict(usage=len(accounts),
+                source='auditmanager:ListAssessments+GetAssessment',
+                method='ACCOUNT_COUNT')
+
+
 CHECKS = [
     ('L-8935A6F1', 'Custom frameworks',
      lambda ctx: dict(usage=len(custom_frameworks(ctx)), source='auditmanager:ListAssessmentFrameworks', method='ACCOUNT_COUNT')),
@@ -30,6 +64,7 @@ CHECKS = [
      lambda ctx: dict(usage=len(ctx.call('auditmanager', 'list_assessments', 'assessmentMetadata', status='ACTIVE')),
                       source='auditmanager:ListAssessments', method='ACCOUNT_COUNT')),
     ('L-724DD74D', 'Controls per framework', controls_per_framework),
+    ('L-BEA222D4', 'Accounts in scope across all assessments', accounts_in_scope),
 ]
 
 

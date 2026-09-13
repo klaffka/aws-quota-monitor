@@ -17,6 +17,7 @@ All notable changes to this project are recorded here. Versions follow
   VPC-endpoint, and container quotas.
 - Network Access Analyzer and Reachability Analyzer measurements for all six
   quotas in the retained Network Insights catalog.
+- Unique Audit Manager accounts in scope across all assessments.
 
 ### Changed
 

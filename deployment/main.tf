@@ -751,6 +751,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "auditmanager:ListAssessmentFrameworks"
           , "auditmanager:ListControls"
           , "auditmanager:ListAssessments"
+          , "auditmanager:GetAssessment"
           , "auditmanager:GetAssessmentFramework"
           , "resiliencehub:ListApps"
           , "resiliencehub:ListResiliencyPolicies"
