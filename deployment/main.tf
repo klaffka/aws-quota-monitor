@@ -342,6 +342,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
         Action = [
           "ram:ListResources",
           "ram:ListPrincipals",
+          "ram:ListPermissions",
           "ram:GetResourceShares",
           "ram:GetResourceShareInvitations",
           "organizations:ListAccountsForParent",

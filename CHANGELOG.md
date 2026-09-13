@@ -20,6 +20,8 @@ All notable changes to this project are recorded here. Versions follow
 - Unique Audit Manager accounts in scope across all assessments.
 - DLM target accounts per snapshot sharing rule.
 - Recycle Bin tag key/value pairs per retention rule.
+- AWS RAM resource/principal associations per share and customer-managed
+  permissions at account and resource-type scope.
 
 ### Changed
 

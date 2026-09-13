@@ -57,7 +57,7 @@ Each deployment monitors its execution account and configured Region.
 | WorkSpaces Managed Instances | Managed instances per Region |
 | AWS re:Post | Private spaces per account |
 | CloudWatch Evidently | Projects per account |
-| AWS RAM | Resource shares, principal associations and pending invitations per account |
+| AWS RAM | Resource shares, resource/principal associations at account and share scope, customer-managed permissions, and pending invitations |
 | SSM Contacts | Contacts and rotations per account |
 | Well-Architected Tool | Review templates, lenses and workloads per Region, plus lenses per template/workload and milestones per workload |
 | Pinpoint | Projects and account-wide message templates across all five template types |
@@ -230,8 +230,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,121 of
-10,398 BA catalog quotas with an implemented measurement method (39.63%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,122 of
+10,398 BA catalog quotas with an implemented measurement method (39.64%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

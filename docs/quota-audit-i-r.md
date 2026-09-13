@@ -1947,14 +1947,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-E9E486C4` — **Display items per sheet control** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-F1EA8033` — **Query timeout for visuals** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `ram` (5 offene Quotas)
-
-- `L-1F7F8A25` — **Number of resource associations per resource share** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-275DAC00` — **Number of principal associations per resource share** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-2870BE9D` — **Number of custom permissions per resource type** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-4A6CEE66` — **Number of resource associations** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-9EBA15DD` — **Number of custom permissions** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-
 ## `rds` (18 offene Quotas)
 
 - `L-5BC124EF` — **Read replicas per primary** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
@@ -2225,10 +2217,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **2012** Quotas aus Services I–R offen.
+Insgesamt sind **2007** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 90
 - `CONFIG_LIMIT`: 246
-- `RESOURCE_MAPPING`: 313
+- `RESOURCE_MAPPING`: 308
 - `UNSUPPORTED`: 273
 - `USAGE_METRIC`: 1090
 
