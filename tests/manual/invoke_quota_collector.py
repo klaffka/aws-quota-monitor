@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 
 # Get AWS profile from environment or use default
-PROFILE = os.environ.get('AWS_PROFILE', 'BA')
+PROFILE = os.environ.get('QM_AWS_PROFILE') or os.environ.get('AWS_PROFILE')
 REGION = os.environ.get('AWS_REGION', 'eu-central-1')
 FUNCTION_NAME = 'qm-quota-collector'
 

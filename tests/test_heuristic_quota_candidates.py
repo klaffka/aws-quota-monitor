@@ -1,0 +1,41 @@
+from unittest.mock import Mock
+
+from modules.qmchecks.amplifyuibuilder import CHECKS as UI_CHECKS
+from modules.qmchecks.acm import CHECKS as ACM_CHECKS
+from modules.qmchecks.databrew import CHECKS as DATABREW_CHECKS
+from modules.qmchecks.evs import CHECKS as EVS_CHECKS
+from modules.qmchecks.eventbridge import CHECKS as EVENT_CHECKS
+
+
+def test_databrew_resource_counts_use_paginated_lists():
+    ctx = Mock()
+    ctx.call.return_value = [{}]
+    assert [check[2](ctx)['usage'] for check in DATABREW_CHECKS] == [1] * len(DATABREW_CHECKS)
+
+
+def test_amplify_ui_resources_are_maximum_per_app():
+    ctx = Mock()
+    ctx.call.side_effect = [[{'appId': 'a'}], [{'id': 'theme'}]]
+    result = UI_CHECKS[0][2](ctx)
+    assert (result['usage'], result['resource_id']) == (1, 'a')
+
+
+def test_evs_environments_and_hosts_are_counted():
+    ctx = Mock()
+    ctx.call.return_value = [{'environmentId': 'env'}]
+    assert EVS_CHECKS[0][2](ctx)['usage'] == 1
+    ctx.call.side_effect = [[{'environmentId': 'env'}], [{'hostId': 'host'}]]
+    assert EVS_CHECKS[1][2](ctx)['usage'] == 1
+
+
+def test_acm_imported_certificates_are_counted_by_certificate_type():
+    ctx = Mock()
+    ctx.call.return_value = [{'Type': 'IMPORTED'}, {'Type': 'AMAZON_ISSUED'}, {'Type': 'IMPORTED'}]
+    assert ACM_CHECKS[1][2](ctx)['usage'] == 2
+
+
+def test_eventbridge_targets_are_maximum_per_rule():
+    ctx = Mock()
+    ctx.call.side_effect = [[{'Name': 'rule'}], [{'Id': 'target-1'}, {'Id': 'target-2'}]]
+    result = EVENT_CHECKS[2][2](ctx)
+    assert (result['usage'], result['resource_id']) == (2, 'rule')
