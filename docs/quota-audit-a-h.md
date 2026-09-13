@@ -223,12 +223,6 @@ Total open entries: **3204**
 - `L-F3D880AA` — Rate of Infor Nexus flow runs
 - `L-FE9BF330` — Rate of Amplitude flow runs
 
-## application-autoscaling
-
-- `L-95848B5F` — Scheduled actions per scalable target
-- `L-9C25247C` — Step adjustments per step scaling policy
-- `L-B395C81B` — Scaling policies per scalable target
-
 ## application-signals
 
 - `L-2C8EDAF0` — Rate of PutGroupingConfiguration requests

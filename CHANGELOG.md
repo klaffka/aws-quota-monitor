@@ -24,6 +24,8 @@ All notable changes to this project are recorded here. Versions follow
   permissions at account and resource-type scope.
 - Complete App Runner resource coverage for connections, configuration names,
   VPC connectors, and VPC ingress connections per service.
+- Complete Application Auto Scaling coverage for scheduled actions and scaling
+  policies per target plus step adjustments per step policy.
 
 ### Changed
 

@@ -69,6 +69,7 @@ Each deployment monitors its execution account and configured Region.
 | Step Functions | Registered state machines and activities, versions and aliases per state machine, plus official open-execution and open-Map-Run gauges |
 | ECR | Registered repositories, maximum images per repository and pull-through cache rules from paginated regional inventories |
 | Auto Scaling | Auto Scaling groups and launch configurations per Region from paginated inventories |
+| Application Auto Scaling | Scalable targets by namespace, scheduled actions and scaling policies per target, and step adjustments per policy |
 | API Gateway | Regional, edge-optimized and private REST APIs, maximum stages per REST API, and API Gateway V2 portals, portal products and product pages |
 | ECS | Clusters, maximum services and container instances per cluster, and task-definition revisions per family |
 | Firehose | Delivery streams per Region from the paginated regional inventory |
@@ -230,8 +231,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,127 of
-10,398 BA catalog quotas with an implemented measurement method (39.69%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,130 of
+10,398 BA catalog quotas with an implemented measurement method (39.72%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

@@ -603,6 +603,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "cloudformation:ListStackInstances"
           , "cloudwatch:DescribeAnomalyDetectors"
           , "application-autoscaling:DescribeScalableTargets"
+          , "application-autoscaling:DescribeScheduledActions"
+          , "application-autoscaling:DescribeScalingPolicies"
           , "rbin:ListRules"
           , "rbin:GetRule"
           , "discovery:ListConfigurations"
