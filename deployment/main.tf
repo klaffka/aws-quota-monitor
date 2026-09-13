@@ -715,6 +715,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "connect:ListSecurityProfiles"
           , "connect:ListHoursOfOperations"
           , "dlm:GetLifecyclePolicies"
+          , "dlm:GetLifecyclePolicy"
           , "glacier:ListVaults"
           , "dataexchange:ListDataSets"
           , "rbin:ListRules"

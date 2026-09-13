@@ -2413,10 +2413,6 @@ Total open entries: **3204**
 - `L-EC09FB9C` — Tags per server
 - `L-F2981287` — Applications per account
 
-## dlm
-
-- `L-DCA05F2F` — Target accounts per sharing rule
-
 ## dms
 
 - `L-2146F1FD` — Endpoints per instance

@@ -37,7 +37,7 @@ Each deployment monitors its execution account and configured Region.
 | IoT Core | Dynamic thing groups, job templates, scheduled audits, mitigation actions, custom metrics, fleet metrics and streams from paginated inventories |
 | Amazon Connect | 34 quota checks including instance inventories, typed integrations, routing queue/channel combinations and data-table attributes; highest utilization using each instance's applied limit |
 | Clean Rooms ML | 129 training-instance types plus total instances, training/inference jobs, model versions, active input channels, algorithm associations and audience jobs; all creator memberships and model versions |
-| DLM | Lifecycle policies per Region |
+| DLM | Lifecycle policies and target accounts per sharing rule |
 | Glacier | Vaults per account |
 | Data Exchange | Data sets per account |
 | Recycle Bin | Rules per Region |
@@ -230,8 +230,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,119 of
-10,398 BA catalog quotas with an implemented measurement method (39.61%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,120 of
+10,398 BA catalog quotas with an implemented measurement method (39.62%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

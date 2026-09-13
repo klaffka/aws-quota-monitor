@@ -18,6 +18,7 @@ All notable changes to this project are recorded here. Versions follow
 - Network Access Analyzer and Reachability Analyzer measurements for all six
   quotas in the retained Network Insights catalog.
 - Unique Audit Manager accounts in scope across all assessments.
+- DLM target accounts per snapshot sharing rule.
 
 ### Changed
 

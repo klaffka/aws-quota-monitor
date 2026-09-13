@@ -1,5 +1,5 @@
 """Persistent-resource inventories for small service modules."""
-from modules.qmcore.aws import CheckContext, maximum, session_from_env
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 def _sso_instances(c):
     return c.call('sso-admin', 'list_instances', 'Instances')
@@ -65,6 +65,47 @@ def wisdom_content_per_knowledge_base(ctx):
                                                     knowledgeBaseId=identifier)), None))
     return maximum(values, 'WisdomKnowledgeBase', 'wisdom:ListContents')
 
+
+def dlm_share_targets(ctx):
+    policies = {}
+    for item in ctx.call('dlm', 'get_lifecycle_policies', 'Policies'):
+        if not isinstance(item, dict):
+            raise NoData('DLM lifecycle-policy inventory contains an invalid item')
+        policy_id = item.get('PolicyId')
+        if not isinstance(policy_id, str) or not policy_id:
+            raise NoData('DLM lifecycle policy is missing PolicyId')
+        if policy_id in policies and policies[policy_id] != item:
+            raise NoData('DLM lifecycle-policy inventory changed during pagination')
+        policies[policy_id] = item
+
+    values = []
+    for policy_id in sorted(policies):
+        response = ctx.call('dlm', 'get_lifecycle_policy', PolicyId=policy_id)
+        policy = response.get('Policy') if isinstance(response, dict) else None
+        details = policy.get('PolicyDetails') if isinstance(policy, dict) else None
+        if not isinstance(policy, dict) or policy.get('PolicyId') != policy_id:
+            raise NoData('DLM lifecycle-policy detail is inconsistent')
+        schedules = details.get('Schedules', []) if isinstance(details, dict) else None
+        if not isinstance(schedules, list) or any(not isinstance(item, dict)
+                                                  for item in schedules):
+            raise NoData('DLM lifecycle policy has an invalid schedule inventory')
+        for schedule_index, schedule in enumerate(schedules):
+            rules = schedule.get('ShareRules', [])
+            if not isinstance(rules, list) or any(not isinstance(item, dict) for item in rules):
+                raise NoData('DLM lifecycle policy has invalid sharing rules')
+            for rule_index, rule in enumerate(rules):
+                accounts = rule.get('TargetAccounts', [])
+                if (not isinstance(accounts, list)
+                        or any(not isinstance(account, str) or len(account) != 12
+                               or not account.isdigit()
+                               for account in accounts)
+                        or len(accounts) != len(set(accounts))):
+                    raise NoData('DLM sharing rule has invalid target accounts')
+                values.append((f'{policy_id}/{schedule_index}/{rule_index}',
+                               len(accounts), None))
+    return maximum(values, 'DLMLifecyclePolicySharingRule',
+                   'dlm:GetLifecyclePolicies+GetLifecyclePolicy')
+
 CHECKS = {
     'servicecatalog': [('L-7C3CEC2B', 'Applications per region', lambda c: dict(usage=len(c.call('servicecatalog-appregistry', 'list_applications', 'applications')), source='servicecatalog-appregistry:ListApplications', method='ACCOUNT_COUNT'))],
     'scn': [('L-4AF12E50', 'AWS Supply Chain instances per account', lambda c: dict(usage=len(c.call('supplychain', 'list_instances', 'instances')), source='supplychain:ListInstances', method='ACCOUNT_COUNT'))],
@@ -86,7 +127,10 @@ CHECKS = {
     'glacier': [('L-D1C67346', 'Vaults per account', lambda c: dict(usage=len(c.call('glacier', 'list_vaults', 'VaultList')), source='glacier:ListVaults', method='ACCOUNT_COUNT'))],
     'dataexchange': [('L-52E2E63A', 'Data sets per account', lambda c: dict(usage=len(c.call('dataexchange', 'list_data_sets', 'DataSets')), source='dataexchange:ListDataSets', method='ACCOUNT_COUNT'))],
     'rbin': [('L-629917A2', 'Rules per Region', lambda c: dict(usage=len(c.call('rbin', 'list_rules', 'Rules')), source='rbin:ListRules', method='ACCOUNT_COUNT'))],
-    'dlm': [('L-5407D8DA', 'Policies per Region', lambda c: dict(usage=len(c.call('dlm', 'get_lifecycle_policies', 'Policies')), source='dlm:GetLifecyclePolicies', method='ACCOUNT_COUNT'))],
+    'dlm': [
+        ('L-5407D8DA', 'Policies per Region', lambda c: dict(usage=len(c.call('dlm', 'get_lifecycle_policies', 'Policies')), source='dlm:GetLifecyclePolicies', method='ACCOUNT_COUNT')),
+        ('L-DCA05F2F', 'Target accounts per sharing rule', dlm_share_targets),
+    ],
     'ssm-contacts': [
         ('L-7DD2017D', 'Contacts per account', lambda c: dict(usage=len(c.call('ssm-contacts', 'list_contacts', 'Contacts')), source='ssm-contacts:ListContacts', method='ACCOUNT_COUNT')),
         ('L-4EA3AB3A', 'Rotations per account', lambda c: dict(usage=len(c.call('ssm-contacts', 'list_rotations', 'Rotations')), source='ssm-contacts:ListRotations', method='ACCOUNT_COUNT')),
