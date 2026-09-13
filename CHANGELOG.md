@@ -15,6 +15,8 @@ All notable changes to this project are recorded here. Versions follow
 - EC2 Image Builder measurements for 20 resource and configuration quotas.
 - AWS Network Firewall measurements for 25 resource, policy, rule-group, TLS,
   VPC-endpoint, and container quotas.
+- Network Access Analyzer and Reachability Analyzer measurements for all six
+  quotas in the retained Network Insights catalog.
 
 ### Changed
 

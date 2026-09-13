@@ -1525,15 +1525,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-2B6C8C12` — **Network traffic bandwidth per firewall endpoint** — `USAGE_METRIC`: Current traffic bandwidth is transient and cannot be derived from the persistent configuration inventory. A compatible official usage metric is required.
 - `L-A364946C` — **Suricata rule character length** — `CONFIG_LIMIT`: AWS counts expanded variable values toward each rule's character length. The API returns the unexpanded rules string and variable definitions separately, so raw line length could understate usage.
 
-## `networkinsights` (6 offene Quotas)
-
-- `L-06B98CB1` — **Network Access Analyzer Access Scope Analyses** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-2AC9F231` — **Network Access Analyzer Concurrent Access Scope Analyses** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
-- `L-44B7545B` — **Reachability Analyzer Analyses** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-51CB2D5B` — **Reachability Analyzer Paths** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-72DF2E0E` — **Network Access Analyzer Access Scopes** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-B393345A` — **Reachability Analyzer concurrent Analyses** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
-
 ## `networkmonitor` (2 offene Quotas)
 
 - `L-A8FA6DFE` — **Number of probes per subnet for each monitor** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.

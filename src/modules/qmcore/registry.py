@@ -37,6 +37,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.polly', 'polly'),
     ('modules.qmchecks.lex', 'lex'),
     ('modules.qmchecks.network_firewall', 'network-firewall'),
+    ('modules.qmchecks.networkinsights', 'networkinsights'),
     ('modules.qmchecks.ses', 'ses'),
     ('modules.qmchecks.connect', 'connect'),
     ('modules.qmchecks.cleanrooms_ml', 'cleanrooms-ml'),

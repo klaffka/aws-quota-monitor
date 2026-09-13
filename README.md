@@ -94,6 +94,7 @@ Each deployment monitors its execution account and configured Region.
 | Polly | Lexicons |
 | Lex V2 | Bots and maximum versions per bot |
 | Network Firewall | 25 account, policy, rule-group, TLS, VPC-endpoint and container quotas |
+| Network Insights | Access scopes, paths, retained analyses and running analyses |
 | SES | Tenants per account |
 | Connect | Amazon Connect instances per Region |
 | Audit Manager | Custom frameworks, custom controls, running assessments and controls per framework |
