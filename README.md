@@ -146,7 +146,7 @@ Each deployment monitors its execution account and configured Region.
 | IoT TwinMaker | Workspaces per Region |
 | RoboMaker | Simulation and robot applications per Region |
 | WorkSpaces | Images, bundles, WorkSpaces and directories per Region |
-| FinSpace | kdb environments per Region |
+| FinSpace | Managed kdb environments; per-environment clusters by AZ mode, users, scaling groups, volumes, databases and dataviews; live nodes by dedicated/scaling host type; volume, savedown and cache storage |
 | Mainframe Modernization | Applications and environments per Region |
 | Entity Resolution | Matching workflows, ID-mapping workflows, namespaces and schema mappings per Region |
 | DataZone | Assets, glossaries, asset types and environments per domain |
@@ -229,8 +229,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,053 of
-10,398 BA catalog quotas with an implemented measurement method (38.98%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,080 of
+10,398 BA catalog quotas with an implemented measurement method (39.24%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

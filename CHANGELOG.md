@@ -11,6 +11,7 @@ All notable changes to this project are recorded here. Versions follow
 - Offline quota coverage and package verification tools.
 - Automated Python, packaging, and Terraform checks for pull requests and branches.
 - Tag-driven GitHub releases with validated versions, release notes, and SHA-256 checksums.
+- FinSpace Managed kdb measurements for 28 resource, node, and storage quotas.
 
 ### Changed
 
