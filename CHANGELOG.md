@@ -46,6 +46,9 @@ All notable changes to this project are recorded here. Versions follow
   connectors, templates per connector, and group access-control entries per template.
 - Complete resource-quota coverage for Private CA Connector for SCEP: connectors
   and challenges per connector.
+- Amazon Personalize measurements for active filters, pending batch inference jobs,
+  pending solution versions and pending data deletion jobs, with corrected campaign,
+  solution and recommender scopes per dataset group.
 
 ### Changed
 

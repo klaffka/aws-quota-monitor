@@ -234,8 +234,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,160 of
-10,398 BA catalog quotas with an implemented measurement method (40.01%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,164 of
+10,398 BA catalog quotas with an implemented measurement method (40.05%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
@@ -433,11 +433,15 @@ Explicitly unsupported cases include:
   private gateway is measured from `DescribeVpnConnections`. Route-advertisement and
   concurrent-client quotas remain workload/state limits without an equivalent resource
   count API.
-- Amazon Personalize dataset groups, campaigns, solutions, recommenders and schemas are
-  counted through their paginated list APIs. SageMaker notebook instances, pipelines,
-  MLflow Tracking Servers and Studio spaces are likewise counted from regional list
-  APIs. Kendra has no quota entries in the local catalog; SageMaker instance-type and
-  throughput quotas remain usage-metric or workload limits rather than resource counts.
+- Amazon Personalize dataset groups, campaigns, solutions, recommenders, filters and
+  schemas are counted through their paginated list APIs. Pending batch inference jobs,
+  solution versions and data deletion jobs use their documented lifecycle states and
+  quota scopes; per-group resources retain the dataset-group ARN in the measurement.
+  See the [Amazon Personalize quotas](https://docs.aws.amazon.com/personalize/latest/dg/limits.html).
+  SageMaker notebook instances, pipelines, MLflow Tracking Servers and Studio spaces
+  are likewise counted from regional list APIs. Kendra has no quota entries in the
+  local catalog; SageMaker instance-type and throughput quotas remain usage-metric or
+  workload limits rather than resource counts.
 - MediaConvert queues and custom job templates are counted through `ListQueues` and
   `ListJobTemplates`. IVS channels and recording configurations use their paginated list
   APIs. SES and the communication API-rate quotas remain unsupported where their local
