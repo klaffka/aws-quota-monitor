@@ -7,6 +7,9 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Coverage measured against the union of several quota exports, a
+  `data/coverage-baseline.json` regression gate in CI, and `quota_orphans.py`
+  for implemented quota codes that no export contains.
 - Lex V2 build-time configuration coverage for intents, slots, composite
   subslots, custom slot types, values and synonyms, and UTF-16 utterance lengths.
 - Broad AWS quota coverage through official CloudWatch usage metrics and paginated resource inventories.
@@ -64,6 +67,11 @@ All notable changes to this project are recorded here. Versions follow
 ### Fixed
 
 - Corrected the OpenSearch UI `ListApplications` IAM service prefix to `es`.
+- Corrected four truncated quota codes in the Backup, GameLift, Ground Station
+  and IoT Core checks, which matched no catalog entry and were therefore never
+  reported.
+- Invoke the Network Insights and WAF Regional checks from the collector; both
+  were registered for reporting but never ran.
 - Corrected the nonexistent KMS `ListCustomKeyStores` call and IAM action to
   `DescribeCustomKeyStores`; reject incomplete or inconsistent KMS inventories.
 - Historical quota measurements and monthly reports preserve account, Region, unit, and interval boundaries.

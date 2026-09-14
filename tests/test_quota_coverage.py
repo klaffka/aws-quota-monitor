@@ -1,7 +1,8 @@
 import json
 import pytest
 
-from scripts.quota_coverage import catalog_coverage, load_catalog, render_table
+from scripts.quota_coverage import (catalog_coverage, compare_baseline, load_catalog,
+                                    merge_catalogs, render_table, totals)
 
 
 def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
@@ -75,3 +76,34 @@ def test_documented_metric_without_catalog_usage_metadata_is_covered():
              'QuotaAppliedAtLevel': 'ACCOUNT'}
     row, = catalog_coverage([quota], set())
     assert row['compatibleMetric'] == row['covered'] == 1
+
+
+def write(tmp_path, name, quotas):
+    path = tmp_path / name
+    path.write_text(json.dumps(quotas), encoding='utf-8')
+    return str(path)
+
+
+def test_merged_catalogs_union_entries_and_prefer_the_later_export(tmp_path):
+    first = write(tmp_path, 'old.json', [{'serviceCode': 'example', 'quotaCode': 'one'},
+                                         {'serviceCode': 'example', 'quotaCode': 'both'}])
+    second = write(tmp_path, 'new.json', [metric_quota('both'), metric_quota('two')])
+    merged = merge_catalogs([first, second])
+    assert {(q['ServiceCode'], q['QuotaCode']) for q in merged} == {
+        ('example', 'one'), ('example', 'both'), ('example', 'two')}
+    row, = catalog_coverage(merged, set())
+    # The later export carries the usage metadata that makes 'both' compatible.
+    assert (row['total'], row['compatibleMetric']) == (3, 2)
+
+
+def test_baseline_reports_every_measure_that_regressed(tmp_path):
+    rows = catalog_coverage([metric_quota('one'), {'ServiceCode': 'example',
+                                                   'QuotaCode': 'two'}], set())
+    assert totals(rows) == {'total': 2, 'implemented': 0, 'compatibleMetric': 1,
+                            'covered': 1, 'uncovered': 1}
+    baseline = tmp_path / 'baseline.json'
+    baseline.write_text(json.dumps({'covered': 1, 'implemented': 0}), encoding='utf-8')
+    assert compare_baseline(rows, str(baseline)) == []
+    baseline.write_text(json.dumps({'covered': 2, 'compatibleMetric': 3}), encoding='utf-8')
+    assert compare_baseline(rows, str(baseline)) == ['compatibleMetric fell from 3 to 1',
+                                                     'covered fell from 2 to 1']

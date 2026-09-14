@@ -7,7 +7,7 @@ def count(ctx, method, key):
 
 
 CHECKS = [
-    ('L-5CCF0BC', 'Config limit', lambda ctx: count(ctx, 'list_configs', 'configList')),
+    ('L-5CCF0BC2', 'Config limit', lambda ctx: count(ctx, 'list_configs', 'configList')),
     ('L-5342B9BF', 'Mission profile limit', lambda ctx: count(ctx, 'list_mission_profiles', 'missionProfileList')),
     ('L-98A63A85', 'Dataflow endpoints per group limit',
      lambda ctx: maximum([(g.get('dataflowEndpointGroupId'), len(g.get('endpointsDetails', [])), None)

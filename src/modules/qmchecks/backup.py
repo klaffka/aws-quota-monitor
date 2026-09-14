@@ -44,7 +44,7 @@ CHECKS = [
          BackupVaultName=v.get('BackupVaultName'))), None)
          for v in ctx.call('backup', 'list_backup_vaults', 'BackupVaultList')],
          'BackupVault', 'backup:ListRecoveryPointsByBackupVault')),
-    ('L-9122A82', 'Versions per backup plan',
+    ('L-9122A82F', 'Versions per backup plan',
      lambda ctx: maximum([(p.get('BackupPlanId'), len(ctx.call(
          'backup', 'list_backup_plan_versions', 'Versions', BackupPlanId=p.get('BackupPlanId'))), None)
          for p in ctx.call('backup', 'list_backup_plans', 'BackupPlansList')],

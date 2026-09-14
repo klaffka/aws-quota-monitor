@@ -47,7 +47,7 @@ CHECKS = [
     ('L-78E3C43F', 'Authorizers per account',
      lambda c: dict(usage=len(c.call('iot', 'list_authorizers', 'authorizers')),
                     source='iot:ListAuthorizers', method='ACCOUNT_COUNT')),
-    ('L-FC25158C', 'Active authorizers per account',
+    ('L-FC25158E', 'Active authorizers per account',
      lambda c: dict(usage=len([a for a in c.call('iot', 'list_authorizers', 'authorizers')
                                if a.get('status') == 'ACTIVE']),
                     source='iot:ListAuthorizers', method='ACCOUNT_COUNT')),

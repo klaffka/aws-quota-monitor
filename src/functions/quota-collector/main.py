@@ -41,6 +41,7 @@ from modules.qmchecks.transcribe import get_current_quotastatus_transcribe
 from modules.qmchecks.polly import get_current_quotastatus_polly
 from modules.qmchecks.lex import get_current_quotastatus_lex
 from modules.qmchecks.network_firewall import get_current_quotastatus_network_firewall
+from modules.qmchecks.networkinsights import get_current_quotastatus_networkinsights
 from modules.qmchecks.ses import get_current_quotastatus_ses
 from modules.qmchecks.connect import get_current_quotastatus_connect
 from modules.qmchecks.auditmanager import get_current_quotastatus_auditmanager
@@ -84,6 +85,7 @@ from modules.qmchecks.new_services import get_current_quotastatus_new_services
 from modules.qmchecks.appconfig import get_current_quotastatus_appconfig
 from modules.qmchecks.servicecatalog import get_current_quotastatus_servicecatalog
 from modules.qmchecks.wafv2 import get_current_quotastatus_wafv2
+from modules.qmchecks.waf_regional import get_current_quotastatus_waf_regional
 from modules.qmchecks.acm import get_current_quotastatus_acm
 from modules.qmchecks.cognito import get_current_quotastatus_cognito
 from modules.qmchecks.backup import get_current_quotastatus_backup
@@ -248,6 +250,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_polly(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_lex(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_network_firewall(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_networkinsights(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_ses(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_connect(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_auditmanager(ctx=ctx, skip=official))
@@ -291,6 +294,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_appconfig(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_servicecatalog(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_wafv2(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_waf_regional(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_acm(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_cognito(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_backup(ctx=ctx, skip=official))

@@ -97,13 +97,58 @@ def render_table(rows: list[dict]) -> str:
                      for row in all_rows)
 
 
+MEASURES = ('total', 'implemented', 'compatibleMetric', 'covered', 'uncovered')
+
+
+def merge_catalogs(paths: list[str]) -> list[dict]:
+    """Union several exports; later files win per service/quota code.
+
+    A single export is never the whole truth: ``list_service_quotas`` returns a
+    different set with and without ``QuotaAppliedAtLevel``, so quotas that exist
+    in the account can be missing from any one snapshot.
+    """
+    merged: dict[tuple[str, str], dict] = {}
+    for path in paths:
+        for quota in load_catalog(path):
+            item = normalize_quota(quota)
+            merged[(item['ServiceCode'], item['QuotaCode'])] = item
+    return list(merged.values())
+
+
+def totals(rows: list[dict]) -> dict:
+    return {measure: sum(row[measure] for row in rows) for measure in MEASURES}
+
+
+def compare_baseline(rows: list[dict], path: str) -> list[str]:
+    """Return one message per measure that regressed against the baseline."""
+    baseline = json.loads(Path(path).read_text(encoding='utf-8'))
+    current = totals(rows)
+    failures = []
+    for measure in ('implemented', 'compatibleMetric', 'covered'):
+        expected = baseline.get(measure)
+        if expected is not None and current[measure] < expected:
+            failures.append(f'{measure} fell from {expected} to {current[measure]}')
+    return failures
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description='Offline Service-Quota-Coverage prüfen')
-    parser.add_argument('input', help='Lokaler Service-Quotas-JSON-Export')
+    parser.add_argument('input', nargs='+', help='Lokale Service-Quotas-JSON-Exporte')
     parser.add_argument('--format', choices=('table', 'json'), default='table')
+    parser.add_argument('--baseline', help='Baseline-JSON; Exit 1 bei Rückschritt')
+    parser.add_argument('--update-baseline', metavar='PATH',
+                        help='Aktuelle Summen als Baseline schreiben')
     args = parser.parse_args()
-    rows = catalog_coverage(load_catalog(args.input))
+    rows = catalog_coverage(merge_catalogs(args.input))
     print(json.dumps(rows, indent=2, ensure_ascii=False) if args.format == 'json' else render_table(rows))
+    if args.update_baseline:
+        Path(args.update_baseline).write_text(
+            json.dumps(totals(rows), indent=2) + '\n', encoding='utf-8')
+    if args.baseline:
+        failures = compare_baseline(rows, args.baseline)
+        for failure in failures:
+            print(f'Coverage-Rückschritt: {failure}', file=sys.stderr)
+        return 1 if failures else 0
     return 0
 
 

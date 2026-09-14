@@ -234,8 +234,15 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,191 of
-10,398 BA catalog quotas with an implemented measurement method (40.31%), including
+`quota_coverage.py` accepts several exports and measures the union, because no
+single export is complete: `list_service_quotas` returns a different set with and
+without `QuotaAppliedAtLevel`. `--baseline` compares the totals with
+`data/coverage-baseline.json` and exits non-zero on a regression, which is how CI
+guards the number. `quota_orphans.py` reports the opposite direction: implemented
+quota codes that no export contains.
+
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,356 of
+12,081 catalog quotas with an implemented measurement method (36.06%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 

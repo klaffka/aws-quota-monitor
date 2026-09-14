@@ -15,7 +15,7 @@ CHECKS = [
     ('L-22451070', 'Game session queues',
      lambda c: dict(usage=len(c.call('gamelift', 'describe_game_session_queues', 'GameSessionQueues')),
                     source='gamelift:DescribeGameSessionQueues', method='ACCOUNT_COUNT')),
-    ('L-AED4A06', 'Aliases',
+    ('L-AED4A06A', 'Aliases',
      lambda c: dict(usage=len(c.call('gamelift', 'list_aliases', 'Aliases')),
                     source='gamelift:ListAliases', method='ACCOUNT_COUNT')),
     ('L-293B0017', 'Scripts',

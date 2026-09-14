@@ -1,20 +1,45 @@
 # Quota coverage progress — 2026-09-14
 
-Catalog: `data/service-quotas-BA-eu-central-1-20260910.json`.
+Catalogs: `data/service-quotas-20251102T133323Z.json` and
+`data/service-quotas-BA-eu-central-1-20260910.json`.
 This is an offline implementation audit, not a live measurement success rate.
 
-| Measure | Quotas |
-| --- | ---: |
-| total | 10,398 |
-| implemented | 1,810 |
-| compatibleMetric | 2,535 |
-| covered | 4,191 |
-| uncovered | 6,207 |
+Neither export is the whole catalog. `list_service_quotas` returns a different
+set with and without `QuotaAppliedAtLevel`, which `catalog.py` passes as `ALL`:
+the BA export holds 205 services and omits quotas the account really has, such
+as the S3 `Access Points`, `Lifecycle rules` and `Bucket tags` limits that the
+older export lists. Coverage is therefore measured against the union of both,
+with the single-export figure kept for comparison.
 
-Implemented measurement availability: **40.31%**. Custom and compatible metric counts overlap; covered is their union. The objective of approaching 100% remains open.
+| Measure | Union | BA export only |
+| --- | ---: | ---: |
+| total | 12,081 | 10,398 |
+| implemented | 1,975 | 1,811 |
+| compatibleMetric | 2,535 | 2,535 |
+| covered | 4,356 | 4,192 |
+| uncovered | 7,725 | 6,206 |
+
+Implemented measurement availability: **36.06%** against the union, 40.32%
+against the BA export alone. Custom and compatible metric counts overlap;
+covered is their union. `data/coverage-baseline.json` holds these totals and CI
+fails on any regression. The objective of approaching 100% remains open.
 
 ## Latest verified changes
 
+- Corrected four quota codes that no catalog contains. `backup L-9122A82`,
+  `gamelift L-AED4A06` and `groundstation L-5CCF0BC` were each missing their
+  final character, and `iotcore L-FC25158C` should be `L-FC25158E`
+  (`Custom authentication: maximum number of active authorizers per account`).
+  Every one of the 1,975 implemented quota codes now matches a catalog entry,
+  and `tests/test_quota_orphans.py` fails if that stops being true.
+- Wired `networkinsights` and `waf_regional` into the collector. Both were
+  registered for reporting but never invoked, so their quotas counted as
+  implemented while nothing measured them.
+  `tests/test_registry_matches_collector.py` now compares the reporting
+  registry with the collector in both directions.
+- Added `scripts/quota_orphans.py`, which reports implemented quota codes that
+  no export contains and separates a missing quota code from a missing service.
+  It is what surfaced the four typos above.
 - Expanded Lex V2 from 2 to 12 of 13 current catalog quotas by measuring build-time
   configuration in addition to the bot and version counts. The collector now walks
   every stable bot, version and locale and counts intents, slots, composite subslots,
@@ -182,6 +207,12 @@ and [GetQuotaUtilizationReport](https://docs.aws.amazon.com/servicequotas/2019-0
 Reproduce with:
 
 ```sh
-python scripts/quota_coverage.py data/service-quotas-BA-eu-central-1-20260910.json
+python scripts/quota_coverage.py \
+  data/service-quotas-20251102T133323Z.json \
+  data/service-quotas-BA-eu-central-1-20260910.json \
+  --baseline data/coverage-baseline.json
+python scripts/quota_orphans.py \
+  data/service-quotas-20251102T133323Z.json \
+  data/service-quotas-BA-eu-central-1-20260910.json
 python -m pytest -q
 ```
