@@ -542,6 +542,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "pca-connector-ad:ListConnectors"
           , "pca-connector-ad:ListTemplates"
           , "pca-connector-ad:ListTemplateGroupAccessControlEntries"
+          , "pca-connector-scep:ListConnectors"
+          , "pca-connector-scep:ListChallengeMetadata"
           , "serverlessrepo:ListApplications"
           , "swf:ListDomains"
           , "cloudhsmv2:DescribeClusters"

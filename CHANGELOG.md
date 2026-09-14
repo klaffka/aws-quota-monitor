@@ -44,6 +44,8 @@ All notable changes to this project are recorded here. Versions follow
 - Regional AWS Payment Cryptography alias counts.
 - Complete resource-quota coverage for Private CA Connector for Active Directory:
   connectors, templates per connector, and group access-control entries per template.
+- Complete resource-quota coverage for Private CA Connector for SCEP: connectors
+  and challenges per connector.
 
 ### Changed
 

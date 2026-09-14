@@ -150,6 +150,7 @@ from modules.qmchecks.gamelift import get_current_quotastatus_gamelift
 from modules.qmchecks.dsql import get_current_quotastatus_dsql
 from modules.qmchecks.payment_cryptography import get_current_quotastatus_payment_cryptography
 from modules.qmchecks.pca_connector_ad import get_current_quotastatus_pca_connector_ad
+from modules.qmchecks.pca_connector_scep import get_current_quotastatus_pca_connector_scep
 from modules.qmchecks.serverlessrepo import get_current_quotastatus_serverlessrepo
 from modules.qmchecks.swf import get_current_quotastatus_swf
 from modules.qmchecks.cloudhsm import get_current_quotastatus_cloudhsm
@@ -355,6 +356,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_dsql(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_payment_cryptography(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_pca_connector_ad(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_pca_connector_scep(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_serverlessrepo(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_swf(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_cloudhsm(ctx=ctx, skip=official))

@@ -1631,7 +1631,7 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-F16E91B4` — **Rate of GetServicePrincipalName requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F6A7C5A2` — **Rate of GetConnector requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 
-## `pca-connector-scep` (17 offene Quotas)
+## `pca-connector-scep` (15 offene Quotas)
 
 - `L-2A99D11A` — **Rate of GetConnector requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-2F85730F` — **Rate of GetChallengeMetadata requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -1645,8 +1645,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-98EB5A5D` — **Rate of ListConnectors requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-A0B79F1B` — **Rate of PKCSReq requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-A87A2654` — **Rate of DeleteConnector requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-CB21FAEA` — **Number of connectors** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-D42FC980` — **Number of challenges per connector** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-F422750F` — **Rate of UntagResource requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F4B10249` — **Rate of TagResource requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F76F0010` — **Rate of CreateChallenge requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -2163,10 +2161,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1944** Quotas aus Services I–R offen.
+Insgesamt sind **1942** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 86
 - `CONFIG_LIMIT`: 241
-- `RESOURCE_MAPPING`: 282
+- `RESOURCE_MAPPING`: 280
 - `UNSUPPORTED`: 244
 - `USAGE_METRIC`: 1091
 
