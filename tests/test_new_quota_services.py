@@ -54,6 +54,7 @@ def test_resolver_checks_use_paginated_apis():
         ('route53resolver', 'L-D74B6237'): {'Value': 6, 'Unit': 'None'},
         ('route53resolver', 'L-94E19253'): {'Value': 10, 'Unit': 'None'},
         ('route53resolver', 'L-9FA3C0A4'): {'Value': 10, 'Unit': 'None'},
+        ('route53resolver', 'L-740A4B31'): {'Value': 10, 'Unit': 'None'},
         ('route53resolver', 'L-02CC8B74'): {'Value': 10, 'Unit': 'None'},
     })
     def call(service, method, key=None, **kwargs):
@@ -61,12 +62,13 @@ def test_resolver_checks_use_paginated_apis():
             'list_resolver_endpoints': [{'Id': 'e1', 'IpAddresses': [{}, {}]}],
             'list_resolver_rules': [{'Id': 'r1', 'OwnerId': '123456789012', 'TargetIps': [{}]}],
             'list_resolver_rule_associations': [{}],
-            'list_firewall_domain_lists': [{}],
+            'list_firewall_domain_lists': [{'Id': 'domain-list'}],
             'list_firewall_domains': [{}],
-            'list_firewall_rule_groups': [{}],
+            'list_firewall_rule_groups': [{'Id': 'group'}],
         }
         return values[method]
     ctx.call.side_effect = call
-    results = {code: fn(ctx) for code, _, fn in RESOLVER_CHECKS}
+    results = {code: fn(ctx) for code, _, fn in RESOLVER_CHECKS
+               if ('route53resolver', code) in ctx.quotas}
     assert len(results) == 8
     assert results['L-D2FE9758']['usage'] == 2

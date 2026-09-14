@@ -30,6 +30,8 @@ All notable changes to this project are recorded here. Versions follow
   connections, template versions, and service instances at their documented scopes.
 - Complete Route 53 Profiles coverage for owned profiles and VPC, private-hosted-zone,
   and VPC-endpoint associations per profile.
+- Route 53 Resolver measurements for DNS Firewall groups per VPC, rules per group,
+  and Resolver-rule and Firewall-group associations per Route 53 Profile.
 
 ### Changed
 

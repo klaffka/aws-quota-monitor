@@ -396,6 +396,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           "route53resolver:ListFirewallDomainLists",
           "route53resolver:ListFirewallDomains",
           "route53resolver:ListFirewallRuleGroups"
+          , "route53resolver:ListFirewallRuleGroupAssociations"
+          , "route53resolver:ListFirewallRules"
         ],
         Resource = "*"
       },

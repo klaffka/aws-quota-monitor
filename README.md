@@ -231,8 +231,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,137 of
-10,398 BA catalog quotas with an implemented measurement method (39.79%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,141 of
+10,398 BA catalog quotas with an implemented measurement method (39.82%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
@@ -400,8 +400,9 @@ Explicitly unsupported cases include:
 - KMS customer keys are counted with `ListKeys`; Systems Manager standard and advanced
   parameters, documents, maintenance windows, patch baselines and State Manager
   associations, plus patch groups per baseline, are counted from their regional SSM inventories. Route 53 Resolver endpoint/rule,
-  rule-association and DNS Firewall domain-list/rule-group quotas use their paginated
-  regional inventories. Resolver system rules are excluded from the customer rule count.
+  VPC/profile association and DNS Firewall domain-list/rule-group quotas use their
+  paginated regional inventories. Resolver system rules and AWS-managed Firewall domain
+  lists are excluded from customer-owned counts.
 - Amazon MQ brokers are counted with `ListBrokers`; Directory Service Microsoft AD and
   AD Connector directories with `DescribeDirectories`; OpenSearch domains and
   OpenSearch Applications with their respective list APIs. Broker/domain/application
