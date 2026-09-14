@@ -1599,10 +1599,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-F34A3FC2` — **Storage - Maximum references per reference store** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-F57A8D18` — **Storage - Maximum concurrent sequence or reference store import jobs** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `opensearch` (1 offene Quotas)
-
-- `L-B9142967` — **OpenSearch Applications per region** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-
 ## `outposts` (2 offene Quotas)
 
 - `L-0B277C74` — **Outposts per site** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
@@ -2180,10 +2176,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1952** Quotas aus Services I–R offen.
+Insgesamt sind **1951** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 86
 - `CONFIG_LIMIT`: 241
-- `RESOURCE_MAPPING`: 286
+- `RESOURCE_MAPPING`: 285
 - `UNSUPPORTED`: 248
 - `USAGE_METRIC`: 1091
 

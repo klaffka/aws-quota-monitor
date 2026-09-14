@@ -1,8 +1,13 @@
+from pathlib import Path
 from unittest.mock import Mock
+
+import pytest
 
 from modules.qmchecks.mq import CHECKS as MQ_CHECKS, configuration_revisions
 from modules.qmchecks.directoryservice import CHECKS as DS_CHECKS
-from modules.qmchecks.opensearch import get_current_quotastatus_opensearch
+from modules.qmchecks.opensearch import application_count, get_current_quotastatus_opensearch
+from modules.qmcore.aws import NoData
+from modules.qmcore.registry import custom_keys
 
 
 def test_mq_broker_inventory_count():
@@ -35,7 +40,9 @@ def test_opensearch_and_applications_are_independent_services():
     ctx = Mock(quotas={('es', 'L-076D529E'): {'Value': 100, 'Unit': 'None'},
                        ('opensearch', 'L-B9142967'): {'Value': 30, 'Unit': 'None'}})
     def call(service, method, key=None, **kwargs):
-        return [{'DomainName': 'domain'}] if service == 'es' else [{'Id': 'app'}]
+        return ([{'DomainName': 'domain'}] if service == 'es' else
+                [{'id': 'app', 'arn': 'arn:aws:opensearch:eu-central-1:123:application/app',
+                  'status': 'ACTIVE'}])
     ctx.call.side_effect = call
     ctx.run.side_effect = lambda service, checks, skip: [
         {'serviceCode': service, 'quotaCode': code,
@@ -44,3 +51,32 @@ def test_opensearch_and_applications_are_independent_services():
     assert {(e['serviceCode'], e['quotaCode'], e['usageValue']) for e in entries} == {
         ('es', 'L-076D529E', 1), ('opensearch', 'L-B9142967', 1),
     }
+
+
+def test_opensearch_application_inventory_deduplicates_identical_pages():
+    app = {'id': 'app', 'arn': 'arn:aws:opensearch:eu-central-1:123:application/app',
+           'status': 'DELETING'}
+    ctx = Mock()
+    ctx.call.return_value = [app, dict(app)]
+    assert application_count(ctx)['usage'] == 1
+
+
+@pytest.mark.parametrize('items,match', [
+    ([{'id': 'app', 'arn': 'arn:app', 'status': 'UNKNOWN'}], 'missing required'),
+    ([{'id': 'app', 'arn': 'arn:app', 'status': 'ACTIVE'},
+      {'id': 'app', 'arn': 'arn:app', 'status': 'FAILED'}], 'changed during pagination'),
+    ([{'id': 'one', 'arn': 'arn:app', 'status': 'ACTIVE'},
+      {'id': 'two', 'arn': 'arn:app', 'status': 'ACTIVE'}], 'duplicate ARN'),
+])
+def test_opensearch_application_inventory_rejects_incomplete_or_conflicting_items(items, match):
+    ctx = Mock()
+    ctx.call.return_value = items
+    with pytest.raises(NoData, match=match):
+        application_count(ctx)
+
+
+def test_opensearch_checks_are_registered_with_the_iam_service_prefix():
+    assert {('es', 'L-076D529E'), ('opensearch', 'L-B9142967')} <= custom_keys()
+    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
+    assert '"es:ListApplications"' in policy
+    assert '"opensearch:ListApplications"' not in policy

@@ -1147,7 +1147,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "mq:ListBrokers"
           , "ds:DescribeDirectories"
           , "es:ListDomainNames"
-          , "opensearch:ListApplications"
+          , "es:ListApplications"
           , "elasticbeanstalk:DescribeApplications"
           , "elasticbeanstalk:DescribeEnvironments"
           , "elasticbeanstalk:DescribeApplicationVersions"

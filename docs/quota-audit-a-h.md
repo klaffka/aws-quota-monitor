@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **3204**
+Total open entries: **3203**
 
 
 ## access-analyzer
@@ -3002,7 +3002,6 @@ Total open entries: **3204**
 
 ## es
 
-- `L-076D529E` — Domains per Region
 - `L-1F053E6F` — Warm instances per domain
 - `L-6408ABDE` — Instances per domain
 - `L-AE676A72` — Dedicated master instances per domain

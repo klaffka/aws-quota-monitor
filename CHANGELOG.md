@@ -35,6 +35,8 @@ All notable changes to this project are recorded here. Versions follow
 - Complete Migration Hub Refactor Spaces coverage for owned environments,
   applications, services, and routes across visible multi-account hierarchies.
 - Maximum configured inference units per running Rekognition Custom Labels model.
+- Registered the existing OpenSearch domain and UI-application inventories for
+  offline coverage reporting and validated application identities and states.
 
 ### Changed
 
@@ -42,6 +44,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
+- Corrected the OpenSearch UI `ListApplications` IAM service prefix to `es`.
 - Historical quota measurements and monthly reports preserve account, Region, unit, and interval boundaries.
 - Corrected the Network Firewall stateless-rule-group quota code.
 - Corrected Recycle Bin rule collection to query every supported resource type.
