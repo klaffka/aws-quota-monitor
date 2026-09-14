@@ -26,6 +26,8 @@ All notable changes to this project are recorded here. Versions follow
   VPC connectors, and VPC ingress connections per service.
 - Complete Application Auto Scaling coverage for scheduled actions and scaling
   policies per target plus step adjustments per step policy.
+- Complete AWS Proton coverage for combined templates, components, environment-account
+  connections, template versions, and service instances at their documented scopes.
 
 ### Changed
 

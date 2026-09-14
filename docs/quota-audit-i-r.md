@@ -227,7 +227,7 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-CFCA90F1` — **Rate of BatchPutMessage messages** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-EFB6780D` — **Number of StartPipelineReprocessing requests** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 
-## `iotcore` (236 offene Quotas)
+## `iotcore` (235 offene Quotas)
 
 - `L-00ACEBE9` — **ListThingPrincipalsV2 API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-01BCDDCA` — **CreateCertificateFromCsr API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -1905,13 +1905,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-DFAEAED3` — **Maximum number of profile history records per profile** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-E17DC7C3` — **Objects per profile** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 
-## `proton` (4 offene Quotas)
-
-- `L-6CC8209C` — **Environment account connections per environment account** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
-- `L-8FBB60E3` — **Components per account** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-A1B6A95A` — **Template versions per template** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-E8182F7E` — **Service instances per service** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-
 ## `qldb` (2 offene Quotas)
 
 - `L-22B6E165` — **QLDB exports per ledger** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
@@ -2205,11 +2198,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1995** Quotas aus Services I–R offen.
-- `CONCURRENCY`: 90
-- `CONFIG_LIMIT`: 245
-- `RESOURCE_MAPPING`: 304
-- `UNSUPPORTED`: 266
-- `USAGE_METRIC`: 1090
+Insgesamt sind **1964** Quotas aus Services I–R offen.
+- `CONCURRENCY`: 87
+- `CONFIG_LIMIT`: 241
+- `RESOURCE_MAPPING`: 292
+- `UNSUPPORTED`: 253
+- `USAGE_METRIC`: 1091
 
 Die Resource-Count-Prüfung wurde für die eindeutig zuordenbaren Fälle in den registrierten Checks ergänzt. Die verbleibenden `RESOURCE_MAPPING`-Einträge bleiben absichtlich `UNSUPPORTED`, bis eine service-spezifische API-Semantik und ein passender Quota-Code anhand der AWS-Dokumentation verifiziert werden können.

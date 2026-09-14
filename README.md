@@ -187,7 +187,7 @@ Each deployment monitors its execution account and configured Region.
 | SWF | Registered domains per Region |
 | CloudHSM | Clusters per Region and account |
 | Amazon MSK | Configurations and replicators per account |
-| AWS Proton | Services, environments and service templates per account |
+| AWS Proton | Services, environments, combined templates and components per account; environment-account connections, template versions and service instances at their quota scope |
 | EC2 Image Builder | Owned components, workflows, recipes, pipelines and configurations; component/workflow parameter and size limits; per-recipe and per-distribution-Region maxima |
 | Firewall Manager | Policies per organization and Region |
 | MSK Connect | Custom plugins per Region |
@@ -231,8 +231,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,130 of
-10,398 BA catalog quotas with an implemented measurement method (39.72%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,134 of
+10,398 BA catalog quotas with an implemented measurement method (39.76%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
