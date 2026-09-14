@@ -8,12 +8,24 @@ from modules.qmchecks.route53resolver import (
 
 
 def test_kms_key_inventory_is_paginated_by_context():
-    ctx = Mock(account='123456789012', quotas={('kms', 'L-C2F1777E'): {'Value': 10, 'Unit': 'None'}})
+    account = '123456789012'
+    region = 'eu-central-1'
+    ctx = Mock(account=account, region=region,
+               quotas={('kms', 'L-C2F1777E'): {'Value': 10, 'Unit': 'None'}})
+    def listed(identifier):
+        return {'KeyId': identifier,
+                'KeyArn': f'arn:aws:kms:{region}:{account}:key/{identifier}'}
+    def metadata(identifier, manager):
+        return {'KeyMetadata': {
+            'KeyId': identifier,
+            'Arn': f'arn:aws:kms:{region}:{account}:key/{identifier}',
+            'KeyManager': manager, 'KeyState': 'Enabled',
+            'KeySpec': 'SYMMETRIC_DEFAULT', 'KeyUsage': 'ENCRYPT_DECRYPT',
+            'Origin': 'AWS_KMS'}}
     ctx.call.side_effect = [
-        [{'KeyId': 'k1'}, {'KeyId': 'k2'}, {'KeyId': 'k3'}],
-        {'KeyMetadata': {'KeyManager': 'CUSTOMER'}},
-        {'KeyMetadata': {'KeyManager': 'AWS'}},
-        {'KeyMetadata': {'KeyManager': 'CUSTOMER'}},
+        [listed('k1'), listed('k2'), listed('k3')],
+        metadata('k1', 'CUSTOMER'), metadata('k2', 'AWS'),
+        metadata('k3', 'CUSTOMER'),
     ]
     result = KMS_CHECKS[0][2](ctx)
     assert result['usage'] == 2

@@ -365,9 +365,17 @@ resource "aws_iam_role_policy" "lambda_ec2" {
         Resource = "*"
       },
       {
-        Sid      = "KmsChecks",
-        Effect   = "Allow",
-        Action   = ["kms:ListKeys", "kms:DescribeKey", "kms:ListAliases", "kms:ListGrants", "kms:ListCustomKeyStores"],
+        Sid    = "KmsChecks",
+        Effect = "Allow",
+        Action = [
+          "kms:ListKeys",
+          "kms:DescribeKey",
+          "kms:ListAliases",
+          "kms:ListGrants",
+          "kms:DescribeCustomKeyStores",
+          "kms:ListKeyRotations",
+          "kms:GetKeyRotationStatus"
+        ],
         Resource = "*"
       },
       {

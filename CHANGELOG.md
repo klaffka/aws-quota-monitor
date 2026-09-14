@@ -52,6 +52,8 @@ All notable changes to this project are recorded here. Versions follow
 - Complete VPC Lattice resource-quota coverage across regional inventories and every
   documented parent scope; register the existing WorkSpaces Thin Client inventory for
   offline coverage reporting.
+- Complete AWS KMS resource-quota coverage, including completed and in-progress
+  on-demand rotations per eligible customer-managed key.
 
 ### Changed
 
@@ -60,6 +62,8 @@ All notable changes to this project are recorded here. Versions follow
 ### Fixed
 
 - Corrected the OpenSearch UI `ListApplications` IAM service prefix to `es`.
+- Corrected the nonexistent KMS `ListCustomKeyStores` call and IAM action to
+  `DescribeCustomKeyStores`; reject incomplete or inconsistent KMS inventories.
 - Historical quota measurements and monthly reports preserve account, Region, unit, and interval boundaries.
 - Corrected the Network Firewall stateless-rule-group quota code.
 - Corrected Recycle Bin rule collection to query every supported resource type.

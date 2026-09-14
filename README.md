@@ -234,8 +234,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,180 of
-10,398 BA catalog quotas with an implemented measurement method (40.20%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,181 of
+10,398 BA catalog quotas with an implemented measurement method (40.21%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
@@ -401,8 +401,11 @@ Explicitly unsupported cases include:
   certificates, NLB targets per AZ, trust stores and revocation quotas are measured from
   their paginated APIs. ALB/NLB capacity reservations are read through
   `DescribeCapacityReservation`.
-- KMS customer keys are counted with `ListKeys`; Systems Manager standard and advanced
-  parameters, documents, maintenance windows, patch baselines and State Manager
+- KMS covers all five resource quotas: customer keys and custom key stores per Region,
+  plus aliases, grants and completed or in-progress on-demand rotations per customer
+  key. Key, alias, grant, store and rotation inventories are validated and deduplicated;
+  only key types that support on-demand rotation are queried. Systems Manager standard
+  and advanced parameters, documents, maintenance windows, patch baselines and State Manager
   associations, plus patch groups per baseline, are counted from their regional SSM inventories. Route 53 Resolver endpoint/rule,
   VPC/profile association and DNS Firewall domain-list/rule-group quotas use their
   paginated regional inventories. Resolver system rules and AWS-managed Firewall domain
