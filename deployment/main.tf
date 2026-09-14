@@ -669,6 +669,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "opensearchserverless:BatchGetLifecyclePolicy"
           , "opensearchserverless:ListCollectionGroups"
           , "opensearchserverless:GetAccountSettings"
+          , "outposts:ListSites"
+          , "outposts:ListOutposts"
           , "vpc-lattice:ListServiceNetworks"
           , "vpc-lattice:ListServices"
           , "vpc-lattice:ListTargetGroups"

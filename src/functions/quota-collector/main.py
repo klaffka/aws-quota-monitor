@@ -64,6 +64,7 @@ from modules.qmchecks.route53resolver import get_current_quotastatus_route53reso
 from modules.qmchecks.mq import get_current_quotastatus_mq
 from modules.qmchecks.directoryservice import get_current_quotastatus_directoryservice
 from modules.qmchecks.opensearch import get_current_quotastatus_opensearch
+from modules.qmchecks.outposts import get_current_quotastatus_outposts
 from modules.qmchecks.elasticbeanstalk import get_current_quotastatus_elasticbeanstalk
 from modules.qmchecks.batch import get_current_quotastatus_batch
 from modules.qmchecks.s3 import get_current_quotastatus_s3
@@ -268,6 +269,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_mq(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_directoryservice(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_opensearch(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_outposts(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_elasticbeanstalk(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_batch(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_s3(ctx=ctx, skip=official))

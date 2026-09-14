@@ -39,6 +39,8 @@ All notable changes to this project are recorded here. Versions follow
   offline coverage reporting and validated application identities and states.
 - Complete current MediaConnect catalog coverage for outputs per flow and regional
   Router inputs, outputs, and network interfaces.
+- Complete AWS Outposts coverage for regional sites and the maximum number of
+  Outposts per site.
 
 ### Changed
 

@@ -61,6 +61,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.mq', 'mq'),
     ('modules.qmchecks.directoryservice', 'ds'),
     ('modules.qmchecks.opensearch', 'opensearch'),
+    ('modules.qmchecks.outposts', 'outposts'),
     ('modules.qmchecks.elasticbeanstalk', 'elasticbeanstalk'),
     ('modules.qmchecks.batch', 'batch'),
     ('modules.qmchecks.s3', 's3'),
