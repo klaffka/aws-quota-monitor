@@ -302,6 +302,10 @@ resource "aws_iam_role_policy" "lambda_ec2" {
         Action = [
           # EC2 collector checks
           "ec2:DescribeCapacityReservations",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeSnapshots",
+          "ec2:DescribeSnapshotTierStatus",
+          "ec2:DescribeFastSnapshotRestores",
           "ec2:DescribeHosts",
           "ec2:DescribeTransitGateways",
           "ec2:DescribeCustomerGateways",

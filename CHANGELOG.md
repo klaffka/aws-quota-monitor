@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Amazon EBS volume, snapshot, archive and fast-snapshot-restore measurements.
 - Amazon SQS queue configuration, policy and tag measurements.
 - Coverage reported against both the full catalog and the measurable base,
   excluding token-bucket, per-second rate and burst quotas by documented rule.

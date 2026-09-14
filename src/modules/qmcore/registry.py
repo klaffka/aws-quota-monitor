@@ -4,6 +4,7 @@ from importlib import import_module
 
 _CHECK_MODULES = (
     ('modules.qmchecks.ec2.ec2', 'ec2'),
+    ('modules.qmchecks.ebs', 'ebs'),
     ('modules.qmchecks.appstream', 'appstream2'),
     ('modules.qmchecks.vpc.vpc', 'vpc'),
     ('modules.qmchecks.lambda_checks.lambda_checks', 'lambda'),

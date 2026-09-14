@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 1,989 | 1,811 |
+| implemented | 2,010 | 1,825 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,370 | 4,192 |
-| uncovered | 7,711 | 6,206 |
+| covered | 4,391 | 4,206 |
+| uncovered | 7,690 | 6,192 |
 | unmeasurable | 2,999 | 2,791 |
 | measurable | 9,082 | 7,607 |
 
-Implemented measurement availability: **36.17%** of the whole union, or
-**48.12%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.35%** of the whole union, or
+**48.35%** of the 9,082 quotas whose usage can be counted at all.
 
 2,999 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -60,6 +60,24 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured Amazon EBS from 0 to 21 of 43 catalog quotas: snapshots per Region,
+  fast snapshot restores in their enabled and transitioning states, archived
+  snapshots per source volume, in-progress archives and restores from archive,
+  provisioned IOPS for io1 and io2, storage per volume type in TiB for all seven
+  types, and concurrent snapshots per volume for all seven types. A pending
+  snapshot whose source volume is gone raises `NoData` rather than being
+  attributed to the wrong type.
+
+  The 22 remaining quotas are not an inventory. The nine storage and IOPS
+  modification quotas apply to everything modified within a rolling six-hour
+  window, which the current volume state cannot reconstruct; concurrent snapshot
+  copies and concurrent volume copy operations are in-flight cross-Region
+  operations that no API lists; the seven direct-API request quotas and the two
+  throughput quotas are rates. Sources:
+  [EBS quotas](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-resource-quotas.html),
+  [DescribeVolumes](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVolumes.html),
+  [DescribeSnapshotTierStatus](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSnapshotTierStatus.html),
+  [DescribeFastSnapshotRestores](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeFastSnapshotRestores.html).
 - Measured Amazon SQS from 0 to 14 of 18 catalog quotas: in-flight messages on
   standard queues only, the configured visibility timeout, retention period,
   maximum message size and delivery delay, queue name length, policy size and

@@ -9,6 +9,7 @@ if __package__ in {None, ''}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from modules.qmchecks.ec2.ec2 import get_current_quotastatus_ec2
+from modules.qmchecks.ebs import get_current_quotastatus_ebs
 from modules.qmchecks.vpc.vpc import get_current_quotastatus_vpc
 from modules.qmchecks.lambda_checks.lambda_checks import get_current_quotastatus_lambda
 from modules.qmchecks.account_services import get_current_quotastatus_account_services
@@ -221,6 +222,7 @@ def lambda_handler(event, context):
                       get_current_quotastatus_lambda):
         # Each collector isolates checks and inventories through CheckContext.
         entries.extend(collector(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_ebs(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_account_services(ctx, skip=official))
     entries.extend(get_current_quotastatus_elb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_stepfunctions(ctx=ctx, skip=official))
