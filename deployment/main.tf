@@ -303,6 +303,13 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           # EC2 collector checks
           "ec2:DescribeCapacityReservations",
           "ec2:DescribeVolumes",
+          "ec2:DescribeIpams",
+          "ec2:DescribeIpamScopes",
+          "ec2:DescribeIpamPools",
+          "ec2:GetIpamPoolCidrs",
+          "ec2:DescribeIpamResourceDiscoveries",
+          "ec2:DescribeIpamInternetRegistryAssociations",
+          "ec2:DescribeIpamPrefixListResolvers",
           "ec2:DescribeSnapshots",
           "ec2:DescribeSnapshotTierStatus",
           "ec2:DescribeFastSnapshotRestores",

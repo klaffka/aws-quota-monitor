@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,010 | 1,825 |
+| implemented | 2,020 | 1,834 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,391 | 4,206 |
-| uncovered | 7,690 | 6,192 |
+| covered | 4,401 | 4,215 |
+| uncovered | 7,680 | 6,183 |
 | unmeasurable | 2,999 | 2,791 |
 | measurable | 9,082 | 7,607 |
 
-Implemented measurement availability: **36.35%** of the whole union, or
-**48.35%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.43%** of the whole union, or
+**48.46%** of the 9,082 quotas whose usage can be counted at all.
 
 2,999 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -60,6 +60,22 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured VPC IP Address Manager from 0 to 10 of 14 catalog quotas: IPAMs and
+  resource discoveries per Region, scopes and resource-discovery associations
+  per IPAM, pools per scope, pool depth, CIDRs per pool, organizational-unit
+  exclusions per resource discovery, and internet-registry associations and
+  prefix-list resolvers per IPAM. Scope, pool and association counts come from
+  the counters AWS already reports on each resource rather than from a second
+  listing. Prefix-list resolvers name their IPAM by ARN, so they are matched
+  through the IPAM inventory and an unknown parent raises `NoData`.
+
+  The four contiguous-block quotas (`Max IPv4/IPv6 Contig Block Size` and
+  `Max IPv4/IPv6 Contig Blocks`) bound what a single allocation request may ask
+  for and leave no inventory. Sources:
+  [IPAM quotas](https://docs.aws.amazon.com/vpc/latest/ipam/quotas-ipam.html),
+  [DescribeIpams](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeIpams.html),
+  [DescribeIpamScopes](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeIpamScopes.html),
+  [GetIpamPoolCidrs](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetIpamPoolCidrs.html).
 - Measured Amazon EBS from 0 to 21 of 43 catalog quotas: snapshots per Region,
   fast snapshot restores in their enabled and transitioning states, archived
   snapshots per source volume, in-progress archives and restores from archive,
