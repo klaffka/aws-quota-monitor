@@ -1203,10 +1203,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-FE63254C` — **GNU Zip compressed archive (.gz or .gzip) file size** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-FEB8D34D` — **Sensitive data discovery per month per account** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 
-## `mediaconnect` (1 offene Quotas)
-
-- `L-CB77E87E` — **Outputs** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-
 ## `mediaconvert` (72 offene Quotas)
 
 - `L-01D327FE` — **Request rate for GetJobTemplate, in a burst** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -2176,11 +2172,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1951** Quotas aus Services I–R offen.
+Insgesamt sind **1950** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 86
 - `CONFIG_LIMIT`: 241
 - `RESOURCE_MAPPING`: 285
-- `UNSUPPORTED`: 248
+- `UNSUPPORTED`: 247
 - `USAGE_METRIC`: 1091
 
 Die Resource-Count-Prüfung wurde für die eindeutig zuordenbaren Fälle in den registrierten Checks ergänzt. Die verbleibenden `RESOURCE_MAPPING`-Einträge bleiben absichtlich `UNSUPPORTED`, bis eine service-spezifische API-Semantik und ein passender Quota-Code anhand der AWS-Dokumentation verifiziert werden können.

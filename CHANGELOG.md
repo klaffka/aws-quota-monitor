@@ -37,6 +37,8 @@ All notable changes to this project are recorded here. Versions follow
 - Maximum configured inference units per running Rekognition Custom Labels model.
 - Registered the existing OpenSearch domain and UI-application inventories for
   offline coverage reporting and validated application identities and states.
+- Complete current MediaConnect catalog coverage for outputs per flow and regional
+  Router inputs, outputs, and network interfaces.
 
 ### Changed
 

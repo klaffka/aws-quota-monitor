@@ -232,8 +232,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,148 of
-10,398 BA catalog quotas with an implemented measurement method (39.89%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,152 of
+10,398 BA catalog quotas with an implemented measurement method (39.93%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
@@ -438,9 +438,8 @@ Explicitly unsupported cases include:
   throughput quotas remain usage-metric or workload limits rather than resource counts.
 - MediaConvert queues and custom job templates are counted through `ListQueues` and
   `ListJobTemplates`. IVS channels and recording configurations use their paginated list
-  APIs. MediaConnect, SES and the communication API-rate quotas remain unsupported
-  because their local quota entries describe request rates or have no matching resource
-  inventory quota.
+  APIs. SES and the communication API-rate quotas remain unsupported where their local
+  entries describe request rates or have no matching resource inventory quota.
 - Macie member accounts and pending invitations are measured with `ListMembers` and
   `GetInvitationsCount`; Security Hub outstanding invitations use the corresponding
   `GetInvitationsCount` API. Access Analyzer account/organization analyzers and archive
@@ -460,7 +459,9 @@ Explicitly unsupported cases include:
 - MediaLive channels and clusters, plus MediaPackage channels, are counted via their
   paginated list APIs. Other streaming quotas describe bitrate, tracks or request rates
   and are not treated as resource counts.
-- MediaConnect entitlements, flows and bridges are counted from paginated list APIs.
+- MediaConnect entitlements, flows and retained bridge inventories are counted from
+  paginated list APIs. Flow details supply the maximum output count per flow; Router
+  inputs, outputs and network interfaces are counted in their reported Region.
 - EC2 Dedicated Host quotas cover 140 catalog-backed instance families using
   paginated `DescribeHosts` results, host ownership and family metadata. Released
   hosts are excluded; allocated available hosts count even when they have no guest
