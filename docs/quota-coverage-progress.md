@@ -1,7 +1,10 @@
 # Quota coverage progress — 2026-09-14
 
-Catalogs: `data/service-quotas-20251102T133323Z.json` and
-`data/service-quotas-BA-eu-central-1-20260910.json`.
+Catalog: `tests/fixtures/quota-catalog-union.json`, the committed union of
+`data/service-quotas-20251102T133323Z.json` and
+`data/service-quotas-BA-eu-central-1-20260910.json`. The exports themselves are
+untracked, so the union is what CI and other contributors can reproduce.
+Regenerate it with `quota_coverage.py --write-catalog`.
 This is an offline implementation audit, not a live measurement success rate.
 
 Neither export is the whole catalog. `list_service_quotas` returns a different
@@ -21,7 +24,7 @@ with the single-export figure kept for comparison.
 
 Implemented measurement availability: **36.06%** against the union, 40.32%
 against the BA export alone. Custom and compatible metric counts overlap;
-covered is their union. `data/coverage-baseline.json` holds these totals and CI
+covered is their union. `tests/fixtures/coverage-baseline.json` holds these totals and CI
 fails on any regression. The objective of approaching 100% remains open.
 
 ## Latest verified changes
@@ -207,12 +210,8 @@ and [GetQuotaUtilizationReport](https://docs.aws.amazon.com/servicequotas/2019-0
 Reproduce with:
 
 ```sh
-python scripts/quota_coverage.py \
-  data/service-quotas-20251102T133323Z.json \
-  data/service-quotas-BA-eu-central-1-20260910.json \
-  --baseline data/coverage-baseline.json
-python scripts/quota_orphans.py \
-  data/service-quotas-20251102T133323Z.json \
-  data/service-quotas-BA-eu-central-1-20260910.json
+python scripts/quota_coverage.py tests/fixtures/quota-catalog-union.json \
+  --baseline tests/fixtures/coverage-baseline.json
+python scripts/quota_orphans.py tests/fixtures/quota-catalog-union.json
 python -m pytest -q
 ```

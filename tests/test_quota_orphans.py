@@ -4,8 +4,8 @@ from scripts.quota_coverage import merge_catalogs
 from scripts.quota_orphans import (UNKNOWN_QUOTA, UNKNOWN_SERVICE, orphans,
                                    render_table)
 
-CATALOGS = ('tests/fixtures/service-quota-keys.json',
-            'data/service-quotas-BA-eu-central-1-20260910.json')
+# The exports under data/ are untracked, so the committed union is the source.
+CATALOGS = ('tests/fixtures/quota-catalog-union.json',)
 
 
 def test_missing_code_and_missing_service_are_reported_separately():

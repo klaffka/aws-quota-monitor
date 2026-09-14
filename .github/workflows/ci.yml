@@ -58,9 +58,8 @@ jobs:
       - name: Check quota coverage baseline
         run: >-
           python scripts/quota_coverage.py
-          data/service-quotas-20251102T133323Z.json
-          data/service-quotas-BA-eu-central-1-20260910.json
-          --baseline data/coverage-baseline.json
+          tests/fixtures/quota-catalog-union.json
+          --baseline tests/fixtures/coverage-baseline.json
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

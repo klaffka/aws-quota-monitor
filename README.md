@@ -237,8 +237,10 @@ is offline and does not contact AWS.
 `quota_coverage.py` accepts several exports and measures the union, because no
 single export is complete: `list_service_quotas` returns a different set with and
 without `QuotaAppliedAtLevel`. `--baseline` compares the totals with
-`data/coverage-baseline.json` and exits non-zero on a regression, which is how CI
-guards the number. `quota_orphans.py` reports the opposite direction: implemented
+`tests/fixtures/coverage-baseline.json` and exits non-zero on a regression, which
+is how CI guards the number; `--write-catalog` regenerates the committed union in
+`tests/fixtures/quota-catalog-union.json`, since the exports under `data/` are not
+tracked. `quota_orphans.py` reports the opposite direction: implemented
 quota codes that no export contains.
 
 The [current coverage audit](docs/quota-coverage-progress.md) records 4,356 of

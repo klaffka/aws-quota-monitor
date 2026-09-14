@@ -115,6 +115,24 @@ def merge_catalogs(paths: list[str]) -> list[dict]:
     return list(merged.values())
 
 
+CATALOG_FIELDS = ('ServiceCode', 'QuotaCode', 'QuotaName', 'UsageMetric', 'Unit',
+                  'GlobalQuota', 'QuotaAppliedAtLevel', 'Period')
+
+
+def write_catalog(quotas: list[dict], path: str) -> int:
+    """Store the merged catalog with just the fields coverage depends on.
+
+    The exports under ``data/`` are untracked, so CI and contributors need a
+    committed copy to reproduce the same numbers.
+    """
+    rows = sorted(({field: quota[field] for field in CATALOG_FIELDS
+                    if quota.get(field) is not None} for quota in quotas),
+                  key=lambda row: (row['ServiceCode'], row['QuotaCode']))
+    Path(path).write_text(json.dumps(rows, separators=(',', ':'), sort_keys=True),
+                          encoding='utf-8')
+    return len(rows)
+
+
 def totals(rows: list[dict]) -> dict:
     return {measure: sum(row[measure] for row in rows) for measure in MEASURES}
 
@@ -138,8 +156,13 @@ def main() -> int:
     parser.add_argument('--baseline', help='Baseline-JSON; Exit 1 bei Rückschritt')
     parser.add_argument('--update-baseline', metavar='PATH',
                         help='Aktuelle Summen als Baseline schreiben')
+    parser.add_argument('--write-catalog', metavar='PATH',
+                        help='Zusammengeführten Katalog als Fixture schreiben')
     args = parser.parse_args()
-    rows = catalog_coverage(merge_catalogs(args.input))
+    merged = merge_catalogs(args.input)
+    if args.write_catalog:
+        print(f'{write_catalog(merged, args.write_catalog)} Quotas -> {args.write_catalog}')
+    rows = catalog_coverage(merged)
     print(json.dumps(rows, indent=2, ensure_ascii=False) if args.format == 'json' else render_table(rows))
     if args.update_baseline:
         Path(args.update_baseline).write_text(
