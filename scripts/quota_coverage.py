@@ -53,13 +53,42 @@ def normalize_quota(quota: dict) -> dict:
     return result
 
 
+UNMEASURABLE_RULES = (
+    # An EC2 request bucket's depth and refill are not observable per account.
+    ('TOKEN_BUCKET', lambda name: name.endswith(('request bucket maximum capacity',
+                                                 'request bucket refill rate'))),
+    # One-minute CloudWatch sums cannot establish a per-second peak.
+    ('API_RATE', lambda name: name.endswith(' TPS')),
+    # Burst allowances are token buckets too, but EFS bursting throughput is a
+    # published metric rather than a request bucket.
+    ('API_BURST', lambda name: 'burst' in name.lower() and 'throughput' not in name.lower()),
+)
+
+
+def unmeasurable(quota: dict) -> str | None:
+    """Return why this quota's usage cannot be counted at all, or None.
+
+    Counting the resources behind these quotas is not a matter of writing
+    another check: the occupancy of a token bucket and the peak of a
+    per-second rate are not derivable from the telemetry AWS exposes. Keeping
+    them in the denominator makes coverage look permanently unreachable, so
+    they are reported separately rather than silently dropped.
+    """
+    name = quota.get('QuotaName') or ''
+    for reason, matches in UNMEASURABLE_RULES:
+        if matches(name):
+            return reason
+    return None
+
+
 def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | None = None) -> list[dict]:
     implemented = implemented if implemented is not None else custom_keys()
     implemented = {(service_code(service), code) for service, code in implemented}
     unique = {(q['ServiceCode'], q['QuotaCode']): q
               for q in account_catalog([normalize_quota(q) for q in quotas])}
     services = defaultdict(lambda: {'total': 0, 'implemented': 0, 'compatibleMetric': 0,
-                                    'covered': 0, 'uncovered': 0, 'uncoveredCodes': []})
+                                    'covered': 0, 'uncovered': 0, 'unmeasurable': 0,
+                                    'uncoveredCodes': []})
     for (service, code), quota in sorted(unique.items()):
         row = services[service]
         row['total'] += 1
@@ -72,32 +101,44 @@ def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | Non
         else:
             row['uncovered'] += 1
             row['uncoveredCodes'].append(code)
+            row['unmeasurable'] += int(unmeasurable(quota) is not None)
     result = []
     for service, row in sorted(services.items()):
-        total = row['total']
-        result.append({**row, 'serviceCode': service,
+        total, measurable = row['total'], row['total'] - row['unmeasurable']
+        result.append({**row, 'serviceCode': service, 'measurable': measurable,
                        'coveredPct': round(row['covered'] / total * 100, 1) if total else None,
+                       'measurablePct': (round(row['covered'] / measurable * 100, 1)
+                                         if measurable else None),
                        'implementedPct': round(row['implemented'] / total * 100, 1) if total else None})
     return result
 
 
+def _percent(covered: int, base: int) -> str:
+    return f'{covered / base * 100:.1f}%' if base else '-'
+
+
 def render_table(rows: list[dict]) -> str:
-    headers = ('Service', 'Total', 'Custom', 'Metric', 'Covered', 'Coverage', 'Uncovered')
+    headers = ('Service', 'Total', 'Custom', 'Metric', 'Covered', 'Coverage', 'Uncovered',
+               'Unmeas', 'OfMeasurable')
     values = [(r['serviceCode'], str(r['total']), str(r['implemented']), str(r['compatibleMetric']),
                str(r['covered']), '-' if r['coveredPct'] is None else f"{r['coveredPct']:.1f}%",
-               str(r['uncovered'])) for r in rows]
+               str(r['uncovered']), str(r['unmeasurable']),
+               '-' if r['measurablePct'] is None else f"{r['measurablePct']:.1f}%") for r in rows]
     total = sum(r['total'] for r in rows)
     covered = sum(r['covered'] for r in rows)
+    unmeasurable_total = sum(r['unmeasurable'] for r in rows)
     values.append(('TOTAL', str(total), str(sum(r['implemented'] for r in rows)),
                    str(sum(r['compatibleMetric'] for r in rows)), str(covered),
-                   f'{covered / total * 100:.1f}%' if total else '-', str(total - covered)))
+                   _percent(covered, total), str(total - covered), str(unmeasurable_total),
+                   _percent(covered, total - unmeasurable_total)))
     all_rows = [headers, *values]
     widths = [max(len(row[i]) for row in all_rows) for i in range(len(headers))]
     return '\n'.join('  '.join(value.ljust(widths[i]) for i, value in enumerate(row))
                      for row in all_rows)
 
 
-MEASURES = ('total', 'implemented', 'compatibleMetric', 'covered', 'uncovered')
+MEASURES = ('total', 'implemented', 'compatibleMetric', 'covered', 'uncovered',
+            'unmeasurable', 'measurable')
 
 
 def merge_catalogs(paths: list[str]) -> list[dict]:
@@ -146,6 +187,11 @@ def compare_baseline(rows: list[dict], path: str) -> list[str]:
         expected = baseline.get(measure)
         if expected is not None and current[measure] < expected:
             failures.append(f'{measure} fell from {expected} to {current[measure]}')
+    # Excluding more quotas as unmeasurable raises the reported share without
+    # measuring anything, so growth needs the same review as a regression.
+    expected = baseline.get('unmeasurable')
+    if expected is not None and current['unmeasurable'] > expected:
+        failures.append(f'unmeasurable grew from {expected} to {current["unmeasurable"]}')
     return failures
 
 

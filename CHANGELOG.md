@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Coverage reported against both the full catalog and the measurable base,
+  excluding token-bucket, per-second rate and burst quotas by documented rule.
 - Coverage measured against the union of several quota exports, a
   `data/coverage-baseline.json` regression gate in CI, and `quota_orphans.py`
   for implemented quota codes that no export contains.

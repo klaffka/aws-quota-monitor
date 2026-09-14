@@ -14,7 +14,8 @@ def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
     rows = catalog_coverage(quotas, {('servicediscovery', 'implemented')})
     assert rows == [{'serviceCode': 'servicediscovery', 'total': 2, 'implemented': 1,
                      'compatibleMetric': 0, 'covered': 1, 'coveredPct': 50.0,
-                     'uncovered': 1, 'uncoveredCodes': ['uncovered'], 'implementedPct': 50.0}]
+                     'uncovered': 1, 'uncoveredCodes': ['uncovered'], 'implementedPct': 50.0,
+                     'unmeasurable': 0, 'measurable': 2, 'measurablePct': 50.0}]
 
 
 def test_catalog_loader_accepts_quotas_wrapper_and_table(tmp_path):
@@ -100,10 +101,58 @@ def test_baseline_reports_every_measure_that_regressed(tmp_path):
     rows = catalog_coverage([metric_quota('one'), {'ServiceCode': 'example',
                                                    'QuotaCode': 'two'}], set())
     assert totals(rows) == {'total': 2, 'implemented': 0, 'compatibleMetric': 1,
-                            'covered': 1, 'uncovered': 1}
+                            'covered': 1, 'uncovered': 1, 'unmeasurable': 0,
+                            'measurable': 2}
     baseline = tmp_path / 'baseline.json'
     baseline.write_text(json.dumps({'covered': 1, 'implemented': 0}), encoding='utf-8')
     assert compare_baseline(rows, str(baseline)) == []
     baseline.write_text(json.dumps({'covered': 2, 'compatibleMetric': 3}), encoding='utf-8')
     assert compare_baseline(rows, str(baseline)) == ['compatibleMetric fell from 3 to 1',
                                                      'covered fell from 2 to 1']
+
+
+def named(code, name):
+    return {'ServiceCode': 'example', 'QuotaCode': code, 'QuotaName': name}
+
+
+def test_token_bucket_rate_and_burst_quotas_are_classified_as_unmeasurable():
+    quotas = [named('bucket', 'DescribeThings request bucket maximum capacity'),
+              named('refill', 'DescribeThings request bucket refill rate'),
+              named('tps', 'DescribeActivations TPS'),
+              named('burst', 'CreateCase burst quota'),
+              named('countable', 'Cases per domain')]
+    row, = catalog_coverage(quotas, set())
+    assert (row['total'], row['unmeasurable'], row['measurable']) == (5, 4, 1)
+    # Coverage against the measurable base is the honest denominator.
+    assert (row['coveredPct'], row['measurablePct']) == (0.0, 0.0)
+
+
+def test_published_burst_throughput_metrics_stay_measurable():
+    # EFS bursting throughput is a CloudWatch metric, not a request bucket.
+    row, = catalog_coverage([named('efs', 'Bursting throughput')], set())
+    assert row['unmeasurable'] == 0
+
+
+def test_a_covered_quota_is_never_counted_as_unmeasurable():
+    quotas = [named('tps', 'DescribeActivations TPS')]
+    row, = catalog_coverage(quotas, {('example', 'tps')})
+    assert (row['covered'], row['unmeasurable'], row['measurablePct']) == (1, 0, 100.0)
+
+
+def test_the_table_reports_both_denominators():
+    rows = catalog_coverage([named('tps', 'DescribeActivations TPS'),
+                             named('countable', 'Cases per domain')],
+                            {('example', 'countable')})
+    table = render_table(rows)
+    assert 'Unmeas' in table and 'OfMeasurable' in table
+    # One of two quotas covered, but one of one measurable quota.
+    assert '50.0%' in table and '100.0%' in table
+
+
+def test_baseline_also_fails_when_more_quotas_are_excluded(tmp_path):
+    rows = catalog_coverage([named('tps', 'DescribeActivations TPS')], set())
+    baseline = tmp_path / 'baseline.json'
+    baseline.write_text(json.dumps({'unmeasurable': 0}), encoding='utf-8')
+    assert compare_baseline(rows, str(baseline)) == ['unmeasurable grew from 0 to 1']
+    baseline.write_text(json.dumps({'unmeasurable': 1}), encoding='utf-8')
+    assert compare_baseline(rows, str(baseline)) == []

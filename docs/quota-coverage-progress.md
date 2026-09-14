@@ -21,11 +21,31 @@ with the single-export figure kept for comparison.
 | compatibleMetric | 2,535 | 2,535 |
 | covered | 4,356 | 4,192 |
 | uncovered | 7,725 | 6,206 |
+| unmeasurable | 2,022 | 1,905 |
+| measurable | 10,059 | 8,493 |
 
-Implemented measurement availability: **36.06%** against the union, 40.32%
-against the BA export alone. Custom and compatible metric counts overlap;
-covered is their union. `tests/fixtures/coverage-baseline.json` holds these totals and CI
-fails on any regression. The objective of approaching 100% remains open.
+Implemented measurement availability: **36.06%** of the whole union, or
+**43.30%** of the 10,059 quotas whose usage can be counted at all.
+
+2,022 quotas are excluded from the second denominator by three rules in
+`quota_coverage.py`, each matched on the quota name and each carrying zero
+covered entries today:
+
+| Reason | Quotas | Rule |
+| --- | ---: | --- |
+| `TOKEN_BUCKET` | 1,526 | `... request bucket maximum capacity` / `... refill rate`, all EC2 |
+| `API_BURST` | 269 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
+| `API_RATE` | 227 | name ends in ` TPS` |
+
+A bucket's occupancy and a per-second peak are not derivable from one-minute
+CloudWatch sums, so these are not a matter of writing further checks. Both
+numbers are always reported together: excluding more quotas raises the second
+figure without measuring anything, so `compare_baseline` fails when the
+exclusion count grows, exactly as it fails on a coverage regression.
+
+Custom and compatible metric counts overlap; covered is their union.
+`tests/fixtures/coverage-baseline.json` holds these totals and CI fails on any
+regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
