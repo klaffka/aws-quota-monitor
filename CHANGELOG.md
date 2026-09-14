@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Lex V2 build-time configuration coverage for intents, slots, composite
+  subslots, custom slot types, values and synonyms, and UTF-16 utterance lengths.
 - Broad AWS quota coverage through official CloudWatch usage metrics and paginated resource inventories.
 - Offline quota coverage and package verification tools.
 - Automated Python, packaging, and Terraform checks for pull requests and branches.

@@ -6,15 +6,34 @@ This is an offline implementation audit, not a live measurement success rate.
 | Measure | Quotas |
 | --- | ---: |
 | total | 10,398 |
-| implemented | 1,800 |
+| implemented | 1,810 |
 | compatibleMetric | 2,535 |
-| covered | 4,181 |
-| uncovered | 6,217 |
+| covered | 4,191 |
+| uncovered | 6,207 |
 
-Implemented measurement availability: **40.21%**. Custom and compatible metric counts overlap; covered is their union. The objective of approaching 100% remains open.
+Implemented measurement availability: **40.31%**. Custom and compatible metric counts overlap; covered is their union. The objective of approaching 100% remains open.
 
 ## Latest verified changes
 
+- Expanded Lex V2 from 2 to 12 of 13 current catalog quotas by measuring build-time
+  configuration in addition to the bot and version counts. The collector now walks
+  every stable bot, version and locale and counts intents, slots, composite subslots,
+  custom slot types, and their values and synonyms. Sample-utterance and slot-type
+  value lengths are measured in UTF-16 code units, matching the AWS character
+  definition. Bot networks are excluded from the bot count, the synthesized `DRAFT`
+  version is never counted, and inventories that change during pagination or locales
+  that are still building raise `NoData` instead of undercounting. Corrected synonym
+  accounting: `SynonymList` members are `SampleValue` structures, so the previous
+  string comparison rejected every slot type that has synonyms. Removed the
+  module-local caches in favour of the shared `CheckContext` call cache used by every
+  other check module. `Bot channel associations per bot alias` (`L-DA28F59B`) remains
+  open: `lexv2-models` exposes no channel inventory, and the V1
+  `GetBotChannelAssociations` operation addresses V1 bot names that V2 bots do not
+  have. Sources:
+  [Lex V2 quotas](https://docs.aws.amazon.com/lexv2/latest/dg/quotas.html),
+  [ListBots](https://docs.aws.amazon.com/lexv2/latest/APIReference/API_ListBots.html),
+  [DescribeSlotType](https://docs.aws.amazon.com/lexv2/latest/APIReference/API_DescribeSlotType.html),
+  [DescribeSlot](https://docs.aws.amazon.com/lexv2/latest/APIReference/API_DescribeSlot.html).
 - Completed KMS resource coverage at 5/57 current catalog quotas by counting completed
   on-demand rotations and any accepted rotation still in progress per eligible
   customer-managed key. The existing key, alias, grant and custom-key-store paths now

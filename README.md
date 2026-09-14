@@ -234,8 +234,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,181 of
-10,398 BA catalog quotas with an implemented measurement method (40.21%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,191 of
+10,398 BA catalog quotas with an implemented measurement method (40.31%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
