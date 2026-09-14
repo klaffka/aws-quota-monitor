@@ -1595,9 +1595,8 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-F34A3FC2` — **Storage - Maximum references per reference store** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-F57A8D18` — **Storage - Maximum concurrent sequence or reference store import jobs** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `payment-cryptography` (4 offene Quotas)
+## `payment-cryptography` (3 offene Quotas)
 
-- `L-10DEBB19` — **Aliases** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-946BFBA8` — **Combined rate of control plane requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-B90266F0` — **Combined rate of data plane requests (symmetric)** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-BBE04029` — **Combined rate of data plane requests (asymmetric)** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -2167,11 +2166,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1948** Quotas aus Services I–R offen.
+Insgesamt sind **1947** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 86
 - `CONFIG_LIMIT`: 241
 - `RESOURCE_MAPPING`: 285
-- `UNSUPPORTED`: 245
+- `UNSUPPORTED`: 244
 - `USAGE_METRIC`: 1091
 
 Die Resource-Count-Prüfung wurde für die eindeutig zuordenbaren Fälle in den registrierten Checks ergänzt. Die verbleibenden `RESOURCE_MAPPING`-Einträge bleiben absichtlich `UNSUPPORTED`, bis eine service-spezifische API-Semantik und ein passender Quota-Code anhand der AWS-Dokumentation verifiziert werden können.

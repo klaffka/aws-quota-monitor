@@ -41,6 +41,7 @@ All notable changes to this project are recorded here. Versions follow
   Router inputs, outputs, and network interfaces.
 - Complete AWS Outposts coverage for regional sites and the maximum number of
   Outposts per site.
+- Regional AWS Payment Cryptography alias counts.
 
 ### Changed
 

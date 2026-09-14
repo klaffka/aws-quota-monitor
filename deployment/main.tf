@@ -538,6 +538,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "gameliftstreams:ListStreamGroups"
           , "dsql:ListClusters"
           , "payment-cryptography:ListKeys"
+          , "payment-cryptography:ListAliases"
           , "serverlessrepo:ListApplications"
           , "swf:ListDomains"
           , "cloudhsmv2:DescribeClusters"

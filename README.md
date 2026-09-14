@@ -182,7 +182,7 @@ Each deployment monitors its execution account and configured Region.
 | Network Monitor | Monitors per account and Region |
 | GameLift Streams | Applications and stream groups per Region |
 | Aurora DSQL | Single-Region clusters per Region |
-| Payment Cryptography | Keys per Region |
+| Payment Cryptography | Keys and aliases per Region |
 | Serverless Application Repository | Public applications per Region |
 | SWF | Registered domains per Region |
 | CloudHSM | Clusters per Region and account |
@@ -232,8 +232,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,154 of
-10,398 BA catalog quotas with an implemented measurement method (39.95%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,155 of
+10,398 BA catalog quotas with an implemented measurement method (39.96%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
