@@ -21,27 +21,38 @@ with the single-export figure kept for comparison.
 | compatibleMetric | 2,535 | 2,535 |
 | covered | 4,356 | 4,192 |
 | uncovered | 7,725 | 6,206 |
-| unmeasurable | 2,022 | 1,905 |
-| measurable | 10,059 | 8,493 |
+| unmeasurable | 2,999 | 2,791 |
+| measurable | 9,082 | 7,607 |
 
 Implemented measurement availability: **36.06%** of the whole union, or
-**43.30%** of the 10,059 quotas whose usage can be counted at all.
+**47.96%** of the 9,082 quotas whose usage can be counted at all.
 
-2,022 quotas are excluded from the second denominator by three rules in
-`quota_coverage.py`, each matched on the quota name and each carrying zero
-covered entries today:
+2,999 quotas are excluded from the second denominator by three rules in
+`quota_coverage.py`, matched on the quota name and applied in this order:
 
 | Reason | Quotas | Rule |
 | --- | ---: | --- |
 | `TOKEN_BUCKET` | 1,526 | `... request bucket maximum capacity` / `... refill rate`, all EC2 |
-| `API_BURST` | 269 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
-| `API_RATE` | 227 | name ends in ` TPS` |
+| `API_RATE` | 1,274 | name contains `TPS` as a word or the words `per second` |
+| `API_BURST` | 199 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
 
 A bucket's occupancy and a per-second peak are not derivable from one-minute
-CloudWatch sums, so these are not a matter of writing further checks. Both
-numbers are always reported together: excluding more quotas raises the second
-figure without measuring anything, so `compare_baseline` fails when the
-exclusion count grows, exactly as it fails on a coverage regression.
+CloudWatch sums, so these are not a matter of writing further checks. The rules
+only ever apply to quotas that are already uncovered: where AWS publishes a
+usage metric for a rate quota it counts as covered, which is how all 19 covered
+`TPS` quotas are accounted for, and no custom check measures a per-second rate
+today. Rates over a longer stated window, such as `Policy generations per day`,
+and unqualified ones such as `Rate of DescribeAcmeEndpoint API requests` stay in
+the measurable base.
+
+The rules cost nothing to widen and instantly flatter the figure, so both
+numbers are always reported together and `compare_baseline` fails when the
+exclusion count grows, exactly as it fails on a coverage regression. Raising it
+requires the same review as any other change to the number.
+
+`iotwireless` is what surfaced this: all 100 of its quotas are
+`TPS limit for <Operation>`, so it read as the largest uncovered service while
+being entirely unmeasurable.
 
 Custom and compatible metric counts overlap; covered is their union.
 `tests/fixtures/coverage-baseline.json` holds these totals and CI fails on any

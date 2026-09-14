@@ -156,3 +156,23 @@ def test_baseline_also_fails_when_more_quotas_are_excluded(tmp_path):
     assert compare_baseline(rows, str(baseline)) == ['unmeasurable grew from 0 to 1']
     baseline.write_text(json.dumps({'unmeasurable': 1}), encoding='utf-8')
     assert compare_baseline(rows, str(baseline)) == []
+
+
+def test_per_second_rates_are_excluded_whatever_the_wording():
+    quotas = [named('a', 'TPS limit for CreateDestination'),
+              named('b', 'DescribeThings throttle limit in transactions per second'),
+              named('c', 'ListOpsItemEvents requests per second'),
+              named('d', 'Messages Published per Second'),
+              named('e', 'Policy generations per day'),
+              named('f', 'Rate of DescribeAcmeEndpoint API requests')]
+    row, = catalog_coverage(quotas, set())
+    # Rates with a stated per-second window are excluded; a daily rate and an
+    # unqualified request rate stay in the measurable base.
+    assert (row['unmeasurable'], row['measurable']) == (4, 2)
+
+
+def test_an_official_metric_beats_the_rate_rule():
+    quota = metric_quota('tps')
+    quota['QuotaName'] = 'Transactions per second (TPS) for the GetPatchBaseline API'
+    row, = catalog_coverage([quota], set())
+    assert (row['covered'], row['unmeasurable']) == (1, 0)
