@@ -18,6 +18,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.eventbridge', 'events'),
     ('modules.qmchecks.cloudtrail', 'cloudtrail'),
     ('modules.qmchecks.sns', 'sns'),
+    ('modules.qmchecks.sqs', 'sqs'),
     ('modules.qmchecks.secretsmanager', 'secretsmanager'),
     ('modules.qmchecks.access_analyzer', 'access-analyzer'),
     ('modules.qmchecks.guardduty', 'guardduty'),

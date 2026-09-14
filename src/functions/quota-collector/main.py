@@ -22,6 +22,7 @@ from modules.qmchecks.firehose import get_current_quotastatus_firehose
 from modules.qmchecks.eventbridge import get_current_quotastatus_eventbridge
 from modules.qmchecks.cloudtrail import get_current_quotastatus_cloudtrail
 from modules.qmchecks.sns import get_current_quotastatus_sns
+from modules.qmchecks.sqs import get_current_quotastatus_sqs
 from modules.qmchecks.secretsmanager import get_current_quotastatus_secretsmanager
 from modules.qmchecks.access_analyzer import get_current_quotastatus_access_analyzer
 from modules.qmchecks.guardduty import get_current_quotastatus_guardduty
@@ -231,6 +232,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_eventbridge(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_cloudtrail(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_sns(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_sqs(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_secretsmanager(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_access_analyzer(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_guardduty(ctx=ctx, skip=official))

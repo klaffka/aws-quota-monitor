@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 1,975 | 1,811 |
+| implemented | 1,989 | 1,811 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,356 | 4,192 |
-| uncovered | 7,725 | 6,206 |
+| covered | 4,370 | 4,192 |
+| uncovered | 7,711 | 6,206 |
 | unmeasurable | 2,999 | 2,791 |
 | measurable | 9,082 | 7,607 |
 
-Implemented measurement availability: **36.06%** of the whole union, or
-**47.96%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.17%** of the whole union, or
+**48.12%** of the 9,082 quotas whose usage can be counted at all.
 
 2,999 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -60,6 +60,17 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured Amazon SQS from 0 to 14 of 18 catalog quotas: in-flight messages on
+  standard queues only, the configured visibility timeout, retention period,
+  maximum message size and delivery delay, queue name length, policy size and
+  the statements, actions, conditions and principals inside each policy, plus
+  tags per queue and UTF-8 tag key and value lengths. The four remaining quotas
+  (`Attributes per Message`, `Messages per Batch`, `Batched Message ID Length`,
+  `Message Size in S3 Bucket`) bound a single request and leave no inventory to
+  read. Sources:
+  [SQS quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-quotas.html),
+  [GetQueueAttributes](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_GetQueueAttributes.html),
+  [ListQueueTags](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ListQueueTags.html).
 - Corrected four quota codes that no catalog contains. `backup L-9122A82`,
   `gamelift L-AED4A06` and `groundstation L-5CCF0BC` were each missing their
   final character, and `iotcore L-FC25158C` should be `L-FC25158E`
