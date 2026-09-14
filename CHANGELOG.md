@@ -49,6 +49,9 @@ All notable changes to this project are recorded here. Versions follow
 - Amazon Personalize measurements for active filters, pending batch inference jobs,
   pending solution versions and pending data deletion jobs, with corrected campaign,
   solution and recommender scopes per dataset group.
+- Complete VPC Lattice resource-quota coverage across regional inventories and every
+  documented parent scope; register the existing WorkSpaces Thin Client inventory for
+  offline coverage reporting.
 
 ### Changed
 

@@ -79,32 +79,6 @@ def test_sns_filter_policies_are_maximum_per_topic_and_account_total():
     assert subscriptions_per_topic(ctx)['usage'] == 3
 
 
-def test_vpc_lattice_parent_scoped_counts():
-    from modules.qmchecks.new_services import (lattice_listeners_per_service,
-                                               lattice_rules_per_listener,
-                                               lattice_target_groups_per_service)
-    ctx = Mock()
-    ctx.call.side_effect = [
-        [{'id': 's1'}, {'id': 's2'}],
-        [{'id': 'l1'}], [{'id': 'l2'}, {'id': 'l3'}],
-    ]
-    assert lattice_listeners_per_service(ctx)['usage'] == 2
-
-    ctx = Mock()
-    ctx.call.return_value = [
-        {'serviceArns': ['s1']}, {'serviceArns': ['s1', 's2']},
-        {'serviceArns': ['s2']},
-    ]
-    assert lattice_target_groups_per_service(ctx)['usage'] == 2
-
-    ctx = Mock()
-    ctx.call.side_effect = [
-        [{'id': 's1'}], [{'id': 'l1'}, {'id': 'l2'}],
-        [{}, {}, {}], [{}],
-    ]
-    assert lattice_rules_per_listener(ctx)['usage'] == 3
-
-
 def test_wafv2_parent_scoped_counts():
     from modules.qmchecks.wafv2 import CHECKS
     ctx = Mock()

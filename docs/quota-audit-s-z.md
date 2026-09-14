@@ -2656,21 +2656,11 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-3248932A` | Characters per VPC endpoint policy | UNSUPPORTED: size/throughput/content quota |
 | `L-8312C5BB` | VPC peering connection request expiry hours | UNSUPPORTED: no direct persistent resource inventory |
 
-## `vpc-lattice` (11 open quotas)
+## `vpc-lattice` (1 open quota)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
-| `L-0DCA4434` | Resource gateways per VPC | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-5FF8F9B9` | Resource configurations per AWS Region | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-6095700C` | Resource Configurations per service network | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-73D0F278` | Domain Verifications per AWS Region | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-75D4A19E` | Service associations per service network | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-87FCA9B2` | Auth policy size | UNSUPPORTED: size/throughput/content quota |
-| `L-89DEA27F` | VPC endpoints of type 'service network' per service network | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-9BC96FEF` | Child Resource Configurations per Group Resource Configuration | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-CA6A1CC5` | Security groups per association | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-D71303F3` | Targets per target group | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-EF6E2D62` | VPC associations per service network | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
 ## `waf-regional` (22 open quotas)
 
@@ -2911,19 +2901,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 - `L-0BA10AAE` — **DiscoverInstancesRevision operation per account rate** — `USAGE_METRIC`: Request rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-514A639A` — **DiscoverInstances operation per account steady rate** — `USAGE_METRIC`: Request rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-76CF203B` — **DiscoverInstances operation per account burst rate** — `USAGE_METRIC`: Request burst rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-
-## `thinclient` (1 offenes Quota)
-
-- `L-64C2BDF4` — **Number of Environments** — `RESOURCE_MAPPING`: Resource-like quota; the local registry has no verified paginated Thin Client environment inventory for this quota code.
-
-## `vpc-lattice` (3 offene Quotas)
-
-- `L-9CAD07FB` — **Service networks per region** — `RESOURCE_MAPPING`: Resource-like quota; the local registry has no verified paginated service-network inventory mapped to this quota code.
-- `L-620C821E` — **Services per region** — `RESOURCE_MAPPING`: Resource-like quota; the local registry has no verified paginated service inventory mapped to this quota code.
-- `L-BB11C6B9` — **Target groups per region** — `RESOURCE_MAPPING`: Resource-like quota; the local registry has no verified paginated target-group inventory mapped to this quota code.
-- `L-3DEC3B9F` — **Target groups per service** — `RESOURCE_MAPPING`: Parent-scoped target-group count requires a complete service association inventory; the current API response does not guarantee that mapping.
-- `L-CF78395E` — **Rules per listener** — `RESOURCE_MAPPING`: Parent-scoped listener rule count requires complete listener identifiers and pagination for every service.
-- `L-D64E952E` — **Listeners per service** — `RESOURCE_MAPPING`: Parent-scoped listener count requires complete service identifiers and pagination for every service.
 
 ## `appstream2` (2 offene Quotas)
 

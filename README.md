@@ -234,8 +234,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,164 of
-10,398 BA catalog quotas with an implemented measurement method (40.05%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,180 of
+10,398 BA catalog quotas with an implemented measurement method (40.20%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
@@ -492,9 +492,14 @@ Explicitly unsupported cases include:
   workspaces per Region and Voice ID domains per Region. The Application Signals quota
   per individual service remains unsupported because the list response has no stable
   service grouping key for a verified maximum.
-- OpenSearch Serverless security, network, encryption and data-access policies, VPC
-  Lattice service networks/services/target groups, and WorkSpaces Thin Client
-  environments are counted through paginated control-plane APIs.
+- OpenSearch Serverless security, network, encryption and data-access policies are
+  counted through paginated control-plane APIs. VPC Lattice covers all 16 resource
+  quotas across Region, VPC, service network, service, listener, target group,
+  resource-configuration group and association scopes. Owned regional resources are
+  separated from shared resources by ARN account; parent links, lifecycle states and
+  duplicate pages are validated. Its auth-policy size remains a configuration limit.
+  See [VPC Lattice quotas](https://docs.aws.amazon.com/vpc-lattice/latest/ug/quotas.html).
+  WorkSpaces Thin Client environments are also counted through their paginated API.
 
 See [Service Quotas metric recommendations](https://docs.aws.amazon.com/servicequotas/2019-06-24/apireference/API_MetricInfo.html)
 and [CloudWatch retention and pagination](https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_GetMetricData.html).

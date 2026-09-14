@@ -6,15 +6,24 @@ This is an offline implementation audit, not a live measurement success rate.
 | Measure | Quotas |
 | --- | ---: |
 | total | 10,398 |
-| implemented | 1,782 |
+| implemented | 1,799 |
 | compatibleMetric | 2,535 |
-| covered | 4,164 |
-| uncovered | 6,234 |
+| covered | 4,180 |
+| uncovered | 6,218 |
 
-Implemented measurement availability: **40.05%**. Custom and compatible metric counts overlap; covered is their union. The objective of approaching 100% remains open.
+Implemented measurement availability: **40.20%**. Custom and compatible metric counts overlap; covered is their union. The objective of approaching 100% remains open.
 
 ## Latest verified changes
 
+- Expanded VPC Lattice from 0/17 to 16/17 current catalog quotas. The collector now
+  covers every resource quota at its documented Region, VPC, service-network, service,
+  listener, target-group, resource-configuration-group or association scope. It
+  separates owned regional resources from shared resources, validates ARNs, lifecycle
+  states and exact parents, and deduplicates complete paginated inventories. The only
+  remaining quota is auth-policy size. Also registered the existing WorkSpaces Thin
+  Client environment collector; its quota was already covered by a compatible metric,
+  so this adds 17 custom methods and 16 net covered quotas. Added nine VPC Lattice read
+  permissions. Sources: [VPC Lattice quotas](https://docs.aws.amazon.com/vpc-lattice/latest/ug/quotas.html), [resource configurations](https://docs.aws.amazon.com/vpc-lattice/latest/APIReference/API_ListResourceConfigurations.html), [resource associations](https://docs.aws.amazon.com/vpc-lattice/latest/APIReference/API_ListServiceNetworkResourceAssociations.html), [VPC association details](https://docs.aws.amazon.com/vpc-lattice/latest/APIReference/API_GetServiceNetworkVpcAssociation.html).
 - Expanded Amazon Personalize from 5/74 to 9/74 catalog quotas. New checks count
   active filters per dataset group, pending or in-progress batch inference jobs and
   solution versions per Region, and pending data deletion jobs per dataset group.
@@ -74,7 +83,7 @@ Implemented measurement availability: **40.05%**. Custom and compatible metric c
 - Added 20 Connect checks and corrected the users quota code to `L-9A46857E`, bringing Connect to 34/338 covered quotas. New checks cover Lex V2 associations, Lambda functions, data tables, workspaces, notifications, email addresses, predefined attributes, eight integration types, hours overrides, agent proficiencies, routing-profile queue/channel combinations and data-table attributes.
 - Connect inventories now resolve each instance's applied limit with `GetServiceQuota(ContextId=instance ARN)` and select the highest usage/limit ratio. A larger raw inventory can have lower utilization when its limit was increased. Unresolved limits and partial failures do not produce a successful sample. Standard queues exclude agent queues; application associations use the APPLICATION filter. Manual-assignment and normal routing queues have separate limits, so their counts are not summed. See [Connect scopes and routing-profile limits](https://docs.aws.amazon.com/connect/latest/adminguide/amazon-connect-service-limits.html) and [GetServiceQuota](https://docs.aws.amazon.com/servicequotas/2019-06-24/apireference/API_GetServiceQuota.html).
 - Added a resumable AWS utilization-report exporter with complete-page, identity and timestamp validation. A live BA/eu-central-1 report on 2026-09-11 returned six quotas, all already covered by compatible metrics, so this source adds no coverage in the observed account. The exporter is not integrated into the collector.
-- Validation: 852 tests passed; Terraform format/validate passed; isolated function ZIP/dependency-layer imports passed; release metadata, dependency consistency and Python bytecode compilation passed. All nine Amazon Personalize measurements and the PCA Connector SCEP, PCA Connector AD, Payment Cryptography alias, AWS Outposts, MediaConnect, OpenSearch domain/UI, Rekognition Custom Labels, Migration Hub Refactor Spaces, Route 53 Resolver, Route 53 Profiles, AWS Proton, Application Auto Scaling, App Runner, AWS RAM, Recycle Bin, Network Firewall, Network Insights, DLM, FinSpace and owned Image Builder inventories were queried successfully in BA/eu-central-1. FIS actions, templates and experiments were read live in the same account/Region; populated Personalize, PCA Connector SCEP, PCA Connector AD, Payment Cryptography aliases, AWS Outposts, MediaConnect, OpenSearch UI, Rekognition, Migration Hub Refactor Spaces, Route 53 Resolver, Route 53 Profiles, Proton, FIS, AOSS, FMS, Glue, SiteWise, FinSpace, Image Builder, Network Firewall, Network Insights, Audit Manager, DLM, Recycle Bin, AWS RAM, App Runner and Application Auto Scaling paths were verified with offline fixtures. No deployment was performed.
+- Validation: 856 tests passed; Terraform format/validate passed; isolated function ZIP/dependency-layer imports passed; release metadata, dependency consistency and Python bytecode compilation passed. All 16 VPC Lattice resource measurements, WorkSpaces Thin Client environments, all nine Amazon Personalize measurements and the PCA Connector SCEP, PCA Connector AD, Payment Cryptography alias, AWS Outposts, MediaConnect, OpenSearch domain/UI, Rekognition Custom Labels, Migration Hub Refactor Spaces, Route 53 Resolver, Route 53 Profiles, AWS Proton, Application Auto Scaling, App Runner, AWS RAM, Recycle Bin, Network Firewall, Network Insights, DLM, FinSpace and owned Image Builder inventories were queried successfully in BA/eu-central-1. FIS actions, templates and experiments were read live in the same account/Region; populated VPC Lattice, Personalize, PCA Connector SCEP, PCA Connector AD, Payment Cryptography aliases, AWS Outposts, MediaConnect, OpenSearch UI, Rekognition, Migration Hub Refactor Spaces, Route 53 Resolver, Route 53 Profiles, Proton, FIS, AOSS, FMS, Glue, SiteWise, FinSpace, Image Builder, Network Firewall, Network Insights, Audit Manager, DLM, Recycle Bin, AWS RAM, App Runner and Application Auto Scaling paths were verified with offline fixtures. No deployment was performed.
 
 ## Previous verified changes
 
