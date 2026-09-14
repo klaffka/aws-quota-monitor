@@ -42,6 +42,8 @@ All notable changes to this project are recorded here. Versions follow
 - Complete AWS Outposts coverage for regional sites and the maximum number of
   Outposts per site.
 - Regional AWS Payment Cryptography alias counts.
+- Complete resource-quota coverage for Private CA Connector for Active Directory:
+  connectors, templates per connector, and group access-control entries per template.
 
 ### Changed
 

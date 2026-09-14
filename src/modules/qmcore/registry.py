@@ -148,6 +148,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.gamelift', 'gamelift'),
     ('modules.qmchecks.dsql', 'dsql'),
     ('modules.qmchecks.payment_cryptography', 'payment-cryptography'),
+    ('modules.qmchecks.pca_connector_ad', 'pca-connector-ad'),
     ('modules.qmchecks.serverlessrepo', 'serverlessrepo'),
     ('modules.qmchecks.swf', 'swf'),
     ('modules.qmchecks.cloudhsm', 'cloudhsm'),

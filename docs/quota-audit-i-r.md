@@ -1601,7 +1601,7 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-B90266F0` — **Combined rate of data plane requests (symmetric)** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-BBE04029` — **Combined rate of data plane requests (asymmetric)** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 
-## `pca-connector-ad` (30 offene Quotas)
+## `pca-connector-ad` (27 offene Quotas)
 
 - `L-01AB3861` — **Rate of DeleteConnector requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-046630BB` — **Rate of GetTemplate requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -1610,7 +1610,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-1F0B4E70` — **Rate of DeleteTemplate requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-21A25C3F` — **Rate of CreateTemplateGroupAccessControlEntry requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-27D56743` — **Rate of RequestSecurityToken requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-351D0DCC` — **Number of connectors** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-431F19A0` — **Rate of UpdateTemplate requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-49BEA97B` — **Rate of ListConnectors requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-5512056E` — **Rate of ListTemplateGroupAccessControlEntries requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -1628,11 +1627,9 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-8B0AFBB5` — **Rate of ListServicePrincipalNames requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-957664CC` — **Rate of TagResource requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-A40E38B0` — **Rate of GetTemplateGroupAccessControlEntry requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-B2C010E5` — **Number of group access control entries per template** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-EE597D84` — **Rate of ListTagsForResource requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F16E91B4` — **Rate of GetServicePrincipalName requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F6A7C5A2` — **Rate of GetConnector requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-FB47817C` — **Number of templates per connector** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 
 ## `pca-connector-scep` (17 offene Quotas)
 
@@ -2166,10 +2163,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1947** Quotas aus Services I–R offen.
+Insgesamt sind **1944** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 86
 - `CONFIG_LIMIT`: 241
-- `RESOURCE_MAPPING`: 285
+- `RESOURCE_MAPPING`: 282
 - `UNSUPPORTED`: 244
 - `USAGE_METRIC`: 1091
 
