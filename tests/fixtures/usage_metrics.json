@@ -1,0 +1,79 @@
+[
+  {
+    "name": "resource_count_maximum",
+    "quota": {
+      "ServiceCode": "ec2",
+      "QuotaCode": "L-TEST0001",
+      "Unit": "Count",
+      "UsageMetric": {
+        "MetricNamespace": "AWS/Usage",
+        "MetricName": "ResourceCount",
+        "MetricDimensions": {"Class": "Standard/OnDemand", "Service": "EC2"},
+        "MetricStatisticRecommendation": "Maximum"
+      }
+    }
+  },
+  {
+    "name": "rate_sum_minute",
+    "quota": {
+      "ServiceCode": "s3",
+      "QuotaCode": "L-TEST0002",
+      "Unit": "Count",
+      "Period": {"PeriodUnit": "MINUTE", "PeriodValue": 1},
+      "UsageMetric": {
+        "MetricNamespace": "AWS/Usage",
+        "MetricName": "CallCount",
+        "MetricDimensions": {"API": "ListBuckets", "Service": "S3"},
+        "MetricStatisticRecommendation": "Sum"
+      }
+    }
+  },
+  {
+    "name": "unresolved_dimension",
+    "quota": {
+      "Unit": "Count",
+      "UsageMetric": {
+        "MetricNamespace": "AWS/Usage",
+        "MetricName": "ResourceCount",
+        "MetricDimensions": {"Resource": "${ResourceId}"},
+        "MetricStatisticRecommendation": "Maximum"
+      }
+    }
+  },
+  {
+    "name": "unsupported_unit",
+    "quota": {
+      "Unit": "Widgets",
+      "UsageMetric": {
+        "MetricNamespace": "AWS/Usage",
+        "MetricName": "ResourceCount",
+        "MetricDimensions": {},
+        "MetricStatisticRecommendation": "Maximum"
+      }
+    }
+  },
+  {
+    "name": "unsupported_statistic",
+    "quota": {
+      "Unit": "Count",
+      "UsageMetric": {
+        "MetricNamespace": "AWS/Usage",
+        "MetricName": "ResourceCount",
+        "MetricDimensions": {},
+        "MetricStatisticRecommendation": "Average"
+      }
+    }
+  },
+  {
+    "name": "invalid_dimensions",
+    "quota": {
+      "Unit": "Count",
+      "UsageMetric": {
+        "MetricNamespace": "AWS/Usage",
+        "MetricName": "ResourceCount",
+        "MetricDimensions": ["invalid"],
+        "MetricStatisticRecommendation": "Maximum"
+      }
+    }
+  }
+]

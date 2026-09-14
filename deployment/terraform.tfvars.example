@@ -1,0 +1,17 @@
+aws_region = "eu-central-1"
+
+tags = {
+  scope = "BA"
+  env   = "prod"
+}
+
+alert_threshold_pct = 80
+alert_email         = "your-email@example.com"
+
+# Optional: create additional CloudWatch metric alarms from JSON and route to the same SNS topic
+enable_cloudwatch_metric_alarms      = false
+cloudwatch_metric_alarms_config_file = "cloudwatch-metric-alarms.example.json"
+
+report_bucket_name    = ""
+report_retention_days = 90
+report_days_back      = 30
