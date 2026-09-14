@@ -28,6 +28,8 @@ All notable changes to this project are recorded here. Versions follow
   policies per target plus step adjustments per step policy.
 - Complete AWS Proton coverage for combined templates, components, environment-account
   connections, template versions, and service instances at their documented scopes.
+- Complete Route 53 Profiles coverage for owned profiles and VPC, private-hosted-zone,
+  and VPC-endpoint associations per profile.
 
 ### Changed
 

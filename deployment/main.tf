@@ -572,6 +572,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "imagebuilder:ListWorkflows"
           , "oam:ListSinks"
           , "route53profiles:ListProfiles"
+          , "route53profiles:ListProfileAssociations"
+          , "route53profiles:ListProfileResourceAssociations"
           , "docdb-elastic:ListClusters"
           , "databrew:ListProjects"
           , "databrew:ListDatasets"

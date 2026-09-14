@@ -2166,12 +2166,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-E7B077D9` — **Combined rate of trust anchor requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F8680437` — **Combined rate of profile requests** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 
-## `route53profiles` (3 offene Quotas)
-
-- `L-0B404E57` — **VPC Endpoint associations to a Route 53 Profile.** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-9BABD1D7` — **VPC to Route 53 Profile associations per Region** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-BA3424AB` — **Private hosted zone associations to a Route 53 Profile.** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-
 ## `route53resolver` (5 offene Quotas)
 
 - `L-15219E1D` — **DNS Firewall rule group associations per VPC** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
@@ -2198,11 +2192,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1964** Quotas aus Services I–R offen.
+Insgesamt sind **1961** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 87
 - `CONFIG_LIMIT`: 241
-- `RESOURCE_MAPPING`: 292
-- `UNSUPPORTED`: 253
+- `RESOURCE_MAPPING`: 291
+- `UNSUPPORTED`: 251
 - `USAGE_METRIC`: 1091
 
 Die Resource-Count-Prüfung wurde für die eindeutig zuordenbaren Fälle in den registrierten Checks ergänzt. Die verbleibenden `RESOURCE_MAPPING`-Einträge bleiben absichtlich `UNSUPPORTED`, bis eine service-spezifische API-Semantik und ein passender Quota-Code anhand der AWS-Dokumentation verifiziert werden können.

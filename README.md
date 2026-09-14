@@ -193,7 +193,7 @@ Each deployment monitors its execution account and configured Region.
 | MSK Connect | Custom plugins per Region |
 | IAM Roles Anywhere | Profiles and trust anchors per Region |
 | Internet Monitor | Monitors per Region |
-| Route 53 Profiles | Profiles per Region |
+| Route 53 Profiles | Owned profiles per Region and VPC, private hosted zone, and VPC endpoint associations per profile |
 | DocumentDB Elastic | Elastic clusters per Region |
 | DataBrew | Projects per account |
 | Cognito Identity | Identity pools per account |
@@ -231,8 +231,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,134 of
-10,398 BA catalog quotas with an implemented measurement method (39.76%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,137 of
+10,398 BA catalog quotas with an implemented measurement method (39.79%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
