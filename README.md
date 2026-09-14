@@ -232,8 +232,8 @@ entries. The table includes an overall total. This is implementation availabilit
 not proof that the current account has permission or usable metric samples. The tool
 is offline and does not contact AWS.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,145 of
-10,398 BA catalog quotas with an implemented measurement method (39.86%), including
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,146 of
+10,398 BA catalog quotas with an implemented measurement method (39.87%), including
 official metrics. It also lists the largest remaining gaps; near-total coverage has
 not yet been achieved.
 
@@ -278,12 +278,13 @@ document; public sharing counts documents across the account. The SSM document
 inventory uses the SDK's owner filter. No parameter values or vocabulary phrase
 text are requested by these checks.
 
-Rekognition has methods for 12/92 catalog quotas, including Custom Labels model,
+Rekognition has methods for 13/92 catalog quotas, including Custom Labels model,
 training and copy concurrency, Media Analysis jobs, stream processor concurrency
-and Kinesis stream associations. Custom Labels inventories explicitly filter out
-other project features. Label detection counts `STARTING` as its processing state;
-face search counts `RUNNING`. Unresolved reservations return `NO_DATA`. These checks
-use service metadata and do not download media files or model artifacts.
+and Kinesis stream associations. The configured inference-unit ceiling is measured
+per running model. Custom Labels inventories explicitly filter out other project
+features. Label detection counts `STARTING` as its processing state; face search
+counts `RUNNING`. Unresolved reservations return `NO_DATA`. These checks use service
+metadata and do not download media files or model artifacts.
 
 Connect Cases now measures all 14 content and configuration quotas: domains, fields,
 layouts, templates, options, rules, related items, files, SLAs, custom-item fields and

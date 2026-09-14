@@ -34,6 +34,7 @@ All notable changes to this project are recorded here. Versions follow
   and Resolver-rule and Firewall-group associations per Route 53 Profile.
 - Complete Migration Hub Refactor Spaces coverage for owned environments,
   applications, services, and routes across visible multi-account hierarchies.
+- Maximum configured inference units per running Rekognition Custom Labels model.
 
 ### Changed
 

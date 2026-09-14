@@ -21,9 +21,9 @@ def context(code='L-5E225387'):
                         [{'ServiceCode': 'rekognition', 'QuotaCode': code, 'Value': 10}], account='123456789012')
 
 
-def version(name='one', status='RUNNING', project=PROJECT):
+def version(name='one', status='RUNNING', project=PROJECT, **values):
     return {'ProjectVersionArn': project.rsplit('/', 1)[0] + f'/version/{name}/1234567890',
-            'Feature': 'CUSTOM_LABELS', 'Status': status}
+            'Feature': 'CUSTOM_LABELS', 'Status': status, **values}
 
 
 def processor(name='face', kind='FaceSearch', status='RUNNING', video=VIDEO):
@@ -63,6 +63,43 @@ def test_model_identity_and_feature_mismatch_prevent_counts(changes):
     ctx.call.side_effect = [[{'ProjectArn': PROJECT}], [dict(version(), **changes)]]
     with pytest.raises(NoData):
         checks.model_count(ctx, 'RUNNING')
+
+
+def test_inference_units_use_maximum_configured_capacity_per_running_model():
+    ctx = Mock()
+    ctx.call.side_effect = [
+        [{'ProjectArn': PROJECT}],
+        [version('fixed', MinInferenceUnits=2),
+         version('scaling', MinInferenceUnits=1, MaxInferenceUnits=5),
+         version('stopped', 'STOPPED')],
+    ]
+    result = checks.inference_units_per_running_model(ctx)
+    assert result['usage'] == 5
+    assert result['resource_id'].endswith('/version/scaling/1234567890')
+
+
+@pytest.mark.parametrize('changes', [
+    {},
+    {'MinInferenceUnits': 0},
+    {'MinInferenceUnits': 2, 'MaxInferenceUnits': 1},
+    {'MinInferenceUnits': True},
+])
+def test_running_model_requires_valid_inference_unit_capacity(changes):
+    ctx = Mock()
+    ctx.call.side_effect = [[{'ProjectArn': PROJECT}], [version(**changes)]]
+    with pytest.raises(NoData, match='invalid inference-unit capacity'):
+        checks.inference_units_per_running_model(ctx)
+
+
+@pytest.mark.parametrize('state', ['STARTING', 'STOPPING', 'DELETING'])
+def test_transitional_model_inference_unit_reservations_are_unknown(state):
+    ctx = Mock()
+    ctx.call.side_effect = [
+        [{'ProjectArn': PROJECT}],
+        [version(status=state, MinInferenceUnits=1, MaxInferenceUnits=2)],
+    ]
+    with pytest.raises(NoData, match='unresolved inference-unit reservation'):
+        checks.inference_units_per_running_model(ctx)
 
 
 def test_filtered_project_inventory_rejects_other_features():

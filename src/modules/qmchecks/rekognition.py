@@ -75,6 +75,36 @@ def model_count(ctx, target):
     return dict(usage=count, source='rekognition:DescribeProjects+DescribeProjectVersions', method='ACCOUNT_COUNT')
 
 
+def inference_units_per_running_model(ctx):
+    values = []
+    for project in unique(projects(ctx), 'ProjectArn'):
+        arn = project['ProjectArn']
+        version_prefix = arn.rsplit('/', 1)[0] + '/version/'
+        versions = ctx.call('rekognition', 'describe_project_versions',
+                            'ProjectVersionDescriptions', ProjectArn=arn)
+        for version in unique(versions, 'ProjectVersionArn'):
+            version_arn = version['ProjectVersionArn']
+            if (not version_arn.startswith(version_prefix)
+                    or version.get('Feature', 'CUSTOM_LABELS') != 'CUSTOM_LABELS'):
+                raise NoData('Rekognition model version has a different parent or feature')
+            state = version.get('Status')
+            if state not in MODEL_STATES:
+                raise NoData('Rekognition model version has an unknown status')
+            if state in {'STARTING', 'STOPPING', 'DELETING'}:
+                raise NoData('Rekognition model has an unresolved inference-unit reservation')
+            if state != 'RUNNING':
+                continue
+            minimum = version.get('MinInferenceUnits')
+            maximum_units = version.get('MaxInferenceUnits', minimum)
+            if (not isinstance(minimum, int) or isinstance(minimum, bool) or minimum < 1
+                    or not isinstance(maximum_units, int) or isinstance(maximum_units, bool)
+                    or maximum_units < minimum):
+                raise NoData('Running Rekognition model has invalid inference-unit capacity')
+            values.append((version_arn, maximum_units, None))
+    return maximum(values, 'RekognitionProjectVersion',
+                   'rekognition:DescribeProjects+DescribeProjectVersions')
+
+
 def stream_definitions(ctx):
     summaries = ctx.call('rekognition', 'list_stream_processors', 'StreamProcessors')
     for item in unique(summaries, 'Name'):
@@ -143,6 +173,8 @@ CHECKS = [('L-14D0BC19', 'Custom Labels projects per account',
                             source='rekognition:ListStreamProcessors', method='ACCOUNT_COUNT'))]
 
 EXTENDED_CHECKS = [
+    ('L-4FA65ECB', 'Maximum inference units per running Custom Labels model',
+     inference_units_per_running_model),
     ('L-5E225387', 'Concurrently running Custom Labels models', partial(model_count, target='RUNNING')),
     ('L-F1558568', 'Concurrent Custom Labels training jobs', partial(model_count, target='TRAINING_IN_PROGRESS')),
     ('L-B3EE7891', 'Concurrent Custom Labels model copy jobs', partial(model_count, target='COPYING_IN_PROGRESS')),

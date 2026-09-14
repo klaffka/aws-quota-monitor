@@ -1997,7 +1997,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-41805FEB` — **Transactions per second per account for the Amazon Rekognition Custom Labels operation: ListDatasetEntries** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-43CBEB68` — **Transactions per second per account for the Amazon Rekognition Image operation SearchFacesByImage** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-4E7ADAC1` — **Transactions per second per account for the Amazon Rekognition Video stored video get operation GetFaceDetection** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-4FA65ECB` — **Maximum inference units per running Amazon Rekognition Custom Labels model.** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
 - `L-513570CC` — **Transactions per second per account for the Amazon Rekognition Custom Labels operation: UpdateDatasetEntries** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-532A3DAC` — **Transactions per second per account for the Amazon Rekognition operation: SearchUsers** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-5346A13A` — **Transactions per second per account for the Amazon Rekognition Image operation DeleteCollection** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -2181,8 +2180,8 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1953** Quotas aus Services I–R offen.
-- `CONCURRENCY`: 87
+Insgesamt sind **1952** Quotas aus Services I–R offen.
+- `CONCURRENCY`: 86
 - `CONFIG_LIMIT`: 241
 - `RESOURCE_MAPPING`: 286
 - `UNSUPPORTED`: 248
