@@ -32,6 +32,8 @@ All notable changes to this project are recorded here. Versions follow
   and VPC-endpoint associations per profile.
 - Route 53 Resolver measurements for DNS Firewall groups per VPC, rules per group,
   and Resolver-rule and Firewall-group associations per Route 53 Profile.
+- Complete Migration Hub Refactor Spaces coverage for owned environments,
+  applications, services, and routes across visible multi-account hierarchies.
 
 ### Changed
 

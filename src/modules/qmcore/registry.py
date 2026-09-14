@@ -159,6 +159,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.rolesanywhere', 'rolesanywhere'),
     ('modules.qmchecks.internetmonitor', 'internetmonitor'),
     ('modules.qmchecks.route53profiles', 'route53profiles'),
+    ('modules.qmchecks.refactor_spaces', 'refactor-spaces'),
     ('modules.qmchecks.docdb_elastic', 'docdb-elastic'),
     ('modules.qmchecks.databrew', 'databrew'),
     ('modules.qmchecks.cognito_identity', 'cognito-identity'),

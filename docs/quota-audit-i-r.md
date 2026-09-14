@@ -1977,13 +1977,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-D8ECCA81` — **Tables for 8xlarge cluster node type** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-FA4166C9` — **Tables for 16xlarge cluster node type** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 
-## `refactor-spaces` (4 offene Quotas)
-
-- `L-B19E8A2B` — **Services** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-CE52EEA2` — **Routes** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-DEF84811` — **Environments** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-EACEDE8E` — **Applications** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-
 ## `rekognition` (90 offene Quotas)
 
 - `L-01C8D885` — **Amazon Rekognition Streaming Video Events stream processors per account that can simultaneously exist** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
@@ -2188,11 +2181,11 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 ## Aggregation
 
-Insgesamt sind **1957** Quotas aus Services I–R offen.
+Insgesamt sind **1953** Quotas aus Services I–R offen.
 - `CONCURRENCY`: 87
 - `CONFIG_LIMIT`: 241
-- `RESOURCE_MAPPING`: 288
-- `UNSUPPORTED`: 250
+- `RESOURCE_MAPPING`: 286
+- `UNSUPPORTED`: 248
 - `USAGE_METRIC`: 1091
 
 Die Resource-Count-Prüfung wurde für die eindeutig zuordenbaren Fälle in den registrierten Checks ergänzt. Die verbleibenden `RESOURCE_MAPPING`-Einträge bleiben absichtlich `UNSUPPORTED`, bis eine service-spezifische API-Semantik und ein passender Quota-Code anhand der AWS-Dokumentation verifiziert werden können.

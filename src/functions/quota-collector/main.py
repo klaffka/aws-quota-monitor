@@ -162,6 +162,7 @@ from modules.qmchecks.kinesisanalytics import get_current_quotastatus_kinesisana
 from modules.qmchecks.kinesis_resources import get_current_quotastatus_kinesis_resources
 from modules.qmchecks.license_manager import get_current_quotastatus_license_manager
 from modules.qmchecks.route53profiles import get_current_quotastatus_route53profiles
+from modules.qmchecks.refactor_spaces import get_current_quotastatus_refactor_spaces
 from modules.qmchecks.docdb_elastic import get_current_quotastatus_docdb_elastic
 from modules.qmchecks.databrew import get_current_quotastatus_databrew
 from modules.qmchecks.cognito_identity import get_current_quotastatus_cognito_identity
@@ -364,6 +365,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_kinesis_resources(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_license_manager(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_route53profiles(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_refactor_spaces(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_docdb_elastic(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_databrew(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_cognito_identity(ctx=ctx, skip=official))
