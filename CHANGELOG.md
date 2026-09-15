@@ -38,6 +38,7 @@ All notable changes to this project are recorded here. Versions follow
 - Service Catalog portfolio, product, TagOption and AppRegistry measurements.
 - CodeDeploy running-deployment instance, traffic route listener and GitHub
   token measurements, and the AgentCore generated-policy rolling window.
+- Keyspaces user-defined type measurements in both reference directions.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,671 uncovered rate quotas leave the measurable denominator.
@@ -130,6 +131,9 @@ All notable changes to this project are recorded here. Versions follow
   `DescribeApplications`.
 - Paginated calls stopped after the first page whenever an API returns
   `NextPageToken` and takes it back as `PageToken`, as Service Catalog does.
+- The Keyspaces checks addressed a `cassandra` client that botocore does not
+  ship and listed tables without the keyspace those listings require, so both
+  quotas always failed.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

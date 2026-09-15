@@ -1,9 +1,9 @@
 {
   "total": 12081,
-  "implemented": 2486,
+  "implemented": 2492,
   "compatibleMetric": 2535,
-  "covered": 4867,
-  "uncovered": 7214,
+  "covered": 4873,
+  "uncovered": 7208,
   "unmeasurable": 5013,
   "measurable": 7068
 }
