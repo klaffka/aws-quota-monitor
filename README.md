@@ -236,7 +236,8 @@ is offline and does not contact AWS.
 
 `quota_coverage.py` accepts several exports and measures the union, because no
 single export is complete: `list_service_quotas` returns a different set with and
-without `QuotaAppliedAtLevel`. `--baseline` compares the totals with
+without `QuotaAppliedAtLevel`. `--update-progress` rewrites the audit document's figures, and `--baseline`
+compares the totals with
 `tests/fixtures/coverage-baseline.json` and exits non-zero on a regression, which
 is how CI guards the number; `--write-catalog` regenerates the committed union in
 `tests/fixtures/quota-catalog-union.json`, since the exports under `data/` are not
@@ -250,9 +251,9 @@ allowances. The exclusion applies only to quotas that no check and no official
 metric already covers. A bucket's occupancy and a per-second peak cannot be derived from
 one-minute CloudWatch sums, so no additional check would ever cover them.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,609 of
-12,081 catalog quotas with an implemented measurement method (38.15%), including
-official metrics, which is 52.74% of the 8,739 measurable quotas. It also lists
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,623 of
+12,081 catalog quotas with an implemented measurement method (38.27%), including
+official metrics, which is 52.90% of the 8,739 measurable quotas. It also lists
 the largest remaining gaps; near-total coverage has not yet been achieved.
 
 Clean Rooms ML has methods for 140/148 catalog quotas (94.6%). Training-instance

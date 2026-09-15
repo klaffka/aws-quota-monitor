@@ -193,6 +193,28 @@ def totals(rows: list[dict]) -> dict:
     return {measure: sum(row[measure] for row in rows) for measure in MEASURES}
 
 
+def update_progress(rows: list[dict], path: str) -> None:
+    """Rewrite the progress document's union column and headline percentages.
+
+    The document is edited by hand for everything else, but these figures move
+    with every check and were repeatedly left stale.
+    """
+    current = totals(rows)
+    document = Path(path).read_text(encoding='utf-8')
+    for measure in MEASURES:
+        document = re.sub(rf'^\| {measure} \| [\d,]+ \|',
+                          f'| {measure} | {current[measure]:,} |',
+                          document, count=1, flags=re.MULTILINE)
+    whole = current['covered'] / current['total'] * 100
+    measurable = current['covered'] / current['measurable'] * 100
+    document = re.sub(r'\*\*[\d.]+%\*\* of the whole union',
+                      f'**{whole:.2f}%** of the whole union', document, count=1)
+    document = re.sub(r'\*\*[\d.]+%\*\* of the [\d,]+ quotas',
+                      f"**{measurable:.2f}%** of the {current['measurable']:,} quotas",
+                      document, count=1)
+    Path(path).write_text(document, encoding='utf-8')
+
+
 def compare_baseline(rows: list[dict], path: str) -> list[str]:
     """Return one message per measure that regressed against the baseline."""
     baseline = json.loads(Path(path).read_text(encoding='utf-8'))
@@ -219,12 +241,16 @@ def main() -> int:
                         help='Aktuelle Summen als Baseline schreiben')
     parser.add_argument('--write-catalog', metavar='PATH',
                         help='Zusammengeführten Katalog als Fixture schreiben')
+    parser.add_argument('--update-progress', metavar='PATH',
+                        help='Zahlen im Fortschrittsdokument aktualisieren')
     args = parser.parse_args()
     merged = merge_catalogs(args.input)
     if args.write_catalog:
         print(f'{write_catalog(merged, args.write_catalog)} Quotas -> {args.write_catalog}')
     rows = catalog_coverage(merged)
     print(json.dumps(rows, indent=2, ensure_ascii=False) if args.format == 'json' else render_table(rows))
+    if args.update_progress:
+        update_progress(rows, args.update_progress)
     if args.update_baseline:
         Path(args.update_baseline).write_text(
             json.dumps(totals(rows), indent=2) + '\n', encoding='utf-8')

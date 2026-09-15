@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- API Gateway key, certificate, domain, usage plan, VPC link, route and stage
+  measurements, and a --update-progress flag that keeps the audit figures current.
 - Transcribe concurrent job, pending vocabulary and Call Analytics measurements.
 - Lightsail storage, certificate, container service and distribution measurements.
 - CodeBuild concurrent build, project tag, VPC and timeout measurements.

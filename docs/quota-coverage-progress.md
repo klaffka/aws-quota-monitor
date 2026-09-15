@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,228 | 1,957 |
+| implemented | 2,242 | 1,971 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,609 | 4,338 |
-| uncovered | 7,472 | 6,060 |
+| covered | 4,623 | 4,352 |
+| uncovered | 7,458 | 6,046 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **38.15%** of the whole union, or
-**52.74%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **38.27%** of the whole union, or
+**52.90%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,16 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened API Gateway from 9 to 23 catalog quotas: API keys, client
+  certificates, custom domain names and the private ones among them, domain name
+  access associations, usage plans, VPC links in both API generations, subnets
+  per V2 VPC link, resources and WebSocket routes against the quota they share,
+  routes per HTTP API, and stage variables and tags per stage. Usage plans per
+  API key inverts the per-plan key listing, which is the only direction the API
+  offers.
+- `quota_coverage.py --update-progress` now rewrites this document's union
+  column and headline percentages, which had gone stale twice while the figures
+  moved. The single-export column is still refreshed by hand.
 - Deepened Amazon Transcribe from 4 to 21 catalog quotas: the current total
   vocabulary, medical vocabulary and language model codes alongside the retired
   ones they replace, pending vocabularies, and the concurrent transcription,
