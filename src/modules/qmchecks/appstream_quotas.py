@@ -511,7 +511,16 @@ INSTANCE_QUOTAS = (
 
 # QuotaCode, InstanceType, Platform, inventory
 PLATFORM_QUOTAS = (
+    # The five Amazon Linux 2 entries name their platform and instance type in
+    # full in the quota name, so nothing here is inferred. The two "Graphics
+    # desktop 2xlarge" instance quotas are not listed: their name does not spell
+    # the instance type the API reports, and this table never guesses one.
     ('L-087EDDC8', 'stream.standard.small', 'UBUNTU_PRO_2404', 'elastic_session'),
+    ('L-27527629', 'stream.standard.large', 'AMAZON_LINUX2', 'elastic_session'),
+    ('L-76EF9A4A', 'stream.standard.xlarge', 'AMAZON_LINUX2', 'elastic_session'),
+    ('L-9528F248', 'stream.standard.2xlarge', 'AMAZON_LINUX2', 'elastic_session'),
+    ('L-B2A2DC75', 'stream.standard.small', 'AMAZON_LINUX2', 'elastic_session'),
+    ('L-BF099F8F', 'stream.standard.medium', 'AMAZON_LINUX2', 'elastic_session'),
     ('L-0DD6E81C', 'stream.standard.xlarge', 'UBUNTU_PRO_2404', 'elastic_session'),
     ('L-234D5738', 'stream.standard.large', 'WINDOWS_SERVER_2019', 'app_block_builder'),
     ('L-36A62DB5', 'stream.standard.small', 'WINDOWS_SERVER_2019', 'elastic_session'),

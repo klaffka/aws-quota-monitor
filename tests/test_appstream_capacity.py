@@ -164,7 +164,30 @@ def test_every_instance_and_platform_mapping_matches_catalog_scope():
         assert (kind == 'BYOL') == q['QuotaName'].startswith('BYOL ')
         assert (kind == 'CUSTOM') == (not typ.startswith('stream.'))
         assert q['QuotaName'].endswith(' for fleets' if inventory == 'fleet' else ' for image builders')
-    assert len(PLATFORM_QUOTAS) == 15
     keys = {('appstream2', code) for code, _, _ in CAPACITY_CHECKS}
-    assert len(keys) == len(CAPACITY_CHECKS) == 520
+    assert len(keys) == len(CAPACITY_CHECKS) == 525
     assert keys <= custom_keys()
+
+
+# How the catalog spells each platform the mapping uses. A new platform has to
+# be added here, which is the point: the enum value is not the display name.
+PLATFORM_NAMES = {'AMAZON_LINUX2': 'Amazon Linux 2',
+                  'UBUNTU_PRO_2404': 'Ubuntu Pro 2404',
+                  'WINDOWS_SERVER_2019': 'Windows Server 2019'}
+INVENTORY_PREFIXES = {'elastic_session': 'Max concurrent sessions for Elastic fleets with ',
+                      'app_block_builder': 'Max app block builders with '}
+
+
+def test_every_platform_mapping_matches_its_catalog_name():
+    """A platform row is only as good as the name it claims to describe, and a
+    wrong instance type or platform measures a different fleet entirely."""
+    from scripts.quota_coverage import load_catalog
+
+    catalog = {quota['QuotaCode']: quota.get('QuotaName') or ''
+               for quota in load_catalog('tests/fixtures/quota-catalog-union.json')
+               if quota['ServiceCode'] == 'appstream2'}
+    for code, instance_type, platform, inventory in PLATFORM_QUOTAS:
+        name = catalog[code]
+        assert name.startswith(INVENTORY_PREFIXES[inventory]), code
+        assert name.endswith(f'{instance_type} instance type'), code
+        assert f'{PLATFORM_NAMES[platform]} platform' in name, code
