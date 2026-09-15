@@ -37,7 +37,6 @@ NOT_COLLECTED = {
     'general.utilization_report': 'manual exporter, driven by hand and not by the collector',
     'robomaker': 'botocore ships no robomaker client; the checks stay for its return',
     'sagemaker': 'compatibility wrapper; the collector registers sagemaker_resources',
-    'twinmaker': 'reached through the iottwinmaker entry point, not registered directly',
 }
 
 

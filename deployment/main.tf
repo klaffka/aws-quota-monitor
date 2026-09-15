@@ -458,6 +458,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "apigateway:GetPortal"
           , "ecs:ListClusters"
           , "ecs:ListServices"
+          , "ecs:DescribeServices"
           , "ecs:ListTaskDefinitionFamilies"
           , "ecs:ListTaskDefinitions"
           , "ecs:ListContainerInstances"
