@@ -224,3 +224,24 @@ def test_every_catalog_rate_quota_has_an_excluded_burst_twin():
             if unmeasurable(entries.get(twin, {})) != 'API_BURST':
                 unpaired.append((service, name))
     assert not unpaired, f'rate quotas without a burst twin: {unpaired[:5]}'
+
+
+def test_the_progress_document_reports_the_measured_union_totals():
+    """The union column is reproducible, so the document must not drift from it."""
+    import re
+    from pathlib import Path
+    measured = totals(catalog_coverage(
+        load_catalog('tests/fixtures/quota-catalog-union.json')))
+    document = Path('docs/quota-coverage-progress.md').read_text(encoding='utf-8')
+    for measure in ('total', 'implemented', 'compatibleMetric', 'covered',
+                    'uncovered', 'unmeasurable', 'measurable'):
+        row = re.search(rf'^\| {measure} \| ([\d,]+) \|', document, re.MULTILINE)
+        assert row, f'{measure} is missing from the progress table'
+        assert int(row.group(1).replace(',', '')) == measured[measure], measure
+    share = re.search(r'\*\*([\d.]+)%\*\* of the whole union', document)
+    assert share and float(share.group(1)) == round(
+        measured['covered'] / measured['total'] * 100, 2)
+    measurable = re.search(r'\*\*([\d.]+)%\*\* of the ([\d,]+) quotas', document)
+    assert measurable and float(measurable.group(1)) == round(
+        measured['covered'] / measured['measurable'] * 100, 2)
+    assert int(measurable.group(2).replace(',', '')) == measured['measurable']

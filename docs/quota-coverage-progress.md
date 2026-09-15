@@ -14,6 +14,10 @@ as the S3 `Access Points`, `Lifecycle rules` and `Bucket tags` limits that the
 older export lists. Coverage is therefore measured against the union of both,
 with the single-export figure kept for comparison.
 
+The union column is asserted against the committed catalog by
+`test_the_progress_document_reports_the_measured_union_totals`; the single-export
+column is measured against an untracked export and is kept for comparison only.
+
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
