@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,136 | 1,902 |
+| implemented | 2,163 | 1,922 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,517 | 4,283 |
-| uncovered | 7,564 | 6,115 |
+| covered | 4,544 | 4,303 |
+| uncovered | 7,537 | 6,095 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **37.39%** of the whole union, or
-**51.69%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.61%** of the whole union, or
+**52.00%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -78,6 +78,22 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened four services that were only counting their top-level inventory.
+  AppSync gained Event APIs per Region, API keys and authentication providers
+  per API, functions per pipeline resolver walked through every schema type,
+  channel namespaces per Event API and source API associations per merged API.
+  CodePipeline gained stages and actions per pipeline, actions per stage, the
+  parallel and sequential action counts a stage's run orders imply, active
+  executions per pipeline, custom action types and webhooks. CodeDeploy gained
+  alarms, Auto Scaling groups and triggers per deployment group, deployment
+  groups per ECS service, customer deployment configurations, and concurrent
+  deployments per account and per group, asking AWS to filter by status rather
+  than listing everything. Resilience Hub gained application components and
+  resources on each application's newest version, and concurrent assessments and
+  recommendation templates per account and per application.
+
+  `Minimum actions` and `Minimum stages per pipeline` state a floor rather than
+  a ceiling, so a usage count means nothing against them and they stay open.
 - Added Support permits per account, the last reachable quota in the
   zero-coverage set, and checked every remaining service against the SDK. What
   is left is recorded under `Services with no coverage at all`.

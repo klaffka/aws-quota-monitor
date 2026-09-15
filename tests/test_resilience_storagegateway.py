@@ -6,7 +6,9 @@ from modules.qmchecks.storagegateway import per_gateway
 
 def test_resilience_hub_counts_applications_and_policies():
     ctx = Mock()
-    ctx.call.return_value = [{'id': 'one'}, {'id': 'two'}]
+    ctx.call.return_value = [
+        {'appArn': 'arn:aws:resiliencehub:eu-central-1:123456789012:app/one'},
+        {'appArn': 'arn:aws:resiliencehub:eu-central-1:123456789012:app/two'}]
     assert RESILIENCE_CHECKS[0][2](ctx)['usage'] == 2
     assert RESILIENCE_CHECKS[1][2](ctx)['usage'] == 2
 

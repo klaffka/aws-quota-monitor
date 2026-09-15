@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Deeper AppSync, CodePipeline, CodeDeploy and Resilience Hub measurements
+  beyond their top-level inventories.
 - Support permit measurements.
 - MWAA Serverless, Migration Hub Strategy, Security Agent, Snow Device
   Management, Compute Optimizer automation, DevOps agent, observability
