@@ -207,7 +207,11 @@ CHECKS = [
     ('L-F678F1CE', 'VPCs per Region', lambda c: dict(usage=len(inventory(c, 'describe_vpcs', 'Vpcs')))),
     ('L-A4707A72', 'Internet gateways per Region', lambda c: dict(usage=len(inventory(c, 'describe_internet_gateways', 'InternetGateways')))),
     ('L-45FE3B85', 'Egress-only internet gateways per Region', lambda c: dict(usage=len(inventory(c, 'describe_egress_only_internet_gateways', 'EgressOnlyInternetGateways')))),
-    ('L-DF5E4CA3', 'Network interfaces per Availability Zone', lambda c: grouped(inventory(c, 'describe_network_interfaces', 'NetworkInterfaces'), 'AvailabilityZone', 'AvailabilityZone')),
+    # The catalog defines this quota per Region at account level, so the busiest
+    # Availability Zone is not the usage: the whole Region's interfaces are.
+    ('L-DF5E4CA3', 'Network interfaces per Region',
+     lambda c: dict(usage=len(inventory(c, 'describe_network_interfaces', 'NetworkInterfaces')),
+                    source='ec2:DescribeNetworkInterfaces', method='ACCOUNT_COUNT')),
     ('L-E79EC296', 'VPC security groups per Region', lambda c: dict(usage=len(inventory(c, 'describe_security_groups', 'SecurityGroups')))),
     ('L-1B52E74A', 'Gateway VPC endpoints per Region', lambda c: dict(usage=len(endpoints(c, {'Gateway'})))),
     ('L-DC9F7029', 'Outstanding VPC peering connection requests per VPC', lambda c: peerings(c, True)),
