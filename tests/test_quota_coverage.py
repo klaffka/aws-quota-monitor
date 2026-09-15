@@ -245,3 +245,31 @@ def test_the_progress_document_reports_the_measured_union_totals():
     assert measurable and float(measurable.group(1)) == round(
         measured['covered'] / measured['measurable'] * 100, 2)
     assert int(measurable.group(2).replace(',', '')) == measured['measurable']
+
+
+def timed(code, name, unit, value=1):
+    return {'ServiceCode': 'example', 'QuotaCode': code, 'QuotaName': name,
+            'Period': {'PeriodUnit': unit, 'PeriodValue': value}}
+
+
+def test_a_one_second_period_marks_a_rate_whatever_the_name_says():
+    quotas = [timed('rate', 'Rate of ListMaps API requests', 'SECOND'),
+              timed('hourly', 'Policy generations per day', 'HOUR'),
+              timed('window', 'ACME domain validations per ACME endpoint',
+                    'MINUTE', 5),
+              named('count', 'Cases per domain')]
+    row, = catalog_coverage(quotas, set())
+    assert (row['unmeasurable'], row['measurable']) == (1, 3)
+    assert unmeasurable(quotas[0]) == 'PERIOD_RATE'
+
+
+def test_a_named_rate_keeps_its_wording_reason_over_the_period_rule():
+    # The wording rules run first, so the published per-reason figures stay
+    # comparable when a quota carries both signals.
+    assert unmeasurable(timed('tps', 'DescribeActivations TPS', 'SECOND')) == 'API_RATE'
+
+
+def test_a_covered_per_second_quota_stays_out_of_the_exclusions():
+    row, = catalog_coverage([timed('rate', 'Rate of ListMaps API requests', 'SECOND')],
+                            {('example', 'rate')})
+    assert (row['covered'], row['unmeasurable'], row['measurablePct']) == (1, 0, 100.0)

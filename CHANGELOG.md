@@ -25,6 +25,9 @@ All notable changes to this project are recorded here. Versions follow
 - Support permit measurements.
 - Connect agent status, data table value and queue email address measurements,
   and Pinpoint import job, event campaign and journey activity measurements.
+- A fourth unmeasurable rule that reads the period AWS states for a quota, so
+  the 938 uncovered per-second rate quotas no wording rule matched leave the
+  measurable denominator.
 - MWAA Serverless, Migration Hub Strategy, Security Agent, Snow Device
   Management, Compute Optimizer automation, DevOps agent, observability
   centralization, organizational unit and S3 on Outposts measurements.

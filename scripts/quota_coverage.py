@@ -64,19 +64,38 @@ OPERATION_THROTTLE = re.compile(r'^\S+ throttle limit$', re.IGNORECASE)
 # the pairing against the committed catalog.
 RATE_QUOTA = re.compile(r'rate quota$', re.IGNORECASE)
 
+def _name(quota: dict) -> str:
+    return quota.get('QuotaName') or ''
+
+
+def _per_second(quota: dict) -> bool:
+    """Read the measurement window AWS states for the quota itself.
+
+    A quota whose period is one second is a request rate whatever its name
+    says, which catches the many `Rate of <Operation> API requests` entries
+    that no wording rule matches.
+    """
+    period = quota.get('Period') or {}
+    return (period.get('PeriodUnit'), period.get('PeriodValue')) == ('SECOND', 1)
+
+
 UNMEASURABLE_RULES = (
     # An EC2 request bucket's depth and refill are not observable per account.
-    ('TOKEN_BUCKET', lambda name: name.endswith(('request bucket maximum capacity',
-                                                 'request bucket refill rate'))),
+    ('TOKEN_BUCKET', lambda quota: _name(quota).endswith(
+        ('request bucket maximum capacity', 'request bucket refill rate'))),
     # One-minute CloudWatch sums cannot establish a per-second peak. Where AWS
     # publishes a usage metric for such a quota it counts as covered before
     # these rules are consulted, and no custom check measures one today.
-    ('API_RATE', lambda name: bool(PER_SECOND.search(name))
-                             or bool(OPERATION_THROTTLE.match(name))
-                             or bool(RATE_QUOTA.search(name))),
+    ('API_RATE', lambda quota: bool(PER_SECOND.search(_name(quota)))
+                               or bool(OPERATION_THROTTLE.match(_name(quota)))
+                               or bool(RATE_QUOTA.search(_name(quota)))),
     # Burst allowances are token buckets too, but EFS bursting throughput is a
     # published metric rather than a request bucket.
-    ('API_BURST', lambda name: 'burst' in name.lower() and 'throughput' not in name.lower()),
+    ('API_BURST', lambda quota: 'burst' in _name(quota).lower()
+                                and 'throughput' not in _name(quota).lower()),
+    # Last, so a quota that one of the wording rules already explains keeps
+    # that reason and the published figures stay comparable.
+    ('PERIOD_RATE', _per_second),
 )
 
 
@@ -89,9 +108,8 @@ def unmeasurable(quota: dict) -> str | None:
     them in the denominator makes coverage look permanently unreachable, so
     they are reported separately rather than silently dropped.
     """
-    name = quota.get('QuotaName') or ''
     for reason, matches in UNMEASURABLE_RULES:
-        if matches(name):
+        if matches(quota):
             return reason
     return None
 
