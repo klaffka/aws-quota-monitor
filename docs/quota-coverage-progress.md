@@ -17,10 +17,10 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,211 | 1,960 |
+| implemented | 2,211 | 1,948 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,592 | 4,341 |
-| uncovered | 7,489 | 6,057 |
+| covered | 4,592 | 4,329 |
+| uncovered | 7,489 | 6,069 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
