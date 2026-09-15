@@ -513,70 +513,67 @@ records how far the current AWS APIs reach.
 ## Services with no coverage at all
 
 Every service that reports zero covered quotas has been checked against the SDK.
-15 services with 111 measurable quotas remain, for two distinct reasons.
+13 services with 91 measurable quotas remain, for two distinct reasons.
 
 **No SDK client (80 quotas, 7 services).** `botocore` ships no client for
 `lookoutmetrics` (30), `qt-platform` (15), `simspaceweaver` (14),
-`lookoutvision` (13), `cloudshell` (4), `kiro` (2), `sms` (2) or `eks-mcp` (1).
-There is no call to make, and the collector's own service guard skips them.
+`lookoutvision` (13), `cloudshell` (4), `kiro` (2) or `sms` (2). There is no
+call to make, and the collector's own service guard skips them.
 
-**The API exposes no usable inventory (31 quotas, 8 services).**
+**The API exposes no usable inventory (11 quotas, 6 services).**
 
 | Service | Quotas | What the API gives instead |
 | --- | ---: | --- |
-| `signer` | 19 | every quota is `Rate of <Operation> requests`; see below |
 | `cognito-sync` | 5 | `ListDatasets` needs an identity, so counting datasets per identity means enumerating every identity in every pool |
 | `signin` | 2 | `ListResourcePermissionStatements` returns a statement's `sid` and `condition`, never the policy body the size quota bounds |
 | `account-access` | 1 | `ListEntitlements` requires a mandatory filter naming a role, and no operation lists the roles |
 | `codeguru-reviewer` | 1 | `Allowed Code Reviews` is an entitlement, not the count `ListCodeReviews` returns |
 | `emr-serverless` | 1 | applications report their maximum capacity, never the vCPUs currently in use |
 | `ssm-guiconnect` | 1 | the client has no listing operation at all |
-| `eks-mcp`, `aco-automation`, `supportauthz` | rates | covered by the rules above |
 
-The 19 `signer` quotas are the largest single judgement call. Their names state
-no window, so the `API_RATE` rule deliberately does not match them and they stay
-in the measurable base, holding the reported figure down by roughly two tenths
-of a percent. Matching `Rate of <Operation> requests` would exclude 1,107 quotas
-across 39 services on an inference about AWS's wording; that inference is not
-worth the point it would add.
+`signer` left this list when the `Rate of <Operation> requests` wording became
+an exclusion rule: all 19 of its quotas are request rates, so the service now
+reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-4,081 quotas are measurable and still uncovered. Sorting them by what their
+2,295 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| rate-shaped | 1,979 | a rate the exclusion rules deliberately do not match, because the name states no window; see the note above on `Rate of <Operation> requests` |
-| size or period | 562 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
-| everything else | 1,540 | a genuine inventory that a check could count |
+| countable | 1,606 | a genuine inventory that a check could count |
+| size or period | 602 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
+| rate-shaped | 87 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 
-The 1,540 countable ones are spread thin. The twelve largest holdings:
+The countable ones are spread thin. The twelve largest holdings:
 
 | Service | Catalog | Covered | Uncovered | Unmeasurable | Countable |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| bedrock | 809 | 98 | 711 | 146 | 229 |
-| connect | 361 | 34 | 327 | 0 | 38 |
+| bedrock | 809 | 98 | 711 | 146 | 436 |
+| pinpoint | 132 | 10 | 122 | 52 | 45 |
 | ec2 | 1751 | 187 | 1564 | 1526 | 37 |
-| pinpoint | 132 | 6 | 126 | 52 | 37 |
-| iotcore | 240 | 8 | 232 | 172 | 36 |
-| iot | 179 | 7 | 172 | 97 | 34 |
-| lambda | 70 | 7 | 63 | 7 | 27 |
-| deadline | 32 | 9 | 23 | 0 | 23 |
-| fsx | 30 | 7 | 23 | 0 | 23 |
-| lookoutmetrics | 60 | 0 | 60 | 30 | 23 |
-| medialive | 24 | 2 | 22 | 1 | 21 |
-| license-manager | 25 | 2 | 23 | 0 | 20 |
+| connect | 361 | 37 | 324 | 283 | 35 |
+| resiliencehub | 38 | 8 | 30 | 0 | 23 |
+| iot | 179 | 15 | 164 | 97 | 22 |
+| iotcore | 240 | 16 | 224 | 173 | 22 |
+| iotevents | 26 | 1 | 25 | 3 | 19 |
+| lookoutmetrics | 60 | 0 | 60 | 30 | 19 |
+| mgn | 19 | 1 | 18 | 0 | 18 |
+| omics | 26 | 4 | 22 | 1 | 18 |
+| redshift | 29 | 9 | 20 | 0 | 18 |
 
-Bedrock's 229 dominate the list and are almost entirely per-model input bounds:
-`Batch inference job size (in GB) for <model>`, `Records per batch inference job
-for <model>` and their siblings, one pair per model. They bound a job's input
-rather than an inventory, but a submitted job does carry a size, so they are
-left in the measurable base rather than excluded by rule.
+Bedrock dominates the list, and almost all of its share is per-model: `Records
+per batch inference job for <model>`, `Scheduled batch inference jobs per
+model` and their siblings, one set per model. They bound a job rather than an
+inventory, but a submitted job does carry those values, so they stay in the
+measurable base rather than being excluded by rule.
 
-After Bedrock no service holds more than 38, so each further service is a
-handful of quotas for a full traversal of its API. That is the shape of the
-remaining work: broad rather than deep.
+`lookoutmetrics` and `iotevents` are countable by name only: this SDK ships no
+client for either, so their 38 entries cannot be reached at all. After Bedrock
+no reachable service holds more than 45, so each further service is a handful
+of quotas for a full traversal of its API. That is the shape of the remaining
+work: broad rather than deep.
 
 ## Next investigations
 
