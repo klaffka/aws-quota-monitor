@@ -631,6 +631,29 @@ AWS documents the asynchronous report in
 [StartQuotaUtilizationReport](https://docs.aws.amazon.com/servicequotas/2019-06-24/apireference/API_StartQuotaUtilizationReport.html)
 and [GetQuotaUtilizationReport](https://docs.aws.amazon.com/servicequotas/2019-06-24/apireference/API_GetQuotaUtilizationReport.html).
 
+## Auditing what actually ran
+
+A check that is structurally broken -- a wrong parameter, an operation the SDK
+does not ship -- reports ERROR on every run rather than failing once. The
+collector already records each failure in its `RUN#` item, but until now
+nothing read them back, so a permanent failure was indistinguishable from a
+throttle in the same log line.
+
+`tests/test_check_smoke.py` catches that class before a deploy: it runs every
+registered check against a response generated from botocore's own service
+model and refuses any ERROR. What only shows up live -- denied permissions,
+throttling, a Region where the service is not enabled -- is read afterwards
+from an exported DynamoDB scan:
+
+```sh
+python scripts/coverage_inspector.py data/scan.json --view errors
+python scripts/coverage_inspector.py data/scan.json --view persistent
+```
+
+`errors` groups the newest run per account and Region by `reason_group` and by
+service. `persistent` lists only the quotas that failed in *every* recorded
+run, which is the signature of a defect rather than bad luck.
+
 Reproduce with:
 
 ```sh

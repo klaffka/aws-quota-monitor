@@ -52,3 +52,42 @@ def test_table_keeps_percentages_independent_for_mixed_snapshots():
 
     assert "80.0%" in output and "70.0%" in output
     assert "25.0%" in output, "the second scope must not reuse the first denominator"
+
+
+RUNS = [
+    {"PK": "RUN#account#region", "SK": "TS#2026-01-01", "errors": [
+        "ec2/L-FB451C26: ParamValidationError: Unknown parameter in input: \"OwnerId\"",
+        "sqs/L-1234567: ThrottlingException: Rate exceeded"]},
+    {"PK": "RUN#account#region", "SK": "TS#2026-01-02", "errors": [
+        "ec2/L-FB451C26: ParamValidationError: Unknown parameter in input: \"OwnerId\"",
+        "s3/L-7654321: AccessDeniedException: not authorised"]},
+    {"PK": "COVERAGE#account#region", "SK": "TS#2026-01-02", "ok": 5},
+]
+
+
+def test_persistent_errors_keep_only_the_quotas_that_fail_in_every_run():
+    """A throttle appears once; a wrong parameter appears every single run."""
+    from scripts.coverage_inspector import persistent_errors
+
+    failures = persistent_errors(RUNS)
+
+    assert [key for key, _runs, _reason in failures["account#region"]] == ["ec2/L-FB451C26"]
+    assert failures["account#region"][0][1] == 2
+
+
+def test_the_error_view_groups_the_latest_run_by_reason_and_service():
+    from scripts.coverage_inspector import render_errors
+
+    report = render_errors(RUNS)
+
+    assert "## account#region at 2026-01-02" in report
+    assert "### permission (1)" in report
+    assert "- s3: 1" in report
+    # The older run's throttle is not part of the latest run's report.
+    assert "Rate exceeded" not in report
+
+
+def test_the_views_report_plainly_when_no_run_records_exist():
+    from scripts.coverage_inspector import render_errors, render_persistent
+
+    assert render_errors([]) == render_persistent([]) == "No RUN# records in the input"
