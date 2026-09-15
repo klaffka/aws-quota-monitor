@@ -86,7 +86,7 @@ def test_new_checks_are_registered_catalog_backed_and_match_sdk_parent_shapes():
     catalog = {q['QuotaCode'] for q in json.loads(Path('tests/fixtures/selected-service-quotas.json').read_text())
                if q['ServiceCode'] == SERVICE}
     codes = {code for code, _, _ in CHECKS}
-    assert len(codes) == len(CHECKS) == 27
+    assert len(codes) == len(CHECKS) == 28
     assert codes <= catalog
     assert {(SERVICE, code) for code in codes} <= custom_keys()
     model = boto3.Session()._session.get_service_model(CONTROL)

@@ -1,4 +1,5 @@
 """AgentCore account and parent-scoped quotas from complete API inventories."""
+from datetime import datetime, timedelta
 from functools import partial
 
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
@@ -61,6 +62,24 @@ def active_sessions(ctx, browser):
     return dict(usage=len(sessions), source=f'{SERVICE}:{session_method}', method='ACCOUNT_COUNT')
 
 
+def generated_policies(ctx, days=7):
+    """Count the policy generations inside the quota's rolling window."""
+    window = ctx.now - timedelta(days=days)
+    values = []
+    for engine in inventory(ctx, 'list_policy_engines', 'policyEngines'):
+        identity = engine['policyEngineId']
+        usage = 0
+        for generation in ctx.call(CONTROL, 'list_policy_generations',
+                                   'policyGenerations', policyEngineId=identity):
+            created = generation.get('createdAt')
+            if not isinstance(created, datetime):
+                raise NoData('AgentCore policy generation has no creation time')
+            usage += created >= window
+        values.append((identity, usage, None))
+    return maximum(values, 'AgentCorePolicyEngine',
+                   f'{CONTROL}:ListPolicyGenerations')
+
+
 def rate_limit_configuration(ctx, field):
     values = []
     for gateway in inventory(ctx, 'list_gateways', 'items'):
@@ -114,6 +133,8 @@ CHECKS += [
     ('L-CAF6F552', 'Total concurrent active code interpreter sessions per account', partial(active_sessions, browser=False)),
     ('L-59D3ABC4', 'Entries per rate limit', partial(rate_limit_configuration, field='entries')),
     ('L-F262C8D7', 'Dimension keys per rate limit', partial(rate_limit_configuration, field='dimensionKeys')),
+    ('L-8DE3076E', 'Generated Policies (7 day rolling window) per Policy Engine',
+     generated_policies),
 ]
 
 

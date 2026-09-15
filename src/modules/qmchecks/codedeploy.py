@@ -1,14 +1,17 @@
 """AWS CodeDeploy application, deployment group and deployment quotas.
 
 The duration, timing and traffic-shift quotas bound one deployment's behaviour
-rather than an inventory, and the instance counts a deployment reaches are
-reported per deployment target rather than per account.
+rather than an inventory. Instance counts are read from the deployment targets
+of the running deployments, since only a `Server` deployment consumes them.
 """
 from collections import Counter
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 CODEDEPLOY = 'codedeploy'
 RUNNING_STATES = ['Created', 'Queued', 'InProgress', 'Baking', 'Ready']
+COMPUTE_PLATFORMS = {'Server', 'Lambda', 'ECS'}
+# BatchGetDeployments accepts at most 100 deployment IDs per call.
+BATCH_SIZE = 100
 # AWS ships its own deployment configurations under this prefix.
 BUILT_IN_PREFIX = 'CodeDeployDefault'
 
@@ -115,6 +118,63 @@ def concurrent_deployments_per_group(ctx):
     return maximum(values, 'DeploymentGroup', 'codedeploy:ListDeployments')
 
 
+def _running_server_deployments(ctx):
+    """Yield the running deployments that place instances, with their targets."""
+    running = ctx.call(CODEDEPLOY, 'list_deployments', 'deployments',
+                       includeOnlyStatuses=RUNNING_STATES)
+    for start in range(0, len(running), BATCH_SIZE):
+        batch = running[start:start + BATCH_SIZE]
+        details = ctx.call(CODEDEPLOY, 'batch_get_deployments',
+                           deploymentIds=batch).get('deploymentsInfo')
+        if not isinstance(details, list) or len(details) != len(batch):
+            raise NoData('CodeDeploy did not describe every running deployment')
+        for detail in details:
+            platform = detail.get('computePlatform')
+            if platform is not None and platform not in COMPUTE_PLATFORMS:
+                raise NoData('CodeDeploy deployment has an unknown compute platform')
+            identity = detail.get('deploymentId')
+            if not isinstance(identity, str) or not identity:
+                raise NoData('CodeDeploy deployment is missing its identity')
+            if platform != 'Server':
+                continue
+            targets = ctx.call(CODEDEPLOY, 'list_deployment_targets', 'targetIds',
+                               deploymentId=identity)
+            yield identity, len(targets)
+
+
+def instances_in_running_deployments(ctx):
+    usage = sum(count for _, count in _running_server_deployments(ctx))
+    return dict(usage=usage,
+                source='codedeploy:ListDeployments+ListDeploymentTargets',
+                method='ACCOUNT_COUNT')
+
+
+def instances_per_deployment(ctx):
+    return maximum(((identity, count, None)
+                    for identity, count in _running_server_deployments(ctx)),
+                   'Deployment',
+                   'codedeploy:ListDeployments+ListDeploymentTargets')
+
+
+def listeners_per_traffic_route(ctx):
+    values = []
+    for identity, detail in _group_details(ctx):
+        pairs = (detail.get('loadBalancerInfo') or {}).get('targetGroupPairInfoList')
+        if pairs is None:
+            continue
+        if not isinstance(pairs, list):
+            raise NoData('CodeDeploy deployment group has an invalid target group pair list')
+        for index, pair in enumerate(pairs):
+            for route in ('prodTrafficRoute', 'testTrafficRoute'):
+                listeners = (pair.get(route) or {}).get('listenerArns')
+                if listeners is None:
+                    continue
+                if not isinstance(listeners, list):
+                    raise NoData('CodeDeploy traffic route has an invalid listener list')
+                values.append((f'{identity}#{index}/{route}', len(listeners), None))
+    return maximum(values, 'DeploymentGroup', 'codedeploy:GetDeploymentGroup')
+
+
 CHECKS = [
     ('L-3F19B6A5', 'Applications associated per account per region',
      lambda ctx: dict(usage=len(applications(ctx)),
@@ -133,6 +193,16 @@ CHECKS = [
     ('L-AB125F0B', 'Concurrent deployments per account', concurrent_deployments),
     ('L-A8B8B32B', 'Concurrent deployments per deployment group',
      concurrent_deployments_per_group),
+    ('L-B0CB7B38', 'GitHub connection tokens per account',
+     lambda ctx: dict(usage=len(ctx.call(CODEDEPLOY, 'list_git_hub_account_token_names',
+                                         'tokenNameList')),
+                      source='codedeploy:ListGitHubAccountTokenNames',
+                      method='ACCOUNT_COUNT')),
+    ('L-464411D9', 'Number of instances used by concurrent deployments that are in '
+                   'progress per account', instances_in_running_deployments),
+    ('L-6BCCFC85', 'Instances count per deployment', instances_per_deployment),
+    ('L-C77AFF36', 'Number of listeners for a traffic route during an Amazon ECS '
+                   'deployment', listeners_per_traffic_route),
 ]
 
 

@@ -36,6 +36,8 @@ All notable changes to this project are recorded here. Versions follow
 - WAFv2 capacity unit, token domain, rate-based statement, custom body and
   custom header measurements, read from the full web ACL and rule group.
 - Service Catalog portfolio, product, TagOption and AppRegistry measurements.
+- CodeDeploy running-deployment instance, traffic route listener and GitHub
+  token measurements, and the AgentCore generated-policy rolling window.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,671 uncovered rate quotas leave the measurable denominator.
