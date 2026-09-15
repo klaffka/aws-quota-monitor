@@ -537,14 +537,14 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,295 quotas are measurable and still uncovered. Sorting them by what their
+2,218 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 1,606 | a genuine inventory that a check could count |
-| size or period | 602 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
-| rate-shaped | 87 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
+| countable | 1,549 | a genuine inventory that a check could count |
+| size or period | 599 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
+| rate-shaped | 70 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 
 The countable ones are spread thin. The twelve largest holdings:
 
@@ -554,26 +554,34 @@ The countable ones are spread thin. The twelve largest holdings:
 | pinpoint | 132 | 10 | 122 | 52 | 45 |
 | ec2 | 1751 | 187 | 1564 | 1526 | 37 |
 | connect | 361 | 37 | 324 | 283 | 35 |
-| resiliencehub | 38 | 8 | 30 | 0 | 23 |
-| iot | 179 | 15 | 164 | 97 | 22 |
+| iot | 179 | 15 | 164 | 112 | 22 |
 | iotcore | 240 | 16 | 224 | 173 | 22 |
 | iotevents | 26 | 1 | 25 | 3 | 19 |
 | lookoutmetrics | 60 | 0 | 60 | 30 | 19 |
-| mgn | 19 | 1 | 18 | 0 | 18 |
-| omics | 26 | 4 | 22 | 1 | 18 |
-| redshift | 29 | 9 | 20 | 0 | 18 |
+| bedrock-agentcore | 199 | 28 | 171 | 134 | 16 |
+| deadline | 32 | 16 | 16 | 0 | 16 |
+| servicecatalog | 20 | 4 | 16 | 0 | 16 |
+| codedeploy | 28 | 9 | 19 | 0 | 15 |
 
-Bedrock dominates the list, and almost all of its share is per-model: `Records
-per batch inference job for <model>`, `Scheduled batch inference jobs per
-model` and their siblings, one set per model. They bound a job rather than an
-inventory, but a submitted job does carry those values, so they stay in the
-measurable base rather than being excluded by rule.
+"Countable" classifies the name, not the reach of the API, and the four largest
+holdings are all blocked behind that distinction:
 
-`lookoutmetrics` and `iotevents` are countable by name only: this SDK ships no
-client for either, so their 38 entries cannot be reached at all. After Bedrock
-no reachable service holds more than 45, so each further service is a handful
-of quotas for a full traversal of its API. That is the shape of the remaining
-work: broad rather than deep.
+- **Bedrock (436)** is per-model: `Records per batch inference job for <model>`,
+  `Model units per provisioned model for <model>` and their siblings, one set
+  per model. Reaching them needs the same fixed quota-code-to-model mapping
+  `bedrock_batch.py` keeps for the batch job quotas, and that mapping can only
+  be extended against AWS's own model list, never inferred from a display name.
+- **Pinpoint (45)** is almost entirely per-request: attribute counts, template
+  character counts and payload sizes that exist only while a call is in flight.
+- **Connect (35)** is workforce management — staffing groups, shift profiles,
+  forecast groups, schedules and capacity plans. This SDK ships no operation
+  for any of them; `connect` has no `list_staffing_groups`, `list_schedules` or
+  equivalent.
+- **iotevents (19)** and **lookoutmetrics (19)** have no client at all.
+
+After those, no reachable service holds more than 22, so each further service is
+a handful of quotas for a full traversal of its API. That is the shape of the
+remaining work: broad rather than deep.
 
 ## Next investigations
 
