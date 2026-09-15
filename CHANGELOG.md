@@ -35,6 +35,7 @@ All notable changes to this project are recorded here. Versions follow
   restore-access measurements.
 - WAFv2 capacity unit, token domain, rate-based statement, custom body and
   custom header measurements, read from the full web ACL and rule group.
+- Service Catalog portfolio, product, TagOption and AppRegistry measurements.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,671 uncovered rate quotas leave the measurable denominator.
@@ -125,6 +126,8 @@ All notable changes to this project are recorded here. Versions follow
   and called the nonexistent `GetJourneys`; projects were also read unpaginated.
 - The Application Migration Service application count called the nonexistent
   `DescribeApplications`.
+- Paginated calls stopped after the first page whenever an API returns
+  `NextPageToken` and takes it back as `PageToken`, as Service Catalog does.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

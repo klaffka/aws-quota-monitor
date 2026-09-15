@@ -19,7 +19,9 @@ def test_servicecatalog_counts_paginated_portfolios_and_products():
     ctx = Mock()
     ctx.call.side_effect = [
         [{'Id': 'portfolio-1'}],
-        [{'ProductId': 'product-1'}, {'ProductId': 'product-2'}],
+        [{'ProductViewSummary': {'ProductId': 'product-1'}},
+         {'ProductViewSummary': {'ProductId': 'product-2'}}],
     ]
-    assert CHECKS[0][2](ctx)['usage'] == 1
-    assert CHECKS[1][2](ctx)['usage'] == 2
+    by_code = {code: check for code, _, check in CHECKS}
+    assert by_code['L-C6458716'](ctx)['usage'] == 1
+    assert by_code['L-764CF6A1'](ctx)['usage'] == 2

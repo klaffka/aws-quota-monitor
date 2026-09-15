@@ -22,3 +22,21 @@ def test_the_call_cache_accepts_datetime_arguments():
                           startTime=moment, endTime=moment)
         assert first == second == [{'taskId': 't1'}]
         stub.assert_no_pending_responses()
+
+
+def test_paginate_follows_the_service_catalog_page_token():
+    """NextPageToken comes back as PageToken; a missed page undercounts silently."""
+    from unittest.mock import Mock
+
+    from modules.qmcore.aws import paginate
+
+    client = Mock()
+    client.can_paginate.return_value = False
+    client.list_portfolio_access.side_effect = [
+        {'AccountIds': ['111111111111'], 'NextPageToken': 'next'},
+        {'AccountIds': ['222222222222']},
+    ]
+    assert paginate(client, 'list_portfolio_access', 'AccountIds',
+                    PortfolioId='port-1') == ['111111111111', '222222222222']
+    assert client.list_portfolio_access.call_args.kwargs == {
+        'PortfolioId': 'port-1', 'PageToken': 'next'}

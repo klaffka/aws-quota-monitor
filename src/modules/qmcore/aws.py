@@ -33,7 +33,8 @@ def paginate(client, method, key, **kwargs):
         page = getattr(client, method)(**kwargs)
         result.extend(page.get(key, []))
         token = (page.get('NextToken') or page.get('nextToken') or page.get('NextMarker')
-                 or page.get('Marker') or page.get('position'))
+                 or page.get('Marker') or page.get('NextPageToken')
+                 or page.get('position'))
         if not token:
             return result
         if token in seen:
@@ -47,6 +48,9 @@ def paginate(client, method, key, **kwargs):
             kwargs['NextMarker'] = token
         elif 'Marker' in page:
             kwargs['Marker'] = token
+        elif 'NextPageToken' in page:
+            # Service Catalog returns NextPageToken but takes it back as PageToken.
+            kwargs['PageToken'] = token
         else:
             # API Gateway v1 uses the lower-case ``position`` cursor.
             kwargs['position'] = token
