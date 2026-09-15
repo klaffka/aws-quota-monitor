@@ -25,21 +25,21 @@ column is measured against an untracked export and is kept for comparison only.
 | compatibleMetric | 2,535 | 2,535 |
 | covered | 4,850 | 4,457 |
 | uncovered | 7,231 | 5,941 |
-| unmeasurable | 4,998 | 3,055 |
-| measurable | 7,083 | 7,343 |
+| unmeasurable | 5,013 | 3,055 |
+| measurable | 7,068 | 7,343 |
 
 Implemented measurement availability: **40.15%** of the whole union, or
-**68.47%** of the 7,083 quotas whose usage can be counted at all.
+**68.62%** of the 7,068 quotas whose usage can be counted at all.
 
-4,998 quotas are excluded from the second denominator by four rules in
+5,013 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
 
 | Reason | Quotas | Rule |
 | --- | ---: | --- |
 | `TOKEN_BUCKET` | 1,648 | `... request bucket maximum capacity` / `... refill rate`, `<Operation> throttle token bucket size`, a name ending in `bucket refill rate`, or any name containing `replenish` |
-| `API_RATE` | 3,047 | name contains `TPS` as a word, `per second` or `throttle rate`, is exactly `<Operation> throttle limit`, ends in `rate quota`, or starts with `Rate of` / `Request rate for` without naming a longer window |
+| `API_RATE` | 3,063 | name contains `TPS` as a word, `per second` or `throttle rate`, is exactly `<Operation> throttle limit`, `<Operation> API throttle limit` or `<Operation> rate`, ends in `rate quota`, or starts with `Rate of` / `Request rate for` without naming a longer window |
 | `API_BURST` | 166 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
-| `PERIOD_RATE` | 137 | the catalog states the quota's period as one second |
+| `PERIOD_RATE` | 136 | the catalog states the quota's period as one second |
 
 A bucket's occupancy and a per-second peak are not derivable from one-minute
 CloudWatch sums, so these are not a matter of writing further checks. The rules
@@ -54,7 +54,7 @@ entry names one today.
 `PERIOD_RATE` is the only rule that does not read the quota's name. AWS
 publishes the measurement window in the catalog entry, and a period of one
 second says the quota is a request rate however it is worded. The wording rules
-run first, so it is left with the 137 per-second quotas whose names give no
+run first, so it is left with the 136 per-second quotas whose names give no
 sign of being rates at all.
 
 The rules cost nothing to widen and instantly flatter the figure, so both

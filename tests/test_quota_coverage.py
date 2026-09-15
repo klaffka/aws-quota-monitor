@@ -327,3 +327,13 @@ def test_a_replenishment_rate_is_a_token_bucket_refill():
     row, = catalog_coverage(quotas, set())
     assert (row['unmeasurable'], row['measurable']) == (2, 1)
     assert unmeasurable(quotas[0]) == 'TOKEN_BUCKET'
+
+
+def test_bare_operation_rates_and_api_throttle_limits_are_excluded():
+    quotas = [named('a', 'DescribeIndex rate'),
+              named('b', 'CloseTunnel API throttle limit'),
+              named('c', 'Job execution roll out rate'),
+              named('d', 'Rules per account')]
+    row, = catalog_coverage(quotas, set())
+    # Only a single operation name may precede the bare word "rate".
+    assert (row['unmeasurable'], row['measurable']) == (2, 2)

@@ -57,7 +57,10 @@ def normalize_quota(quota: dict) -> dict:
 PER_SECOND = re.compile(r'\bTPS\b|per second|throttle rate', re.IGNORECASE)
 # Anchored, because Textract uses "throttle limit for max number of adapters per
 # account" and similar wording for quotas that really are resource counts.
-OPERATION_THROTTLE = re.compile(r'^\S+ throttle limit$', re.IGNORECASE)
+OPERATION_THROTTLE = re.compile(r'^\S+(?: API)? throttle limit$', re.IGNORECASE)
+# IoT writes a bare "<Operation> rate"; one token before the word keeps the
+# rule on operation names and off wordings like "Job execution roll out rate".
+OPERATION_RATE = re.compile(r'^\S+ rate$', re.IGNORECASE)
 # Every "<Operation> rate quota" in the catalog has a matching "<Operation>
 # burst quota", which the burst rule already excludes: the pair is the refill
 # rate and the depth of one token bucket. tests/test_quota_coverage.py asserts
@@ -103,6 +106,7 @@ UNMEASURABLE_RULES = (
     ('API_RATE', lambda quota: bool(PER_SECOND.search(_name(quota)))
                                or bool(OPERATION_THROTTLE.match(_name(quota)))
                                or bool(RATE_QUOTA.search(_name(quota)))
+                               or bool(OPERATION_RATE.match(_name(quota)))
                                or (bool(RATE_PREFIX.match(_name(quota)))
                                    and not LONGER_WINDOW.search(_name(quota)))),
     # Burst allowances are token buckets too, but EFS bursting throughput is a
