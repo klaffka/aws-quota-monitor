@@ -72,6 +72,9 @@ LONGER_WINDOW = re.compile(r'\bper (minute|hour|day|week|month|year)\b', re.IGNO
 # size" and ECS its refill as "... (or bucket refill rate)".
 BUCKET_DEPTH = re.compile(r'throttle token bucket size$|bucket refill rate\)?$',
                           re.IGNORECASE)
+# EMR words the same thing as "Replenishment rate of <Operation> calls" and
+# "The maximum rate at which your bucket replenishes ...".
+REPLENISHMENT = re.compile(r'replenish', re.IGNORECASE)
 
 def _name(quota: dict) -> str:
     return quota.get('QuotaName') or ''
@@ -92,7 +95,8 @@ UNMEASURABLE_RULES = (
     # An EC2 request bucket's depth and refill are not observable per account.
     ('TOKEN_BUCKET', lambda quota: _name(quota).endswith(
         ('request bucket maximum capacity', 'request bucket refill rate'))
-        or bool(BUCKET_DEPTH.search(_name(quota)))),
+        or bool(BUCKET_DEPTH.search(_name(quota)))
+        or bool(REPLENISHMENT.search(_name(quota)))),
     # One-minute CloudWatch sums cannot establish a per-second peak. Where AWS
     # publishes a usage metric for such a quota it counts as covered before
     # these rules are consulted, and no custom check measures one today.

@@ -27,7 +27,7 @@ All notable changes to this project are recorded here. Versions follow
   and Pinpoint import job, event campaign and journey activity measurements.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
-  forms, so 1,605 uncovered rate quotas leave the measurable denominator.
+  forms, so 1,656 uncovered rate quotas leave the measurable denominator.
 - MWAA Serverless, Migration Hub Strategy, Security Agent, Snow Device
   Management, Compute Optimizer automation, DevOps agent, observability
   centralization, organizational unit and S3 on Outposts measurements.

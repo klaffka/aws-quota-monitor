@@ -317,3 +317,13 @@ def test_the_rule_table_reports_the_measured_reason_counts():
         assert row, f'{reason} is missing from the rule table'
         assert int(row.group(1).replace(',', '')) == count, reason
     assert len(re.findall(r'^\| `[A-Z_]+` \| ', document, re.MULTILINE)) == len(measured)
+
+
+def test_a_replenishment_rate_is_a_token_bucket_refill():
+    quotas = [named('emr', 'Replenishment rate of RunJobFlow calls'),
+              named('bucket', 'The maximum rate at which your bucket replenishes '
+                              'for all EMR operations.'),
+              named('count', 'Clusters per account')]
+    row, = catalog_coverage(quotas, set())
+    assert (row['unmeasurable'], row['measurable']) == (2, 1)
+    assert unmeasurable(quotas[0]) == 'TOKEN_BUCKET'

@@ -254,7 +254,7 @@ one-minute CloudWatch sums, so no additional check would ever cover them.
 
 The [current coverage audit](docs/quota-coverage-progress.md) records 4,765 of
 12,081 catalog quotas with an implemented measurement method (39.44%), including
-official metrics, which is 66.79% of the 7,134 measurable quotas. It also lists
+official metrics, which is 67.27% of the 7,083 measurable quotas. It also lists
 the largest remaining gaps; near-total coverage has not yet been achieved.
 
 Clean Rooms ML has methods for 140/148 catalog quotas (94.6%). Training-instance
