@@ -47,7 +47,7 @@ def paginate(client, method, key, **kwargs):
         result.extend(page.get(key, []))
         token = (page.get('NextToken') or page.get('nextToken') or page.get('NextMarker')
                  or page.get('Marker') or page.get('NextPageToken')
-                 or page.get('position'))
+                 or page.get('nextPageToken') or page.get('position'))
         if not token:
             return result
         if token in seen:
@@ -64,6 +64,9 @@ def paginate(client, method, key, **kwargs):
         elif 'NextPageToken' in page:
             # Service Catalog returns NextPageToken but takes it back as PageToken.
             kwargs['PageToken'] = token
+        elif 'nextPageToken' in page:
+            # Lightsail returns nextPageToken but takes it back as pageToken.
+            kwargs['pageToken'] = token
         else:
             # API Gateway v1 uses the lower-case ``position`` cursor.
             kwargs['position'] = token

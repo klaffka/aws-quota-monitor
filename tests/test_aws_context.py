@@ -40,3 +40,20 @@ def test_paginate_follows_the_service_catalog_page_token():
                     PortfolioId='port-1') == ['111111111111', '222222222222']
     assert client.list_portfolio_access.call_args.kwargs == {
         'PortfolioId': 'port-1', 'PageToken': 'next'}
+
+
+def test_paginate_follows_the_lightsail_next_page_token():
+    """Lightsail spells the cursor nextPageToken; page two was dropped silently."""
+    from unittest.mock import Mock
+
+    from modules.qmcore.aws import paginate
+
+    client = Mock()
+    client.can_paginate.return_value = False
+    client.get_distributions.side_effect = [
+        {'distributions': [{'name': 'one'}], 'nextPageToken': 'next'},
+        {'distributions': [{'name': 'two'}]},
+    ]
+    assert paginate(client, 'get_distributions', 'distributions') == [
+        {'name': 'one'}, {'name': 'two'}]
+    assert client.get_distributions.call_args.kwargs == {'pageToken': 'next'}
