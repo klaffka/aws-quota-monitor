@@ -90,6 +90,26 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Audited every check's call sites against botocore and fixed what the audit
+  found: EFS and EMR addressed their Service Quotas service codes (`elastic‑
+  filesystem`, `elasticmapreduce`) as SDK clients, Keyspaces addressed a
+  `cassandra` client that does not exist and listed tables without the keyspace
+  they require, Internet Monitor called a `ListMonitoredResources` operation the
+  SDK has never had, and twelve listings read a response key their operation
+  does not return, reporting zero usage with an OK status. Three tests now walk
+  every `ctx.call` in `qmchecks`: the service must be a client botocore ships,
+  the operation must exist on it, and the paginated key must be a member of the
+  response. Evidently, IoT Analytics, IoT Events, QLDB and RoboMaker have no
+  client at all any more and report as unsupported through one shared helper.
+- Fixed 60 IAM actions that named SDK clients rather than service prefixes
+  (`voice-id` for `voiceid`, `amp` for `aps`, `connectcases` for `cases`,
+  `servicecatalog-appregistry` for `servicecatalog` and more). Each would have
+  been denied at run time. Duplicate grants inside a statement are gone, and a
+  test compares every prefix with botocore's signing name, with CloudWatch and
+  IAM Identity Center documented as the two exceptions.
+- Taught the shared paginator the `PageToken` cursor: an API that returns
+  `NextPageToken` and takes it back under a different name silently stopped
+  after its first page, which is how every Service Catalog listing behaved.
 - Deepened AWS IoT from 7 to 15 catalog quotas and IoT Core from 7 to 15.
   Jobs are filtered server side by status and target selection; security profile
   behaviours come from the profile detail and the profiles per target are
