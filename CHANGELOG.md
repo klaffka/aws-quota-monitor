@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Complete DAX and License Manager user subscription coverage, and Textract
+  in-progress adapter version measurements.
 - AWS RTB Fabric gateway, link and routing measurements.
 - Complete Telco Network Builder and Interconnect coverage.
 - Amazon Chime SDK identity, messaging, voice and media pipeline measurements.

@@ -186,3 +186,14 @@ def test_throttle_rates_are_excluded_like_other_per_second_limits():
     row, = catalog_coverage(quotas, set())
     # An unqualified ingestion rate keeps no stated window, so it stays measurable.
     assert (row['unmeasurable'], row['measurable']) == (3, 1)
+
+
+def test_operation_throttle_limits_are_excluded_but_named_counts_are_not():
+    quotas = [named('a', 'ListDevices throttle limit'),
+              named('b', 'CreateAdapter throttle limit for max number of adapters '
+                         'per account'),
+              named('c', 'Async DocumentAnalysis throttle limit for max number of '
+                         'concurrent jobs')]
+    row, = catalog_coverage(quotas, set())
+    # Only the bare "<Operation> throttle limit" wording names a rate.
+    assert (row['unmeasurable'], row['measurable']) == (1, 2)

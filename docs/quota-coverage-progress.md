@@ -17,23 +17,23 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,075 | 1,881 |
+| implemented | 2,085 | 1,882 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,456 | 4,262 |
-| uncovered | 7,625 | 6,136 |
-| unmeasurable | 3,214 | 2,976 |
-| measurable | 8,867 | 7,422 |
+| covered | 4,466 | 4,263 |
+| uncovered | 7,615 | 6,135 |
+| unmeasurable | 3,253 | 2,976 |
+| measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **36.88%** of the whole union, or
-**50.25%** of the 8,867 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.97%** of the whole union, or
+**50.59%** of the 8,828 quotas whose usage can be counted at all.
 
-3,214 quotas are excluded from the second denominator by three rules in
+3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
 
 | Reason | Quotas | Rule |
 | --- | ---: | --- |
 | `TOKEN_BUCKET` | 1,526 | `... request bucket maximum capacity` / `... refill rate`, all EC2 |
-| `API_RATE` | 1,489 | name contains `TPS` as a word, `per second`, or `throttle rate` |
+| `API_RATE` | 1,528 | name contains `TPS` as a word, `per second` or `throttle rate`, or is exactly `<Operation> throttle limit` |
 | `API_BURST` | 199 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
 
 A bucket's occupancy and a per-second peak are not derivable from one-minute
@@ -55,7 +55,11 @@ requires the same review as any other change to the number.
 being entirely unmeasurable. `throttle rate` was added for the same reason after
 `emr-containers` (21 of 21 quotas), `aco-automation` (23 of 24) and
 `lookoutmetrics` (30) turned out to name their rate limits that way; the wording
-covers 215 quotas across ten services and none of them is covered today.
+covers 215 quotas across ten services and none of them is covered today. The
+`<Operation> throttle limit` form is anchored on purpose: Textract writes
+`CreateAdapter throttle limit for max number of adapters per account` for a
+quota that really is a resource count, and a loose `throttle limit` rule would
+have excluded six countable Textract quotas.
 
 Custom and compatible metric counts overlap; covered is their union.
 `tests/fixtures/coverage-baseline.json` holds these totals and CI fails on any
@@ -63,6 +67,15 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Completed Amazon DynamoDB Accelerator at 5 of 5 catalog quotas (total nodes,
+  nodes per cluster from the `TotalNodes` each cluster reports, parameter groups,
+  subnet groups and subnets per subnet group) and AWS License Manager user
+  subscriptions at 4 of 4 (user-based subscriptions for each of the three
+  products and instance associations per user). Product names are compared with
+  spacing and casing removed, so `VISUAL_STUDIO_ENTERPRISE` and
+  `Visual Studio Enterprise` count towards the same quota.
+- Added Textract in-progress adapter versions per account, counting only
+  versions still in `CREATION_IN_PROGRESS`.
 - Measured AWS RTB Fabric at 5 of 11 measurable catalog quotas: gateways across
   both the requester and responder listings, links and certificate associations
   per gateway, routing rules per link, and flow modules per link from the link
