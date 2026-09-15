@@ -149,6 +149,112 @@ def dedicated_hosts(ctx, family):
                 meta={'instanceFamily': family})
 
 
+def multicast_domains(ctx):
+    """Return each multicast domain with the transit gateway that owns it."""
+    found = {}
+    for domain in ctx.call('ec2', 'describe_transit_gateway_multicast_domains',
+                           'TransitGatewayMulticastDomains'):
+        identity = domain.get('TransitGatewayMulticastDomainId')
+        gateway = domain.get('TransitGatewayId')
+        if not identity or not gateway:
+            raise NoData('Multicast domain is missing its identity or gateway')
+        if domain.get('State') == 'deleted':
+            continue
+        found[identity] = gateway
+    return found
+
+
+def multicast_domains_per_gateway(ctx):
+    counts = {}
+    for gateway in multicast_domains(ctx).values():
+        counts[gateway] = counts.get(gateway, 0) + 1
+    return maximum(((gateway, count, None) for gateway, count in counts.items()),
+                   'TransitGateway',
+                   'ec2:DescribeTransitGatewayMulticastDomains')
+
+
+def multicast_groups(ctx):
+    """Yield every multicast group entry with the domain it belongs to."""
+    for identity, gateway in multicast_domains(ctx).items():
+        for group in ctx.call('ec2', 'search_transit_gateway_multicast_groups',
+                              'MulticastGroups',
+                              TransitGatewayMulticastDomainId=identity):
+            address = group.get('GroupIpAddress')
+            if not address:
+                raise NoData('Multicast group entry has no group address')
+            yield identity, gateway, address, group
+
+
+def _group_members(field):
+    """Count the sources or the members of the busiest multicast group."""
+    def check(ctx):
+        counts = {}
+        for identity, _, address, group in multicast_groups(ctx):
+            if group.get(field):
+                key = f'{identity}/{address}'
+                counts[key] = counts.get(key, 0) + 1
+        return maximum(((key, count, None) for key, count in counts.items()),
+                       'TransitGatewayMulticastGroup',
+                       'ec2:SearchTransitGatewayMulticastGroups')
+    return check
+
+
+def multicast_interfaces_per_gateway(ctx):
+    interfaces = {}
+    for _, gateway, _, group in multicast_groups(ctx):
+        interface = group.get('NetworkInterfaceId')
+        if interface:
+            interfaces.setdefault(gateway, set()).add(interface)
+    return maximum(((gateway, len(found), None)
+                    for gateway, found in interfaces.items()),
+                   'TransitGateway',
+                   'ec2:SearchTransitGatewayMulticastGroups')
+
+
+def multicast_associations_per_vpc(ctx):
+    counts = {}
+    for identity in multicast_domains(ctx):
+        for association in ctx.call(
+                'ec2', 'get_transit_gateway_multicast_domain_associations',
+                'MulticastDomainAssociations',
+                TransitGatewayMulticastDomainId=identity):
+            if association.get('ResourceType') != 'vpc':
+                continue
+            vpc = association.get('ResourceId')
+            if not vpc:
+                raise NoData('Multicast domain association has no resource')
+            counts[vpc] = counts.get(vpc, 0) + 1
+    return maximum(((vpc, count, None) for vpc, count in counts.items()),
+                   'Vpc', 'ec2:GetTransitGatewayMulticastDomainAssociations')
+
+
+def transit_gateway_attachments(ctx, resource_type):
+    """Group live transit gateway attachments of one kind by both ends."""
+    per_gateway, per_resource = {}, {}
+    for attachment in ctx.call('ec2', 'describe_transit_gateway_attachments',
+                               'TransitGatewayAttachments'):
+        if attachment.get('State') in {'deleted', 'deleting', 'failed', 'rejected'}:
+            continue
+        if attachment.get('ResourceType') != resource_type:
+            continue
+        gateway, resource = (attachment.get('TransitGatewayId'),
+                             attachment.get('ResourceId'))
+        if not gateway or not resource:
+            raise NoData('Transit gateway attachment is missing an endpoint')
+        per_gateway[gateway] = per_gateway.get(gateway, 0) + 1
+        per_resource[resource] = per_resource.get(resource, 0) + 1
+    return per_gateway, per_resource
+
+
+def _attachments(resource_type, side, resource_label):
+    def check(ctx):
+        per_gateway, per_resource = transit_gateway_attachments(ctx, resource_type)
+        counts = per_gateway if side == 'gateway' else per_resource
+        return maximum(((key, count, None) for key, count in counts.items()),
+                       resource_label, 'ec2:DescribeTransitGatewayAttachments')
+    return check
+
+
 CHECKS = [
     ('L-B665C33B', 'AMIs', ami_count),
     ('L-0E3CBAB9', 'Public AMIs', public_ami_count),
@@ -171,6 +277,28 @@ CHECKS = [
     ('L-B91E5754', 'VPN connections per VGW', vpn_connections_per_vgw),
     ('L-2C8F52B3', 'Concurrent P4d Capacity Blocks per account', lambda c: capacity_blocks(c, 'p4d.24xlarge')),
     ('L-CFF3E941', 'Concurrent P4de Capacity Blocks per account', lambda c: capacity_blocks(c, 'p4de.24xlarge')),
+    ('L-5D439CF7', 'Verified Access Endpoints',
+     lambda c: verified_access_count(c, 'describe_verified_access_endpoints',
+                                     'VerifiedAccessEndpoints')),
+    ('L-8FBBDF0C', 'Amazon FPGA images (AFIs)',
+     lambda c: dict(usage=len(c.call('ec2', 'describe_fpga_images', 'FpgaImages',
+                                     Owners=['self'])),
+                    source='ec2:DescribeFpgaImages', method='ACCOUNT_COUNT')),
+    ('L-31775423', 'Multicast domains per transit gateway',
+     multicast_domains_per_gateway),
+    ('L-4F2F99E3', 'Sources per transit gateway multicast group',
+     _group_members('GroupSource')),
+    ('L-C768F2D6', 'Members per transit gateway multicast group',
+     _group_members('GroupMember')),
+    ('L-C673935A', 'Multicast Network Interfaces per transit gateway',
+     multicast_interfaces_per_gateway),
+    ('L-9F8FA74B', 'Multicast domain associations per VPC',
+     multicast_associations_per_vpc),
+    ('L-350B2172', 'Direct Connect gateways per transit gateway',
+     _attachments('direct-connect-gateway', 'gateway', 'TransitGateway')),
+    ('L-6B192186', 'Transit gateways per Direct Connect Gateway',
+     _attachments('direct-connect-gateway', 'resource', 'DirectConnectGateway')),
+    ('L-6DA43717', 'Attachments per VPC', _attachments('vpc', 'resource', 'Vpc')),
 ]
 
 HOST_CHECKS = [(code, f'Running Dedicated {family} Hosts', partial(dedicated_hosts, family=family))

@@ -42,6 +42,9 @@ All notable changes to this project are recorded here. Versions follow
 - WAF Classic inventory and condition-depth measurements: rules, rate-based
   rules, geo match sets, the filters of every match condition type, and logging
   destinations per web ACL.
+- EC2 transit gateway multicast domain, group, interface and association
+  measurements, Direct Connect and VPC attachment counts from both ends, and
+  Verified Access endpoint and FPGA image counts.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,671 uncovered rate quotas leave the measurable denominator.
