@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- CodeBuild concurrent build, project tag, VPC and timeout measurements.
 - Deeper AppSync, CodePipeline, CodeDeploy and Resilience Hub measurements
   beyond their top-level inventories.
 - Support permit measurements.

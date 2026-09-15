@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,163 | 1,922 |
+| implemented | 2,193 | 1,948 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,544 | 4,303 |
-| uncovered | 7,537 | 6,095 |
+| covered | 4,574 | 4,329 |
+| uncovered | 7,507 | 6,069 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **37.61%** of the whole union, or
-**52.00%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.86%** of the whole union, or
+**52.34%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -78,6 +78,14 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured CodeBuild's 26 concurrent build quotas from one traversal. Each
+  quota names an environment type and a compute size, so the running builds are
+  grouped by that pair and every quota reads its own cell. The scan is bounded
+  at 1,000 build ids, newest first, which a build cannot outlive given
+  CodeBuild's eight-hour maximum timeout; a build still running in the last
+  batch scanned raises `NoData` rather than reporting a possibly truncated
+  count. Tags, VPC security groups, VPC subnets and the configured build timeout
+  come from the project details in the same pass.
 - Deepened four services that were only counting their top-level inventory.
   AppSync gained Event APIs per Region, API keys and authentication providers
   per API, functions per pipeline resolver walked through every schema type,

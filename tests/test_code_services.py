@@ -8,7 +8,9 @@ from modules.qmchecks.logs import CHECKS as LOGS
 
 def test_codebuild_pipeline_and_logs_counts():
     ctx = Mock()
-    ctx.call.side_effect = [[{'id': 'project'}], [{'name': 'pipeline'}], [{'logGroupName': 'group'}]]
+    # CodeBuild lists project names; the others list objects.
+    ctx.call.side_effect = [['project'], [{'name': 'pipeline'}],
+                            [{'logGroupName': 'group'}]]
     assert BUILD[0][2](ctx)['usage'] == 1
     assert PIPELINE[0][2](ctx)['usage'] == 1
     assert LOGS[0][2](ctx)['usage'] == 1
