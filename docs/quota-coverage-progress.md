@@ -17,23 +17,23 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,062 | 1,868 |
+| implemented | 2,070 | 1,876 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,443 | 4,249 |
-| uncovered | 7,638 | 6,149 |
-| unmeasurable | 2,999 | 2,791 |
-| measurable | 9,082 | 7,607 |
+| covered | 4,451 | 4,257 |
+| uncovered | 7,630 | 6,141 |
+| unmeasurable | 3,214 | 2,976 |
+| measurable | 8,867 | 7,422 |
 
-Implemented measurement availability: **36.78%** of the whole union, or
-**48.92%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.84%** of the whole union, or
+**50.20%** of the 8,867 quotas whose usage can be counted at all.
 
-2,999 quotas are excluded from the second denominator by three rules in
+3,214 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
 
 | Reason | Quotas | Rule |
 | --- | ---: | --- |
 | `TOKEN_BUCKET` | 1,526 | `... request bucket maximum capacity` / `... refill rate`, all EC2 |
-| `API_RATE` | 1,274 | name contains `TPS` as a word or the words `per second` |
+| `API_RATE` | 1,489 | name contains `TPS` as a word, `per second`, or `throttle rate` |
 | `API_BURST` | 199 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
 
 A bucket's occupancy and a per-second peak are not derivable from one-minute
@@ -52,7 +52,10 @@ requires the same review as any other change to the number.
 
 `iotwireless` is what surfaced this: all 100 of its quotas are
 `TPS limit for <Operation>`, so it read as the largest uncovered service while
-being entirely unmeasurable.
+being entirely unmeasurable. `throttle rate` was added for the same reason after
+`emr-containers` (21 of 21 quotas), `aco-automation` (23 of 24) and
+`lookoutmetrics` (30) turned out to name their rate limits that way; the wording
+covers 215 quotas across ten services and none of them is covered today.
 
 Custom and compatible metric counts overlap; covered is their union.
 `tests/fixtures/coverage-baseline.json` holds these totals and CI fails on any
@@ -60,6 +63,13 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Completed AWS Telco Network Builder at 4 of 4 catalog quotas (function
+  packages, network packages, network service instances, and the operations
+  still `PROCESSING` or `CANCELLING`) and AWS Interconnect at 4 of 4 (created
+  connections excluding deleted ones, outstanding requested connections, and
+  connections per last-mile and per cloud-service provider). A connection's
+  `provider` is a tagged union naming one side, so the two provider quotas group
+  disjoint sets of connections.
 - Measured the Amazon Chime SDK from 0 to 13 of its 32 measurable catalog
   quotas across four APIs: app instances, users per app instance, admins per app
   instance and endpoints per user from Chime SDK Identity; channel flows per app

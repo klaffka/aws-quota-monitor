@@ -176,3 +176,13 @@ def test_an_official_metric_beats_the_rate_rule():
     quota['QuotaName'] = 'Transactions per second (TPS) for the GetPatchBaseline API'
     row, = catalog_coverage([quota], set())
     assert (row['covered'], row['unmeasurable']) == (1, 0)
+
+
+def test_throttle_rates_are_excluded_like_other_per_second_limits():
+    quotas = [named('a', 'StartJobRun API throttle rate quota'),
+              named('b', 'Throttle rate limit for CreateAutomationRule'),
+              named('c', 'Throttle rate (ListAlerts)'),
+              named('d', 'Ingestion rate per workspace')]
+    row, = catalog_coverage(quotas, set())
+    # An unqualified ingestion rate keeps no stated window, so it stays measurable.
+    assert (row['unmeasurable'], row['measurable']) == (3, 1)

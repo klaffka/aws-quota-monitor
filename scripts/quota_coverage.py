@@ -54,7 +54,7 @@ def normalize_quota(quota: dict) -> dict:
     return result
 
 
-PER_SECOND = re.compile(r'\bTPS\b|per second', re.IGNORECASE)
+PER_SECOND = re.compile(r'\bTPS\b|per second|throttle rate', re.IGNORECASE)
 
 UNMEASURABLE_RULES = (
     # An EC2 request bucket's depth and refill are not observable per account.

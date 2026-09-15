@@ -13,6 +13,8 @@ from modules.qmchecks.ebs import get_current_quotastatus_ebs
 from modules.qmchecks.ec2_ipam import get_current_quotastatus_ec2_ipam
 from modules.qmchecks.customer_profiles import get_current_quotastatus_customer_profiles
 from modules.qmchecks.chime import get_current_quotastatus_chime
+from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
+from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.drs import get_current_quotastatus_drs
 from modules.qmchecks.schemas import get_current_quotastatus_schemas
 from modules.qmchecks.launchwizard import get_current_quotastatus_launchwizard
@@ -232,6 +234,8 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_ec2_ipam(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_customer_profiles(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_chime(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_interconnect(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_drs(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_schemas(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_launchwizard(ctx=ctx, skip=official))

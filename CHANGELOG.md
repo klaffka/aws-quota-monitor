@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Complete Telco Network Builder and Interconnect coverage.
 - Amazon Chime SDK identity, messaging, voice and media pipeline measurements.
 - Complete Elastic Disaster Recovery and EventBridge Schemas coverage, and
   Launch Wizard deployment measurements.

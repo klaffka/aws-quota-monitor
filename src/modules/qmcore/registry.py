@@ -8,6 +8,8 @@ _CHECK_MODULES = (
     ('modules.qmchecks.ec2_ipam', 'ec2-ipam'),
     ('modules.qmchecks.customer_profiles', 'profile'),
     ('modules.qmchecks.chime', 'chime'),
+    ('modules.qmchecks.interconnect', 'interconnect'),
+    ('modules.qmchecks.tnb', 'tnb'),
     ('modules.qmchecks.drs', 'drs'),
     ('modules.qmchecks.schemas', 'schemas'),
     ('modules.qmchecks.launchwizard', 'launchwizard'),
