@@ -17,6 +17,23 @@ from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
 from modules.qmchecks.rtbfabric import get_current_quotastatus_rtbfabric
 from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.dax import get_current_quotastatus_dax
+from modules.qmchecks.aco_automation import (
+    get_current_quotastatus_aco_automation)
+from modules.qmchecks.aidevops import get_current_quotastatus_aidevops
+from modules.qmchecks.controltower import (
+    get_current_quotastatus_controltower)
+from modules.qmchecks.migrationhubstrategy import (
+    get_current_quotastatus_migrationhubstrategy)
+from modules.qmchecks.mwaa_serverless import (
+    get_current_quotastatus_airflow_serverless)
+from modules.qmchecks.observabilityadmin import (
+    get_current_quotastatus_observabilityadmin)
+from modules.qmchecks.s3_outposts import (
+    get_current_quotastatus_s3_outposts)
+from modules.qmchecks.securityagent import (
+    get_current_quotastatus_securityagent)
+from modules.qmchecks.snow_device_management import (
+    get_current_quotastatus_snow_device_management)
 from modules.qmchecks.snowball import get_current_quotastatus_snowball
 from modules.qmchecks.vmimportexport import get_current_quotastatus_vmimportexport
 from modules.qmchecks.appflow import get_current_quotastatus_appflow
@@ -263,6 +280,15 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_rtbfabric(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_dax(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_aco_automation(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_aidevops(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_controltower(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_migrationhubstrategy(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_airflow_serverless(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_observabilityadmin(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_s3_outposts(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_securityagent(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_snow_device_management(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_snowball(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_vmimportexport(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_appflow(ctx=ctx, skip=official))

@@ -7,6 +7,9 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- MWAA Serverless, Migration Hub Strategy, Security Agent, Snow Device
+  Management, Compute Optimizer automation, DevOps agent, observability
+  centralization, organizational unit and S3 on Outposts measurements.
 - Complete Snow Family and VM Import/Export coverage.
 - Migration Hub Orchestrator, Connect outbound campaign, Linux subscription,
   EC2 fast launch, AppFlow and Inspector Classic measurements.

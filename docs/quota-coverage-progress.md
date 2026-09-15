@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,119 | 1,892 |
+| implemented | 2,135 | 1,901 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,500 | 4,273 |
-| uncovered | 7,581 | 6,125 |
+| covered | 4,516 | 4,282 |
+| uncovered | 7,565 | 6,116 |
 | unmeasurable | 3,253 | 2,976 |
 | measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **37.25%** of the whole union, or
-**50.97%** of the 8,828 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.38%** of the whole union, or
+**51.16%** of the 8,828 quotas whose usage can be counted at all.
 
 3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -67,6 +67,15 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Reached the end of what the SDK exposes for the remaining zero-coverage
+  services. Measured MWAA Serverless workflows, versions per workflow and
+  concurrent runs; Migration Hub Strategy active imports and servers per
+  assessment; Security Agent concurrent code review, pentest and threat model
+  jobs across every agent space; Snow Device Management total and active tasks;
+  Compute Optimizer automation events in flight; DevOps agent spaces; the
+  organization centralization rules; accounts per organizational unit, walked
+  from the organization roots; and S3 on Outposts buckets and access points per
+  outpost.
 - Completed the AWS Snow Family at 2 of 2 catalog quotas and VM Import/Export at
   2 of 2. Snow devices are counted from the jobs that hold them, excluding jobs
   that are `Complete` or `Cancelled`, and the Edge and Snowcone families are
