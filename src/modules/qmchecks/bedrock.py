@@ -5,6 +5,7 @@ from modules.qmchecks.bedrock_configuration import CHECKS as CONFIGURATION_CHECK
 from modules.qmchecks.bedrock_reasoning import CHECKS as REASONING_CHECKS
 from modules.qmchecks.bedrock_evaluation import CHECKS as EVALUATION_CHECKS
 from modules.qmchecks.bedrock_data_automation import CHECKS as DATA_AUTOMATION_CHECKS
+from modules.qmchecks.bedrock_throughput import CHECKS as THROUGHPUT_CHECKS
 
 
 def _max_nested(ctx, parents, parent_field, method, key, kwargs=None,
@@ -114,7 +115,7 @@ CHECKS = [('L-60DA3E0D', 'Knowledge bases per account',
           ('L-60AFC764', 'Flow versions per flow', versions_per_flow)]
 
 
-EXTENDED_CHECKS = BATCH_CHECKS + CONFIGURATION_CHECKS + REASONING_CHECKS + EVALUATION_CHECKS + DATA_AUTOMATION_CHECKS
+EXTENDED_CHECKS = BATCH_CHECKS + CONFIGURATION_CHECKS + REASONING_CHECKS + EVALUATION_CHECKS + DATA_AUTOMATION_CHECKS + THROUGHPUT_CHECKS
 ALL_CHECKS = CHECKS + EXTENDED_CHECKS
 
 

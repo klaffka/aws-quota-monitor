@@ -131,6 +131,14 @@ RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bper (second|minute|hour|day
                          re.IGNORECASE)
 
 
+# A volume of data inside one job, file or request. "Records per batch inference
+# job" reads like a count, but it bounds the payload rather than an inventory.
+VOLUME = re.compile(r'\b(records?|tokens?|rows?|columns?|data points?|characters?) per\b'
+                    r'|\bsum of training and validation\b|\bamount of\b'
+                    r'|\bper (call|request|invocation)\b|\bin a \w+ call\b',
+                    re.IGNORECASE)
+
+
 def gap_shape(quota: dict) -> str:
     """Classify a measurable, uncovered quota by what its name describes.
 
@@ -140,7 +148,7 @@ def gap_shape(quota: dict) -> str:
     name = _name(quota)
     if RATE_SHAPED.search(name):
         return 'rate_shaped'
-    if SIZE_OR_PERIOD.search(name):
+    if SIZE_OR_PERIOD.search(name) or VOLUME.search(name):
         return 'size_or_period'
     return 'countable'
 
