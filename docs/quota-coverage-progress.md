@@ -479,23 +479,41 @@ worth the point it would add.
 
 ## Largest remaining gaps
 
-| Service | Catalog | Covered | Open |
-| --- | ---: | ---: | ---: |
-| ec2 | 1735 | 187 | 1548 |
-| bedrock | 722 | 98 | 624 |
-| connect | 338 | 34 | 304 |
-| bedrock-agentcore | 199 | 28 | 171 |
-| iotcore | 139 | 1 | 138 |
-| cleanrooms | 115 | 10 | 105 |
-| elasticmapreduce | 106 | 4 | 102 |
-| iotwireless | 100 | 0 | 100 |
-| swf | 101 | 3 | 98 |
-| cases | 100 | 14 | 86 |
-| cloudformation | 104 | 25 | 79 |
-| states | 98 | 6 | 92 |
-| kinesisvideo | 96 | 3 | 93 |
-| ssm | 160 | 72 | 88 |
-| rekognition | 92 | 13 | 79 |
+4,081 quotas are measurable and still uncovered. Sorting them by what their
+names describe shows what the remaining work actually is:
+
+| Shape | Quotas | What it would take |
+| --- | ---: | --- |
+| rate-shaped | 1,979 | a rate the exclusion rules deliberately do not match, because the name states no window; see the note above on `Rate of <Operation> requests` |
+| size or period | 562 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
+| everything else | 1,540 | a genuine inventory that a check could count |
+
+The 1,540 countable ones are spread thin. The twelve largest holdings:
+
+| Service | Catalog | Covered | Uncovered | Unmeasurable | Countable |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| bedrock | 809 | 98 | 711 | 146 | 229 |
+| connect | 361 | 34 | 327 | 0 | 38 |
+| ec2 | 1751 | 187 | 1564 | 1526 | 37 |
+| pinpoint | 132 | 6 | 126 | 52 | 37 |
+| iotcore | 240 | 8 | 232 | 172 | 36 |
+| iot | 179 | 7 | 172 | 97 | 34 |
+| lambda | 70 | 7 | 63 | 7 | 27 |
+| deadline | 32 | 9 | 23 | 0 | 23 |
+| fsx | 30 | 7 | 23 | 0 | 23 |
+| lookoutmetrics | 60 | 0 | 60 | 30 | 23 |
+| medialive | 24 | 2 | 22 | 1 | 21 |
+| license-manager | 25 | 2 | 23 | 0 | 20 |
+
+Bedrock's 229 dominate the list and are almost entirely per-model input bounds:
+`Batch inference job size (in GB) for <model>`, `Records per batch inference job
+for <model>` and their siblings, one pair per model. They bound a job's input
+rather than an inventory, but a submitted job does carry a size, so they are
+left in the measurable base rather than excluded by rule.
+
+After Bedrock no service holds more than 38, so each further service is a
+handful of quotas for a full traversal of its API. That is the shape of the
+remaining work: broad rather than deep.
 
 ## Next investigations
 
