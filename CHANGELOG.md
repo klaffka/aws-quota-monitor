@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Amazon Chime SDK identity, messaging, voice and media pipeline measurements.
 - Complete Elastic Disaster Recovery and EventBridge Schemas coverage, and
   Launch Wizard deployment measurements.
 - Amazon Connect Customer Profiles domain, object type and recommender measurements.

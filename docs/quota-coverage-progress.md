@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,049 | 1,863 |
+| implemented | 2,062 | 1,868 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,430 | 4,244 |
-| uncovered | 7,651 | 6,154 |
+| covered | 4,443 | 4,249 |
+| uncovered | 7,638 | 6,149 |
 | unmeasurable | 2,999 | 2,791 |
 | measurable | 9,082 | 7,607 |
 
-Implemented measurement availability: **36.67%** of the whole union, or
-**48.78%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.78%** of the whole union, or
+**48.92%** of the 9,082 quotas whose usage can be counted at all.
 
 2,999 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -60,6 +60,26 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured the Amazon Chime SDK from 0 to 13 of its 32 measurable catalog
+  quotas across four APIs: app instances, users per app instance, admins per app
+  instance and endpoints per user from Chime SDK Identity; channel flows per app
+  instance and processors per channel flow from Chime SDK Messaging, whose
+  summaries already carry the processor list; voice connectors, SIP media
+  applications and applications per SIP rule from Chime SDK Voice; and media
+  pipelines, Kinesis Video Stream pools, call analytics configurations and call
+  analytics pipelines from Chime SDK Media Pipelines. A pipeline counts towards
+  the call analytics quota only when its detail carries a
+  `MediaInsightsPipeline`.
+
+  Meeting quotas are not measurable: a meeting exists only while it runs and no
+  API lists one, which also covers attendees, video streams and replica
+  meetings. Active call limits and concurrent connections per app instance user
+  are in-flight counts, and the prefetch quotas bound one event's contents.
+  Sources:
+  [Chime SDK quotas](https://docs.aws.amazon.com/chime-sdk/latest/dg/end-user-quotas.html),
+  [ListAppInstances](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_identity-chime_ListAppInstances.html),
+  [ListChannelFlows](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_messaging-chime_ListChannelFlows.html),
+  [GetMediaPipeline](https://docs.aws.amazon.com/chime-sdk/latest/APIReference/API_media-pipelines-chime_GetMediaPipeline.html).
 - Completed AWS Elastic Disaster Recovery at 9 of 9 catalog quotas: source
   servers and replicating source servers, concurrent jobs, jobs per source
   server, source servers in a single job and across all jobs, launch
