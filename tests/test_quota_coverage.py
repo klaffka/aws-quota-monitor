@@ -356,3 +356,22 @@ def test_every_measurable_uncovered_quota_has_exactly_one_shape():
     shapes = sum(sum(row[shape] for row in rows) for shape, _note in GAP_SHAPES)
     gap = sum(row['uncovered'] - row['unmeasurable'] for row in rows)
     assert shapes == gap
+
+
+def test_the_readme_reports_the_same_coverage_as_the_catalog():
+    """The README repeats the headline figures, and nothing kept them honest."""
+    import re
+    from pathlib import Path
+    from scripts.quota_coverage import merge_catalogs, totals
+    current = totals(catalog_coverage(merge_catalogs(['tests/fixtures/quota-catalog-union.json'])))
+    readme = Path('README.md').read_text(encoding='utf-8')
+    sentence = re.search(r'records ([\d,]+) of\n([\d,]+) catalog quotas with an implemented '
+                         r'measurement method \(([\d.]+)%\), including\nofficial metrics, which '
+                         r'is ([\d.]+)% of the ([\d,]+) measurable quotas\.', readme)
+    assert sentence, 'the README coverage sentence has moved'
+    covered, total, whole, measurable_pct, measurable = sentence.groups()
+    assert int(covered.replace(',', '')) == current['covered']
+    assert int(total.replace(',', '')) == current['total']
+    assert int(measurable.replace(',', '')) == current['measurable']
+    assert whole == f"{current['covered'] / current['total'] * 100:.2f}"
+    assert measurable_pct == f"{current['covered'] / current['measurable'] * 100:.2f}"

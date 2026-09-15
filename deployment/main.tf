@@ -785,6 +785,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "wellarchitected:ListReviewTemplates"
           , "ssm-contacts:ListContacts"
           , "ssm-contacts:ListRotations"
+          , "ssm-contacts:GetContact"
           , "dataexchange:ListDataSets"
           , "dataexchange:ListEventActions"
           , "dataexchange:ListDataSetRevisions"

@@ -58,6 +58,11 @@ PER_SECOND = re.compile(r'\bTPS\b|per second|throttle rate', re.IGNORECASE)
 # Anchored, because Textract uses "throttle limit for max number of adapters per
 # account" and similar wording for quotas that really are resource counts.
 OPERATION_THROTTLE = re.compile(r'^\S+(?: API)? throttle limit$', re.IGNORECASE)
+# SSM Contacts words the same thing as "<Operation> API throttle quota" and
+# "Voice engagement throttle quota". Ten of its sixteen already fall to the
+# period rule because they state a one-second window; the other six describe
+# the same request rates and differ only in carrying no period.
+THROTTLE_QUOTA = re.compile(r'throttle quota$', re.IGNORECASE)
 # IoT writes a bare "<Operation> rate"; one token before the word keeps the
 # rule on operation names and off wordings like "Job execution roll out rate".
 OPERATION_RATE = re.compile(r'^\S+ rate$', re.IGNORECASE)
@@ -105,6 +110,7 @@ UNMEASURABLE_RULES = (
     # these rules are consulted, and no custom check measures one today.
     ('API_RATE', lambda quota: bool(PER_SECOND.search(_name(quota)))
                                or bool(OPERATION_THROTTLE.match(_name(quota)))
+                               or bool(THROTTLE_QUOTA.search(_name(quota)))
                                or bool(RATE_QUOTA.search(_name(quota)))
                                or bool(OPERATION_RATE.match(_name(quota)))
                                or (bool(RATE_PREFIX.match(_name(quota)))

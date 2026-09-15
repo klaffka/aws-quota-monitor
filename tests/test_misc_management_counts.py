@@ -6,10 +6,16 @@ from modules.qmchecks.dataexchange import CHECKS as DATASETS
 from modules.qmchecks.rbin import CHECKS as RBIN
 
 
+# The plan- and rotation-scoped contact checks descend into a contact; they are
+# covered by tests/test_ssm_contacts_plans.py against a real client.
+SCOPED = {'L-5AE11799', 'L-F338226A', 'L-D438A616'}
+
+
 def test_misc_management_resource_counts():
     for checks in (WA, CONTACTS):
-        context = Mock(); context.call.side_effect = [[{}]] * len(checks)
-        assert [check[2](context)['usage'] for check in checks] == [1] * len(checks)
+        flat = [check for check in checks if check[0] not in SCOPED]
+        context = Mock(); context.call.side_effect = [[{}]] * len(flat)
+        assert [check[2](context)['usage'] for check in flat] == [1] * len(flat)
     # Data sets carry an identity and an asset type; see tests/test_dataexchange.py.
     context = Mock()
     context.call.return_value = [{'Id': 'set-1', 'AssetType': 'S3_SNAPSHOT'}]
