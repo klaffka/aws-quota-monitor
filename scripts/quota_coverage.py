@@ -63,6 +63,15 @@ OPERATION_THROTTLE = re.compile(r'^\S+ throttle limit$', re.IGNORECASE)
 # rate and the depth of one token bucket. tests/test_quota_coverage.py asserts
 # the pairing against the committed catalog.
 RATE_QUOTA = re.compile(r'rate quota$', re.IGNORECASE)
+# "Rate of GetSchema requests", "Request rate for DeleteAsset": Service Quotas
+# states these per second. None of the 555 such entries names a longer window,
+# and the guard keeps a future "Rate of X per day" in the measurable base.
+RATE_PREFIX = re.compile(r'^(rate of|request rate for)\b', re.IGNORECASE)
+LONGER_WINDOW = re.compile(r'\bper (minute|hour|day|week|month|year)\b', re.IGNORECASE)
+# Step Functions writes a bucket's depth as "<Operation> throttle token bucket
+# size" and ECS its refill as "... (or bucket refill rate)".
+BUCKET_DEPTH = re.compile(r'throttle token bucket size$|bucket refill rate\)?$',
+                          re.IGNORECASE)
 
 def _name(quota: dict) -> str:
     return quota.get('QuotaName') or ''
@@ -82,13 +91,16 @@ def _per_second(quota: dict) -> bool:
 UNMEASURABLE_RULES = (
     # An EC2 request bucket's depth and refill are not observable per account.
     ('TOKEN_BUCKET', lambda quota: _name(quota).endswith(
-        ('request bucket maximum capacity', 'request bucket refill rate'))),
+        ('request bucket maximum capacity', 'request bucket refill rate'))
+        or bool(BUCKET_DEPTH.search(_name(quota)))),
     # One-minute CloudWatch sums cannot establish a per-second peak. Where AWS
     # publishes a usage metric for such a quota it counts as covered before
     # these rules are consulted, and no custom check measures one today.
     ('API_RATE', lambda quota: bool(PER_SECOND.search(_name(quota)))
                                or bool(OPERATION_THROTTLE.match(_name(quota)))
-                               or bool(RATE_QUOTA.search(_name(quota)))),
+                               or bool(RATE_QUOTA.search(_name(quota)))
+                               or (bool(RATE_PREFIX.match(_name(quota)))
+                                   and not LONGER_WINDOW.search(_name(quota)))),
     # Burst allowances are token buckets too, but EFS bursting throughput is a
     # published metric rather than a request bucket.
     ('API_BURST', lambda quota: 'burst' in _name(quota).lower()

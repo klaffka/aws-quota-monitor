@@ -25,38 +25,37 @@ column is measured against an untracked export and is kept for comparison only.
 | compatibleMetric | 2,535 | 2,535 |
 | covered | 4,765 | 4,457 |
 | uncovered | 7,316 | 5,941 |
-| unmeasurable | 4,280 | 3,055 |
-| measurable | 7,801 | 7,343 |
+| unmeasurable | 4,947 | 3,055 |
+| measurable | 7,134 | 7,343 |
 
 Implemented measurement availability: **39.44%** of the whole union, or
-**61.08%** of the 7,801 quotas whose usage can be counted at all.
+**66.79%** of the 7,134 quotas whose usage can be counted at all.
 
-4,280 quotas are excluded from the second denominator by four rules in
+4,947 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
 
 | Reason | Quotas | Rule |
 | --- | ---: | --- |
-| `TOKEN_BUCKET` | 1,526 | `... request bucket maximum capacity` / `... refill rate`, all EC2 |
-| `API_RATE` | 1,617 | name contains `TPS` as a word, `per second` or `throttle rate`, is exactly `<Operation> throttle limit`, or ends in `rate quota` |
-| `PERIOD_RATE` | 938 | the catalog states the quota's period as one second |
-| `API_BURST` | 199 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
+| `TOKEN_BUCKET` | 1,586 | `... request bucket maximum capacity` / `... refill rate`, `<Operation> throttle token bucket size`, or a name ending in `bucket refill rate` |
+| `API_RATE` | 3,047 | name contains `TPS` as a word, `per second` or `throttle rate`, is exactly `<Operation> throttle limit`, ends in `rate quota`, or starts with `Rate of` / `Request rate for` without naming a longer window |
+| `API_BURST` | 166 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
+| `PERIOD_RATE` | 148 | the catalog states the quota's period as one second |
 
 A bucket's occupancy and a per-second peak are not derivable from one-minute
 CloudWatch sums, so these are not a matter of writing further checks. The rules
 only ever apply to quotas that are already uncovered: where AWS publishes a
 usage metric for a rate quota it counts as covered, which is how all 19 covered
-`TPS` quotas are accounted for, and no custom check measures a per-second rate
-today. Rates over a longer stated window, such as `Policy generations per day`,
-stay in the measurable base.
+`TPS` quotas and all 25 covered `Rate of ...` quotas are accounted for, and no
+custom check measures a per-second rate today. Rates over a longer stated
+window, such as `Policy generations per day`, stay in the measurable base, and
+`LONGER_WINDOW` keeps a future `Rate of ... per day` there as well: no catalog
+entry names one today.
 
 `PERIOD_RATE` is the only rule that does not read the quota's name. AWS
 publishes the measurement window in the catalog entry, and a period of one
-second says the quota is a request rate however it is worded. It resolves the
-`Rate of <Operation> API requests` form, which no wording rule matched and
-which is spread over 32 services, 283 of them in Connect alone; 13 quotas with
-that period carry a usage metric and stay covered. The three wording rules run
-first so a quota they already explain keeps its established reason and the
-published per-reason figures remain comparable.
+second says the quota is a request rate however it is worded. The wording rules
+run first, so it is left with the 148 per-second quotas whose names give no
+sign of being rates at all.
 
 The rules cost nothing to widen and instantly flatter the figure, so both
 numbers are always reported together and `compare_baseline` fails when the

@@ -167,9 +167,9 @@ def test_per_second_rates_are_excluded_whatever_the_wording():
               named('e', 'Policy generations per day'),
               named('f', 'Rate of DescribeAcmeEndpoint API requests')]
     row, = catalog_coverage(quotas, set())
-    # Rates with a stated per-second window are excluded; a daily rate and an
-    # unqualified request rate stay in the measurable base.
-    assert (row['unmeasurable'], row['measurable']) == (4, 2)
+    # Every stated request rate is excluded; only the daily one stays in the
+    # measurable base.
+    assert (row['unmeasurable'], row['measurable']) == (5, 1)
 
 
 def test_an_official_metric_beats_the_rate_rule():
@@ -253,7 +253,7 @@ def timed(code, name, unit, value=1):
 
 
 def test_a_one_second_period_marks_a_rate_whatever_the_name_says():
-    quotas = [timed('rate', 'Rate of ListMaps API requests', 'SECOND'),
+    quotas = [timed('rate', 'Data points ingested', 'SECOND'),
               timed('hourly', 'Policy generations per day', 'HOUR'),
               timed('window', 'ACME domain validations per ACME endpoint',
                     'MINUTE', 5),
@@ -270,6 +270,50 @@ def test_a_named_rate_keeps_its_wording_reason_over_the_period_rule():
 
 
 def test_a_covered_per_second_quota_stays_out_of_the_exclusions():
-    row, = catalog_coverage([timed('rate', 'Rate of ListMaps API requests', 'SECOND')],
+    row, = catalog_coverage([timed('rate', 'Data points ingested', 'SECOND')],
                             {('example', 'rate')})
     assert (row['covered'], row['unmeasurable'], row['measurablePct']) == (1, 0, 100.0)
+
+
+def test_the_rate_and_request_rate_prefixes_are_excluded():
+    quotas = [named('rate', 'Rate of GetSchema requests'),
+              named('request', 'Request rate for DeleteAsset'),
+              named('windowed', 'Rate of policy generations per day'),
+              named('count', 'Cases per domain')]
+    row, = catalog_coverage(quotas, set())
+    assert (row['unmeasurable'], row['measurable']) == (2, 2)
+    assert unmeasurable(quotas[2]) is None
+
+
+def test_named_token_buckets_are_excluded_whatever_the_service_calls_them():
+    quotas = [named('depth', 'ListActivities throttle token bucket size'),
+              named('refill', 'Sustained rate of service read actions '
+                              '(or bucket refill rate)'),
+              named('count', 'Cases per domain')]
+    row, = catalog_coverage(quotas, set())
+    assert (row['unmeasurable'], row['measurable']) == (2, 1)
+    assert unmeasurable(quotas[0]) == 'TOKEN_BUCKET'
+
+
+def test_the_rule_table_reports_the_measured_reason_counts():
+    """The per-reason figures are as easy to widen as the totals, so pin them."""
+    import re
+    from collections import Counter
+    from pathlib import Path
+    from modules.qmcore.metrics import compatible
+    from modules.qmcore.registry import custom_keys
+    implemented = {(service.lower(), code) for service, code in custom_keys()}
+    measured = Counter()
+    for quota in load_catalog('tests/fixtures/quota-catalog-union.json'):
+        if (quota['ServiceCode'].lower(), quota['QuotaCode']) in implemented \
+                or compatible(quota):
+            continue
+        reason = unmeasurable(quota)
+        if reason:
+            measured[reason] += 1
+    document = Path('docs/quota-coverage-progress.md').read_text(encoding='utf-8')
+    for reason, count in measured.items():
+        row = re.search(rf'^\| `{reason}` \| ([\d,]+) \|', document, re.MULTILINE)
+        assert row, f'{reason} is missing from the rule table'
+        assert int(row.group(1).replace(',', '')) == count, reason
+    assert len(re.findall(r'^\| `[A-Z_]+` \| ', document, re.MULTILINE)) == len(measured)
