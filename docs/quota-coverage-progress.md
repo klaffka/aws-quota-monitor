@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,264 | 1,989 |
+| implemented | 2,277 | 1,999 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,645 | 4,370 |
-| uncovered | 7,436 | 6,028 |
+| covered | 4,658 | 4,380 |
+| uncovered | 7,423 | 6,018 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **38.45%** of the whole union, or
-**53.15%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **38.56%** of the whole union, or
+**53.30%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,11 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened Amazon Forecast from 12 to 25 catalog quotas: dataset import jobs,
+  datasets per dataset group, and the eleven parallel task counts. Forecast
+  reports lifecycle statuses as `<VERB>_<STATE>`, so a resource counts as a
+  running task while its state is pending or in progress, and a resource without
+  a status raises `NoData`.
 - Deepened AWS Data Exchange from 2 to 24 catalog quotas: revisions per data
   set and per asset type, assets per revision in the same four flavours, the
   nine concurrent in-progress job counts grouped by job type, data grants in

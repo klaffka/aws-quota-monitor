@@ -953,6 +953,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "iotfleetwise:ListDecoderManifests"
           , "iotfleetwise:ListStateTemplates"
           , "forecast:ListPredictors"
+          , "forecast:ListDatasetImportJobs"
+          , "forecast:DescribeDatasetGroup"
           , "forecast:ListDatasetGroups"
           , "forecast:ListDatasets"
           , "forecast:ListForecasts"

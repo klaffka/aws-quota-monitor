@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Forecast parallel task and dataset group measurements.
 - Data Exchange revision, asset, job and data grant measurements.
 - API Gateway key, certificate, domain, usage plan, VPC link, route and stage
   measurements, and a --update-progress flag that keeps the audit figures current.
