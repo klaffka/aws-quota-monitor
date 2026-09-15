@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,032 | 1,846 |
+| implemented | 2,049 | 1,863 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,413 | 4,227 |
-| uncovered | 7,668 | 6,171 |
+| covered | 4,430 | 4,244 |
+| uncovered | 7,651 | 6,154 |
 | unmeasurable | 2,999 | 2,791 |
 | measurable | 9,082 | 7,607 |
 
-Implemented measurement availability: **36.53%** of the whole union, or
-**48.59%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.67%** of the whole union, or
+**48.78%** of the 9,082 quotas whose usage can be counted at all.
 
 2,999 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -60,6 +60,23 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Completed AWS Elastic Disaster Recovery at 9 of 9 catalog quotas: source
+  servers and replicating source servers, concurrent jobs, jobs per source
+  server, source servers in a single job and across all jobs, launch
+  configuration templates, source networks, and launch actions per resource.
+  Only `STOPPED` and `DISCONNECTED` servers count as no longer replicating,
+  because a paused or stalled server still holds its staging area, and an
+  unknown replication state raises `NoData`.
+- Completed EventBridge Schemas at 5 of 5 catalog quotas: registries,
+  discoverers, schemas per registry, discovered schemas in the
+  `discovered-schemas` registry, and versions per schema from the `VersionCount`
+  each schema summary already reports.
+- Measured AWS Launch Wizard at 3 of 4 catalog quotas: deployments excluding
+  deleted ones, active deployments, and in-progress deployments. `Settings Set`
+  counts saved deployment settings, which no API lists. Sources:
+  [DRS quotas](https://docs.aws.amazon.com/drs/latest/userguide/drs-quotas.html),
+  [EventBridge Schemas quotas](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-quota.html),
+  [ListDeployments](https://docs.aws.amazon.com/launchwizard/latest/APIReference/API_ListDeployments.html).
 - Measured Amazon Connect Customer Profiles from 0 to 12 of 17 catalog quotas:
   domains per account, profile object types and domain object types per domain,
   keys per object type, the longest configured retention on a domain or object

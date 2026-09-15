@@ -250,9 +250,9 @@ allowances. The exclusion applies only to quotas that no check and no official
 metric already covers. A bucket's occupancy and a per-second peak cannot be derived from
 one-minute CloudWatch sums, so no additional check would ever cover them.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,413 of
-12,081 catalog quotas with an implemented measurement method (36.53%), including
-official metrics, which is 48.59% of the 9,082 measurable quotas. It also lists
+The [current coverage audit](docs/quota-coverage-progress.md) records 4,430 of
+12,081 catalog quotas with an implemented measurement method (36.67%), including
+official metrics, which is 48.78% of the 9,082 measurable quotas. It also lists
 the largest remaining gaps; near-total coverage has not yet been achieved.
 
 Clean Rooms ML has methods for 140/148 catalog quotas (94.6%). Training-instance
