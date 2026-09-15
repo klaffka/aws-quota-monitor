@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Amazon Connect Customer Profiles domain, object type and recommender measurements.
 - VPC IP Address Manager resource measurements.
 - Amazon EBS volume, snapshot, archive and fast-snapshot-restore measurements.
 - Amazon SQS queue configuration, policy and tag measurements.

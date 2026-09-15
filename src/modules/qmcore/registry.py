@@ -6,6 +6,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.ec2.ec2', 'ec2'),
     ('modules.qmchecks.ebs', 'ebs'),
     ('modules.qmchecks.ec2_ipam', 'ec2-ipam'),
+    ('modules.qmchecks.customer_profiles', 'profile'),
     ('modules.qmchecks.appstream', 'appstream2'),
     ('modules.qmchecks.vpc.vpc', 'vpc'),
     ('modules.qmchecks.lambda_checks.lambda_checks', 'lambda'),

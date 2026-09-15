@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,020 | 1,834 |
+| implemented | 2,032 | 1,846 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,401 | 4,215 |
-| uncovered | 7,680 | 6,183 |
+| covered | 4,413 | 4,227 |
+| uncovered | 7,668 | 6,171 |
 | unmeasurable | 2,999 | 2,791 |
 | measurable | 9,082 | 7,607 |
 
-Implemented measurement availability: **36.43%** of the whole union, or
-**48.46%** of the 9,082 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.53%** of the whole union, or
+**48.59%** of the 9,082 quotas whose usage can be counted at all.
 
 2,999 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -60,6 +60,20 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured Amazon Connect Customer Profiles from 0 to 12 of 17 catalog quotas:
+  domains per account, profile object types and domain object types per domain,
+  keys per object type, the longest configured retention on a domain or object
+  type, calculated attributes, event streams, event triggers and integrations
+  per domain, and recommenders, recommender schemas and recommender filters per
+  domain.
+
+  The five remaining quotas need a per-profile walk or bound a single record:
+  objects per profile and profile history records per profile would require
+  enumerating every profile in a domain, the two size quotas bound one object or
+  profile, and segment snapshots per day is a rolling daily rate. Sources:
+  [Customer Profiles quotas](https://docs.aws.amazon.com/connect/latest/adminguide/amazon-connect-service-limits.html),
+  [ListDomains](https://docs.aws.amazon.com/customerprofiles/latest/APIReference/API_ListDomains.html),
+  [GetProfileObjectType](https://docs.aws.amazon.com/customerprofiles/latest/APIReference/API_GetProfileObjectType.html).
 - Measured VPC IP Address Manager from 0 to 10 of 14 catalog quotas: IPAMs and
   resource discoveries per Region, scopes and resource-discovery associations
   per IPAM, pools per scope, pool depth, CIDRs per pool, organizational-unit
