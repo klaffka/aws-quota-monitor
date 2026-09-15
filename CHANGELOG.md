@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Transcribe concurrent job, pending vocabulary and Call Analytics measurements.
 - Lightsail storage, certificate, container service and distribution measurements.
 - CodeBuild concurrent build, project tag, VPC and timeout measurements.
 - Deeper AppSync, CodePipeline, CodeDeploy and Resilience Hub measurements

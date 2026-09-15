@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,211 | 1,948 |
+| implemented | 2,228 | 1,957 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,592 | 4,329 |
-| uncovered | 7,489 | 6,069 |
+| covered | 4,609 | 4,338 |
+| uncovered | 7,472 | 6,060 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **38.01%** of the whole union, or
-**52.55%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **38.15%** of the whole union, or
+**52.74%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,13 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened Amazon Transcribe from 4 to 21 catalog quotas: the current total
+  vocabulary, medical vocabulary and language model codes alongside the retired
+  ones they replace, pending vocabularies, and the concurrent transcription,
+  medical transcription, Call Analytics and language model training counts.
+  Transcribe filters jobs by status server side, so each unfinished status is
+  asked for separately rather than listing every job. Call Analytics categories
+  and the rules on each are counted from the same listing.
 - Deepened Lightsail from 3 to 21 catalog quotas: distributions, load
   balancers, buckets and certificates per Region, active certificates counted as
   the issued ones, block storage disks per instance, the largest disk and the
