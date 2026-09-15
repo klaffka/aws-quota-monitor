@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Deadline Cloud association and License Manager grant, token and entitlement measurements.
 - MediaLive inventory and FSx capacity, IOPS, cache and backup measurements.
 - Forecast parallel task and dataset group measurements.
 - Data Exchange revision, asset, job and data grant measurements.
@@ -99,6 +100,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
+- Deadline Cloud worker and job counts called ListWorkers and ListJobs with a
+  farm alone, though they take a fleet and a queue; both now sum their children.
 - Corrected the OpenSearch UI `ListApplications` IAM service prefix to `es`.
 - Corrected four truncated quota codes in the Backup, GameLift, Ground Station
   and IoT Core checks, which matched no catalog entry and were therefore never

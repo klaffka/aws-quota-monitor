@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,320 | 2,042 |
+| implemented | 2,336 | 2,052 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,701 | 4,423 |
-| uncovered | 7,380 | 5,975 |
+| covered | 4,717 | 4,433 |
+| uncovered | 7,364 | 5,965 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **38.91%** of the whole union, or
-**53.79%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **39.04%** of the whole union, or
+**53.98%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,20 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened AWS Deadline Cloud from 9 to 16 catalog quotas and corrected two
+  that could never have worked: `ListWorkers` takes a fleet and `ListJobs` takes
+  a queue, so both were being called with a farm alone. Each now sums its
+  children back up to the farm. Added limits, queue fleet associations and farm
+  members per farm, members per fleet and per queue, queue environments per
+  queue, and queue limit associations attributed to the queue the farm-wide
+  listing names. The step, task and job member quotas stay open because they
+  need a walk through every job in every queue, which a render farm makes
+  unbounded.
+- Deepened AWS License Manager from 2 to 11 catalog quotas: licenses, asset
+  groups and asset rulesets, grants and tokens per license, received licenses
+  per product, counted and uncounted entitlements split by whether the
+  entitlement's unit is a plain count, and configuration associations inverted
+  onto the resource they attach to.
 - Measured AWS Elemental MediaLive at 20 catalog quotas, a service that had only
   official metrics before: inputs grouped by push type, device, MediaConnect,
   VPC destination and on-premises placement; channels by the codec and

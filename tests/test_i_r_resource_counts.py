@@ -55,9 +55,13 @@ def test_kafka_configuration_revisions_use_maximum_per_configuration():
 
 
 def test_license_manager_counts_use_paginated_lists():
+    # The plain regional inventories; the per-license checks read ARNs, units
+    # and grants and are covered by tests/test_deadline_license_manager.py.
+    counted = {'L-CDB75D7A', 'L-9FBEFBCB', 'L-D603D41E', 'L-9FC671A7'}
     ctx = Mock()
     ctx.call.return_value = [{'id': 'one'}, {'id': 'two'}]
-    assert [check(ctx)['usage'] for _, _, check in LICENSE_CHECKS] == [2, 2]
+    assert [check(ctx)['usage'] for code, _, check in LICENSE_CHECKS
+            if code in counted] == [2] * len(counted)
 
 
 def test_kinesis_shard_count_sums_shards_across_streams():
