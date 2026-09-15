@@ -78,7 +78,7 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
     session = boto3.Session(region_name='eu-central-1')
     available = set(session.get_available_services())
     policy = POLICY.read_text(encoding='utf-8')
-    granted = {match.group(2) for match in ACTION.finditer(policy)}
+    granted = {(match.group(1), match.group(2)) for match in ACTION.finditer(policy)}
     models, ungranted = {}, []
     for path in MODULES:
         for service, method in _call_sites(path, {'call'}, arity=2):
@@ -87,12 +87,16 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
                 continue
             if service not in models:
                 models[service] = session.client(service).meta.service_model
-            operation = next((name for name in models[service].operation_names
+            model = models[service]
+            operation = next((name for name in model.operation_names
                               if xform_name(name) == method), None)
             if operation is None:
                 continue
-            if S3_ALIASES.get(operation, operation) not in granted:
-                ungranted.append(f'{module_id(path)}: {service}:{operation}')
+            # The client name is not the IAM prefix: qconnect signs as wisdom.
+            prefix = model.metadata.get('signingName') or model.metadata.get('endpointPrefix')
+            prefix = PREFIX_ALIASES.get(prefix, prefix)
+            if (prefix, S3_ALIASES.get(operation, operation)) not in granted:
+                ungranted.append(f'{module_id(path)}: {prefix}:{operation}')
     assert not ungranted, f'operations called without an IAM grant: {ungranted}'
 
 

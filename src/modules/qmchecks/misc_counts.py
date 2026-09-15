@@ -57,6 +57,58 @@ def milestones_per_workload(ctx):
     return maximum(values, 'Workload', 'wellarchitected:ListWorkloads+ListMilestones')
 
 
+# Message templates arrived with the Q Connect rename; the wisdom client still
+# serves the older operations, so each check uses the client that has its own.
+QCONNECT = 'qconnect'
+
+
+def _message_templates(ctx):
+    """Return (knowledge base, template id) for every message template.
+
+    The listing is read in full before any caller descends into a template, so
+    the request order does not depend on what the caller does with each one.
+    """
+    found = []
+    for base in ctx.call(QCONNECT, 'list_knowledge_bases', 'knowledgeBaseSummaries'):
+        identifier = base.get('knowledgeBaseId')
+        if not identifier:
+            raise NoData('Q Connect knowledge base is missing its identity')
+        found.extend((identifier, template['messageTemplateId'])
+                     for template in ctx.call(QCONNECT, 'list_message_templates',
+                                              'messageTemplateSummaries',
+                                              knowledgeBaseId=identifier))
+    return found
+
+
+def message_templates_per_knowledge_base(ctx):
+    totals = {}
+    for base, _template in _message_templates(ctx):
+        totals[base] = totals.get(base, 0) + 1
+    return maximum([(base, count, None) for base, count in totals.items()],
+                   'QConnectKnowledgeBase', 'qconnect:ListMessageTemplates')
+
+
+def versions_per_message_template(ctx):
+    return maximum([(f'{base}/{template}',
+                     len(ctx.call(QCONNECT, 'list_message_template_versions',
+                                  'messageTemplateVersionSummaries',
+                                  knowledgeBaseId=base, messageTemplateId=template)), None)
+                    for base, template in _message_templates(ctx)],
+                   'QConnectMessageTemplate', 'qconnect:ListMessageTemplateVersions')
+
+
+def assistant_associations(ctx):
+    values = []
+    for assistant in ctx.call('wisdom', 'list_assistants', 'assistantSummaries'):
+        identifier = assistant.get('assistantId')
+        if not identifier:
+            raise NoData('Q Connect assistant is missing its identity')
+        values.append((identifier, len(ctx.call('wisdom', 'list_assistant_associations',
+                                                'assistantAssociationSummaries',
+                                                assistantId=identifier)), None))
+    return maximum(values, 'QConnectAssistant', 'wisdom:ListAssistantAssociations')
+
+
 def wisdom_content_per_knowledge_base(ctx):
     values = []
     for base in ctx.call('wisdom', 'list_knowledge_bases', 'knowledgeBaseSummaries'):
@@ -115,6 +167,11 @@ CHECKS = {
         ('L-B9FB65B0', 'Knowledge bases per account', lambda c: dict(usage=len(c.call('wisdom', 'list_knowledge_bases', 'knowledgeBaseSummaries')), source='wisdom:ListKnowledgeBases', method='ACCOUNT_COUNT')),
         ('L-5558F50C', 'Assistants per account', lambda c: dict(usage=len(c.call('wisdom', 'list_assistants', 'assistantSummaries')), source='wisdom:ListAssistants', method='ACCOUNT_COUNT')),
         ('L-80B507B3', 'Content per knowledge base', wisdom_content_per_knowledge_base),
+        ('L-8EAC5E16', 'Maximum number of message templates per knowledge base',
+         message_templates_per_knowledge_base),
+        ('L-F84C0EB2', 'Maximum number of versions per message template',
+         versions_per_message_template),
+        ('L-DA307021', 'Assistant association', assistant_associations),
     ],
     'sso': [
         ('L-B44C7A29', 'Permission sets allowed in IAM Identity Center', lambda c: dict(usage=_permission_sets(c), source='sso-admin:ListPermissionSets', method='ACCOUNT_COUNT')),
