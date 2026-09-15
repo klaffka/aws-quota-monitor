@@ -3,7 +3,7 @@ import os
 import json
 import boto3
 from botocore.config import Config
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, UnknownServiceError
 from modules.qmcore.model import measurement, utcnow
 
 CONFIG = Config(retries={'mode': 'adaptive', 'max_attempts': 8},
@@ -21,6 +21,19 @@ class NoData(ValueError):
 def session_from_env():
     return boto3.Session(profile_name=os.getenv('QM_AWS_PROFILE') or os.getenv('AWS_PROFILE'),
                          region_name=os.getenv('AWS_REGION') or os.getenv('AWS_DEFAULT_REGION'))
+
+
+def sdk_call(ctx, service, method, key=None, **kwargs):
+    """Call an API, reporting a service this SDK no longer ships as unsupported.
+
+    The call is still attempted, so a check starts working again by itself once
+    botocore restores the client.
+    """
+    try:
+        return ctx.call(service, method, key, **kwargs)
+    except UnknownServiceError:
+        raise Unsupported(f'This SDK ships no {service} client, so no inventory '
+                          'can be read') from None
 
 
 def paginate(client, method, key, **kwargs):

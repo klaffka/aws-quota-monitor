@@ -134,6 +134,11 @@ All notable changes to this project are recorded here. Versions follow
 - The Keyspaces checks addressed a `cassandra` client that botocore does not
   ship and listed tables without the keyspace those listings require, so both
   quotas always failed.
+- EFS and EMR addressed their Service Quotas service codes as SDK clients, so
+  every check in both modules errored; a test now proves each check module only
+  names clients botocore ships. The retired Evidently, IoT Analytics, IoT
+  Events, QLDB and RoboMaker clients report as unsupported through one shared
+  helper instead of failing the run.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

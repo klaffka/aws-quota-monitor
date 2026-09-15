@@ -95,5 +95,5 @@ def test_iot_events_reports_the_missing_client_as_unsupported():
 
     ctx = CheckContext(boto3.Session(region_name='eu-central-1'),
                        account='123456789012')
-    with pytest.raises(Unsupported, match='no AWS IoT Events client'):
+    with pytest.raises(Unsupported, match='no iotevents client'):
         alarm_models(ctx)

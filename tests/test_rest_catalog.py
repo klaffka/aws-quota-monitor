@@ -9,7 +9,7 @@ def test_rest_catalog_resource_counts():
     # CodeDeploy lists application names, the others list resource objects.
     c = Mock()
     c.call.side_effect = [['app'], [{'a': 1}], [{'NumberOfNodes': 2}],
-                          [{'a': 1}], [{'a': 1}]]
+                          [{'FileSystemId': 'fs-11111111'}], [{'a': 1}]]
     assert CD[0][2](c)['usage'] == 1
     assert EKS[0][2](c)['usage'] == 1
     assert RS[0][2](c)['usage'] == 2
