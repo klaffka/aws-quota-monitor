@@ -58,6 +58,8 @@ def test_no_statement_grants_the_same_action_twice():
 # API Gateway authorises by HTTP verb rather than by operation, and S3's IAM
 # action names differ from its API operation names.
 VERB_AUTHORISED = {'apigateway', 'apigatewayv2'}
+# CloudWatch signs as `monitoring` but authorises as `cloudwatch`.
+PREFIX_ALIASES = {'monitoring': 'cloudwatch'}
 S3_ALIASES = {
     'ListBuckets': 'ListAllMyBuckets',
     'GetBucketReplication': 'GetReplicationConfiguration',
@@ -92,3 +94,48 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
             if S3_ALIASES.get(operation, operation) not in granted:
                 ungranted.append(f'{module_id(path)}: {service}:{operation}')
     assert not ungranted, f'operations called without an IAM grant: {ungranted}'
+
+
+def test_every_operation_a_check_actually_makes_is_granted():
+    """The AST guard above only sees a call whose service and operation are
+    literal at the ctx.call node. Most modules route through a helper that takes
+    the operation as a parameter, so roughly half the call sites are invisible
+    to it and a missing grant surfaces as AccessDenied in production.
+
+    The smoke harness records every call a check really makes, so the policy is
+    checked against that instead of against what the source happens to spell out.
+    """
+    import boto3
+    from botocore import xform_name
+
+    from tests.shape_harness import entries, entry_points, run, run_entry
+    from tests.test_check_client_names import RETIRED
+
+    session = boto3.Session(region_name='eu-central-1')
+    available = set(session.get_available_services())
+    granted = {(match.group(1), match.group(2))
+               for match in ACTION.finditer(POLICY.read_text(encoding='utf-8'))}
+    called = set()
+    for _module, service, checks in entries():
+        _results, sites = run(service, checks)
+        called.update(sites)
+    for _module, entry, keys in entry_points():
+        run_entry(entry, keys)
+    models, ungranted = {}, set()
+    for service, method, _key in called:
+        if service in RETIRED or service not in available or service in VERB_AUTHORISED:
+            continue
+        if service not in models:
+            models[service] = session.client(service).meta.service_model
+        model = models[service]
+        operation = next((name for name in model.operation_names
+                          if xform_name(name) == method), None)
+        if operation is None:
+            continue
+        # The prefix matters: a grant written for the wrong one authorises
+        # nothing, which is how MWAA Serverless ran under `airflow:`.
+        prefix = model.metadata.get('signingName') or model.metadata.get('endpointPrefix')
+        prefix = PREFIX_ALIASES.get(prefix, prefix)
+        if (prefix, S3_ALIASES.get(operation, operation)) not in granted:
+            ungranted.add(f'{prefix}:{operation}')
+    assert not ungranted, f'operations called without an IAM grant: {sorted(ungranted)}'

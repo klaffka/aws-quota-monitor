@@ -4,10 +4,16 @@ from modules.qmchecks.dms_resources import CHECKS as DMS
 from modules.qmchecks.mgn import CHECKS as MGN
 
 
+# The scoped checks group or filter their inventory; they are covered by
+# tests/test_dms_migrations.py against a real client.
+SCOPED = {'L-4182EDE9', 'L-62EFB27A', 'L-FBEA20FB'}
+
+
 def test_dms_resource_counts():
     ctx = Mock()
     ctx.call.return_value = [{'id': 'resource'}]
-    assert [check[2](ctx)['usage'] for check in DMS] == [1] * len(DMS)
+    totals = [check[2](ctx)['usage'] for check in DMS if check[0] not in SCOPED]
+    assert totals == [1] * (len(DMS) - len(SCOPED))
 
 
 def test_dms_inventory_checks_cover_subnet_groups_projects_and_data_providers():
