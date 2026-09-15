@@ -2,7 +2,8 @@ import json
 import pytest
 
 from scripts.quota_coverage import (catalog_coverage, compare_baseline, load_catalog,
-                                    merge_catalogs, render_table, totals)
+                                    merge_catalogs, render_table, totals,
+                                    unmeasurable)
 
 
 def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
@@ -197,3 +198,29 @@ def test_operation_throttle_limits_are_excluded_but_named_counts_are_not():
     row, = catalog_coverage(quotas, set())
     # Only the bare "<Operation> throttle limit" wording names a rate.
     assert (row['unmeasurable'], row['measurable']) == (1, 2)
+
+
+def test_rate_quotas_are_excluded_alongside_their_burst_twin():
+    quotas = [named('rate', 'CreateCase rate quota'),
+              named('burst', 'CreateCase burst quota'),
+              named('count', 'Cases per domain')]
+    row, = catalog_coverage(quotas, set())
+    assert (row['unmeasurable'], row['measurable']) == (2, 1)
+
+
+def test_every_catalog_rate_quota_has_an_excluded_burst_twin():
+    """The rate rule rests on that pairing, so a lone rate quota must fail here."""
+    import re
+    catalog = load_catalog('tests/fixtures/quota-catalog-union.json')
+    names = {}
+    for quota in catalog:
+        names.setdefault(quota['ServiceCode'], {})[quota.get('QuotaName') or ''] = quota
+    unpaired = []
+    for service, entries in names.items():
+        for name in entries:
+            if not re.search(r'rate quota$', name, re.I):
+                continue
+            twin = re.sub(r'rate quota$', 'burst quota', name, flags=re.I)
+            if unmeasurable(entries.get(twin, {})) != 'API_BURST':
+                unpaired.append((service, name))
+    assert not unpaired, f'rate quotas without a burst twin: {unpaired[:5]}'

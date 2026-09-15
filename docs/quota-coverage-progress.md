@@ -21,19 +21,19 @@ with the single-export figure kept for comparison.
 | compatibleMetric | 2,535 | 2,535 |
 | covered | 4,517 | 4,282 |
 | uncovered | 7,564 | 6,116 |
-| unmeasurable | 3,253 | 2,976 |
-| measurable | 8,828 | 7,422 |
+| unmeasurable | 3,342 | 3,043 |
+| measurable | 8,739 | 7,355 |
 
 Implemented measurement availability: **37.39%** of the whole union, or
-**51.17%** of the 8,828 quotas whose usage can be counted at all.
+**51.69%** of the 8,739 quotas whose usage can be counted at all.
 
-3,253 quotas are excluded from the second denominator by three rules in
+3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
 
 | Reason | Quotas | Rule |
 | --- | ---: | --- |
 | `TOKEN_BUCKET` | 1,526 | `... request bucket maximum capacity` / `... refill rate`, all EC2 |
-| `API_RATE` | 1,528 | name contains `TPS` as a word, `per second` or `throttle rate`, or is exactly `<Operation> throttle limit` |
+| `API_RATE` | 1,617 | name contains `TPS` as a word, `per second` or `throttle rate`, is exactly `<Operation> throttle limit`, or ends in `rate quota` |
 | `API_BURST` | 199 | name contains `burst`, except EFS `Bursting throughput`, which is a published metric |
 
 A bucket's occupancy and a per-second peak are not derivable from one-minute
@@ -59,7 +59,17 @@ covers 215 quotas across ten services and none of them is covered today. The
 `<Operation> throttle limit` form is anchored on purpose: Textract writes
 `CreateAdapter throttle limit for max number of adapters per account` for a
 quota that really is a resource count, and a loose `throttle limit` rule would
-have excluded six countable Textract quotas.
+have excluded six countable Textract quotas. `rate quota` rests on the
+catalog's own structure rather than on wording: all 89 such quotas pair exactly
+with an `<Operation> burst quota` that the burst rule already excludes, so each
+pair is the refill rate and the depth of one token bucket.
+`test_every_catalog_rate_quota_has_an_excluded_burst_twin` fails if AWS ever
+adds a `rate quota` without that twin.
+
+Per-minute quotas stay in the measurable base on purpose: a one-minute
+CloudWatch sum is exactly the window they name, so Bedrock's
+`requests per minute` and `tokens per minute` quotas are a measurement problem
+rather than an impossible one.
 
 Custom and compatible metric counts overlap; covered is their union.
 `tests/fixtures/coverage-baseline.json` holds these totals and CI fails on any

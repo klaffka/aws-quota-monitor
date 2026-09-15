@@ -58,6 +58,11 @@ PER_SECOND = re.compile(r'\bTPS\b|per second|throttle rate', re.IGNORECASE)
 # Anchored, because Textract uses "throttle limit for max number of adapters per
 # account" and similar wording for quotas that really are resource counts.
 OPERATION_THROTTLE = re.compile(r'^\S+ throttle limit$', re.IGNORECASE)
+# Every "<Operation> rate quota" in the catalog has a matching "<Operation>
+# burst quota", which the burst rule already excludes: the pair is the refill
+# rate and the depth of one token bucket. tests/test_quota_coverage.py asserts
+# the pairing against the committed catalog.
+RATE_QUOTA = re.compile(r'rate quota$', re.IGNORECASE)
 
 UNMEASURABLE_RULES = (
     # An EC2 request bucket's depth and refill are not observable per account.
@@ -67,7 +72,8 @@ UNMEASURABLE_RULES = (
     # publishes a usage metric for such a quota it counts as covered before
     # these rules are consulted, and no custom check measures one today.
     ('API_RATE', lambda name: bool(PER_SECOND.search(name))
-                             or bool(OPERATION_THROTTLE.match(name))),
+                             or bool(OPERATION_THROTTLE.match(name))
+                             or bool(RATE_QUOTA.search(name))),
     # Burst allowances are token buckets too, but EFS bursting throughput is a
     # published metric rather than a request bucket.
     ('API_BURST', lambda name: 'burst' in name.lower() and 'throughput' not in name.lower()),
