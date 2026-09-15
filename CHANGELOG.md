@@ -27,6 +27,7 @@ All notable changes to this project are recorded here. Versions follow
   and Pinpoint import job, event campaign and journey activity measurements.
 - IVS stage, composition, public key, stream key and playback measurements.
 - Storage Gateway tape, volume, cache and upload buffer capacity measurements.
+- Application Migration Service server, wave, job and action measurements.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,656 uncovered rate quotas leave the measurable denominator.
@@ -115,6 +116,8 @@ All notable changes to this project are recorded here. Versions follow
   time window need.
 - Pinpoint listings sent the page token as `NextToken`, which those APIs reject,
   and called the nonexistent `GetJourneys`; projects were also read unpaginated.
+- The Application Migration Service application count called the nonexistent
+  `DescribeApplications`.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

@@ -18,5 +18,8 @@ def test_dms_inventory_checks_cover_subnet_groups_projects_and_data_providers():
 
 def test_mgn_counts_only_non_archived_applications():
     ctx = Mock()
-    ctx.call.return_value = [{'applicationID': 'a'}, {'applicationID': 'b', 'isArchived': True}]
-    assert MGN[0][2](ctx)['usage'] == 1
+    ctx.call.return_value = [{'applicationID': 'a', 'isArchived': False},
+                             {'applicationID': 'b', 'isArchived': True}]
+    by_code = {code: check for code, _, check in MGN}
+    assert by_code['L-D5507441'](ctx)['usage'] == 1
+    assert by_code['L-391504A2'](ctx)['usage'] == 1
