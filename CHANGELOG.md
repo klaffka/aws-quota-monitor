@@ -28,6 +28,7 @@ All notable changes to this project are recorded here. Versions follow
 - IVS stage, composition, public key, stream key and playback measurements.
 - Storage Gateway tape, volume, cache and upload buffer capacity measurements.
 - Application Migration Service server, wave, job and action measurements.
+- HealthOmics run, task, store, share and import job measurements.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,656 uncovered rate quotas leave the measurable denominator.
