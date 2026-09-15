@@ -28,7 +28,47 @@ def access_points_per_file_system(ctx):
     return maximum(values, 'FileSystem', 'elasticfilesystem:DescribeAccessPoints')
 
 
+def mount_targets(ctx):
+    """Yield (file system, mount target) pairs; the listing needs a parent."""
+    for identity in file_systems(ctx):
+        for target in ctx.call(EFS, 'describe_mount_targets', 'MountTargets',
+                               FileSystemId=identity):
+            yield identity, target
+
+
+def vpcs_per_file_system(ctx):
+    """A file system reaches a VPC through its mount targets."""
+    vpcs = {}
+    for identity in file_systems(ctx):
+        found = set()
+        for target in ctx.call(EFS, 'describe_mount_targets', 'MountTargets',
+                               FileSystemId=identity):
+            vpc = target.get('VpcId')
+            if vpc:
+                found.add(vpc)
+        vpcs[identity] = len(found)
+    return maximum([(identity, count, None) for identity, count in vpcs.items()],
+                   'FileSystem', 'elasticfilesystem:DescribeMountTargets')
+
+
+def security_groups_per_mount_target(ctx):
+    values = []
+    for _identity, target in mount_targets(ctx):
+        mount_target = target.get('MountTargetId')
+        if not isinstance(mount_target, str) or not mount_target:
+            raise NoData('EFS mount target is missing its identity')
+        groups = ctx.call(EFS, 'describe_mount_target_security_groups',
+                          MountTargetId=mount_target).get('SecurityGroups')
+        if not isinstance(groups, list):
+            raise NoData('EFS mount target has no security group list')
+        values.append((mount_target, len(groups), None))
+    return maximum(values, 'FileSystemMountTarget',
+                   'elasticfilesystem:DescribeMountTargetSecurityGroups')
+
+
 CHECKS = [
+    ('L-03A6A61D', 'VPCs per file system', vpcs_per_file_system),
+    ('L-3D348029', 'Security groups per mount target', security_groups_per_mount_target),
     ('L-848C634D', 'File systems per account',
      lambda ctx: dict(usage=len(file_systems(ctx)),
                       source='elasticfilesystem:DescribeFileSystems',

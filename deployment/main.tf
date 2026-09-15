@@ -1413,6 +1413,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "lightsail:GetContainerImages"
           , "mediastore:ListContainers"
           , "mediatailor:ListSourceLocations"
+          , "mediatailor:DescribeSourceLocation"
           , "mediatailor:ListChannels"
           , "kinesisvideo:ListStreams"
           , "kinesisvideo:ListSignalingChannels"

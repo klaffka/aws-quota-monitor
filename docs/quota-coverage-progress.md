@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,542 | 2,076 |
+| implemented | 2,547 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,923 | 4,457 |
-| uncovered | 7,158 | 5,941 |
+| covered | 4,928 | 4,457 |
+| uncovered | 7,153 | 5,941 |
 | unmeasurable | 5,013 | 3,055 |
 | measurable | 7,068 | 7,343 |
 
-Implemented measurement availability: **40.75%** of the whole union, or
-**69.65%** of the 7,068 quotas whose usage can be counted at all.
+Implemented measurement availability: **40.79%** of the whole union, or
+**69.72%** of the 7,068 quotas whose usage can be counted at all.
 
 5,013 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -557,12 +557,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,145 quotas are measurable and still uncovered. Sorting them by what their
+2,140 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 1,094 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 1,089 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 750 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
 | rate-shaped | 301 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 

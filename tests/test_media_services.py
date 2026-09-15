@@ -11,7 +11,10 @@ def test_media_service_resource_counts():
                             [{'StreamName': 'stream'}], [{'ChannelName': 'signaling'}],
                             [{'StreamName': 'retained', 'DataRetentionInHours': 1}]]
     assert STORE[0][2](ctx)['usage'] == 1
-    assert [check[2](ctx)['usage'] for check in TAILOR] == [1, 1]
+    # Address the account-total checks by quota code; list order is not a contract.
+    account_totals = {'L-2290981E', 'L-29DF1B92'}
+    assert [check[2](ctx)['usage'] for check in TAILOR
+            if check[0] in account_totals] == [1, 1]
     assert [check[2](ctx)['usage'] for check in VIDEO] == [1, 1, 1]
 
 

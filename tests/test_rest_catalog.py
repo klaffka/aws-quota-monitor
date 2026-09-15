@@ -13,5 +13,6 @@ def test_rest_catalog_resource_counts():
     assert CD[0][2](c)['usage'] == 1
     assert EKS[0][2](c)['usage'] == 1
     assert RS[0][2](c)['usage'] == 2
-    assert EFS[0][2](c)['usage'] == 1
+    file_systems = next(check for check in EFS if check[0] == 'L-848C634D')
+    assert file_systems[2](c)['usage'] == 1
     assert MQ[0][2](c)['usage'] == 1
