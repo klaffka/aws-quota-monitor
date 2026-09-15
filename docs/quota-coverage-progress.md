@@ -17,12 +17,12 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,136 | 1,901 |
+| implemented | 2,136 | 1,902 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,517 | 4,282 |
-| uncovered | 7,564 | 6,116 |
-| unmeasurable | 3,342 | 3,043 |
-| measurable | 8,739 | 7,355 |
+| covered | 4,517 | 4,283 |
+| uncovered | 7,564 | 6,115 |
+| unmeasurable | 3,342 | 3,055 |
+| measurable | 8,739 | 7,343 |
 
 Implemented measurement availability: **37.39%** of the whole union, or
 **51.69%** of the 8,739 quotas whose usage can be counted at all.
