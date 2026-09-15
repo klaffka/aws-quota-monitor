@@ -12,4 +12,9 @@ def test_app_runner_amplify_and_lightsail_resource_counts():
     assert AMPLIFY[0][2](ctx)['usage'] == 1
     ctx.call.return_value = [{'name': 'resource'}]
     ctx.call.side_effect = None
-    assert [check[2](ctx)['usage'] for check in LIGHTSAIL] == [1] * len(LIGHTSAIL)
+    # The plain regional inventories; tests/test_lightsail.py covers the
+    # per-resource checks, which read sizes and nested lists instead.
+    counted = {'L-4259AF9B', 'L-3B2B13A1', 'L-BB561519', 'L-1DB37119', 'L-C512E6B9',
+               'L-CF67FCDA', 'L-D5FCDF87'}
+    assert [check[2](ctx)['usage'] for check in LIGHTSAIL
+            if check[0] in counted] == [1] * len(counted)

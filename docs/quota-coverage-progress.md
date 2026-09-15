@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,193 | 1,948 |
+| implemented | 2,211 | 1,960 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,574 | 4,329 |
-| uncovered | 7,507 | 6,069 |
+| covered | 4,592 | 4,341 |
+| uncovered | 7,489 | 6,057 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **37.86%** of the whole union, or
-**52.34%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **38.01%** of the whole union, or
+**52.55%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -78,6 +78,13 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened Lightsail from 3 to 21 catalog quotas: distributions, load
+  balancers, buckets and certificates per Region, active certificates counted as
+  the issued ones, block storage disks per instance, the largest disk and the
+  attached total, container service nodes, deployment containers, custom
+  domains, deployment versions and stored images per service, and the
+  alternative domain names, cache behaviours and forwarded cookie, header and
+  query string allow lists per distribution.
 - Measured CodeBuild's 26 concurrent build quotas from one traversal. Each
   quota names an environment type and a compute size, so the running builds are
   grouped by that pair and every quota reads its own cell. The scan is bounded
