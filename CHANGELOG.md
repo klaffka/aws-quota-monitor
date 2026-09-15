@@ -45,6 +45,8 @@ All notable changes to this project are recorded here. Versions follow
 - EC2 transit gateway multicast domain, group, interface and association
   measurements, Direct Connect and VPC attachment counts from both ends, and
   Verified Access endpoint and FPGA image counts.
+- Capacity block measurements for the P5, P5e, P5en, P6 and Trainium families,
+  and Client VPN session and route measurements per endpoint.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,671 uncovered rate quotas leave the measurable denominator.

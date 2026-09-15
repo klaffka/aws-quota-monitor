@@ -336,6 +336,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           "ec2:DescribeVerifiedAccessTrustProviders",
           "ec2:DescribeClientVpnEndpoints",
           "ec2:DescribeClientVpnAuthorizationRules",
+          "ec2:DescribeClientVpnConnections",
+          "ec2:DescribeClientVpnRoutes",
           "ec2:DescribeVpnConnections",
           # VPC collector checks
           "ec2:DescribeVpcs",

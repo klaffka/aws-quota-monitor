@@ -137,3 +137,39 @@ def test_fpga_images_are_limited_to_this_account():
             {'Owners': ['self']})
         assert check('L-8FBBDF0C')(ctx)['usage'] == 2
         stub.assert_no_pending_responses()
+
+
+def test_client_vpn_sessions_and_routes_are_reported_per_endpoint():
+    ctx = context('L-C4B238BF')
+    endpoint = 'cvpn-endpoint-11111111111111111'
+    subnet = 'subnet-11111111111111111'
+    with Stubber(ctx.client('ec2')) as stub:
+        stub.add_response('describe_client_vpn_endpoints', {
+            'ClientVpnEndpoints': [{'ClientVpnEndpointId': endpoint}]}, {})
+        stub.add_response('describe_client_vpn_connections', {'Connections': [
+            {'ConnectionId': 'cvpn-connection-1', 'Status': {'Code': 'active'}},
+            {'ConnectionId': 'cvpn-connection-2', 'Status': {'Code': 'terminated'}}]},
+            {'ClientVpnEndpointId': endpoint})
+        sessions = check('L-C4B238BF')(ctx)
+        assert (sessions['usage'], sessions['resource_id']) == (1, endpoint)
+        stub.add_response('describe_client_vpn_routes', {'Routes': [
+            {'ClientVpnEndpointId': endpoint, 'TargetSubnet': subnet,
+             'DestinationCidr': '10.0.0.0/16'},
+            {'ClientVpnEndpointId': endpoint, 'TargetSubnet': subnet,
+             'DestinationCidr': '10.1.0.0/16'}]}, {'ClientVpnEndpointId': endpoint})
+        routes = check('L-401D78F7')(ctx)
+        assert (routes['usage'], routes['resource_id']) == (2, f'{endpoint}/{subnet}')
+        stub.assert_no_pending_responses()
+
+
+def test_an_unknown_client_vpn_connection_status_raises_nodata():
+    ctx = context('L-C4B238BF')
+    endpoint = 'cvpn-endpoint-11111111111111111'
+    with Stubber(ctx.client('ec2')) as stub:
+        stub.add_response('describe_client_vpn_endpoints', {
+            'ClientVpnEndpoints': [{'ClientVpnEndpointId': endpoint}]}, {})
+        stub.add_response('describe_client_vpn_connections', {'Connections': [
+            {'ConnectionId': 'cvpn-connection-1', 'Status': {'Code': 'paused'}}]},
+            {'ClientVpnEndpointId': endpoint})
+        with pytest.raises(NoData, match='unknown status'):
+            check('L-C4B238BF')(ctx)

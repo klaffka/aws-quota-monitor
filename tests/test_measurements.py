@@ -99,7 +99,9 @@ def test_capacity_reservations_count_blocks_not_instances():
                 TotalInstanceCount=64, CapacityBlockId='block-1', CapacityReservationId='cr-1')
     ctx.call.return_value = [base, dict(base, CapacityReservationId='cr-2'), dict(base, State='scheduled', CapacityBlockId='future'),
         dict(base, OwnerId='other', CapacityBlockId='shared'), dict(base, ReservationType='default', CapacityBlockId='ordinary')]
-    assert capacity_blocks(ctx, 'p4d.24xlarge')['usage'] == 1
+    # The quota names a family, so every size of p4d counts against it.
+    assert capacity_blocks(ctx, 'p4d')['usage'] == 1
+    assert capacity_blocks(ctx, 'p5')['usage'] == 0
 
 
 def test_sg_direction_family_and_prefix_weight():

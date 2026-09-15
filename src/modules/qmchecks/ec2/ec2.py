@@ -3,6 +3,18 @@ from functools import partial
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 from modules.qmchecks.ec2.host_families import HOST_FAMILIES
 
+CLIENT_VPN_CONNECTION_STATES = {'active', 'failed-to-terminate', 'terminating',
+                                'terminated'}
+# Capacity block quotas per instance family, as the catalog names them.
+CAPACITY_BLOCK_FAMILIES = (
+    ('L-2C8F52B3', 'P4d', 'p4d'), ('L-CFF3E941', 'P4de', 'p4de'),
+    ('L-DA6814F2', 'P5', 'p5'), ('L-C45F30BC', 'P5e', 'p5e'),
+    ('L-4F9BB70B', 'P5en', 'p5en'), ('L-8B23CEF3', 'P6-B200', 'p6-b200'),
+    ('L-9C38E5AB', 'P6-B300', 'p6-b300'),
+    ('L-FCF0179E', 'P6e-GB200', 'p6e-gb200'),
+    ('L-2E30FD7D', 'TRN1', 'trn1'), ('L-64569A79', 'TRN2', 'trn2'),
+)
+
 
 def ami_sharing(ctx):
     images = ctx.call('ec2', 'describe_images', 'Images', Owners=['self'])
@@ -102,15 +114,53 @@ def vpn_rules(ctx):
     return maximum(values, 'ClientVpnEndpoint', 'ec2:DescribeClientVpnAuthorizationRules')
 
 
-def capacity_blocks(ctx, instance_type):
+def client_vpn_connections(ctx):
+    """Count the sessions an endpoint is currently carrying."""
+    values = []
+    for endpoint in vpn_endpoints(ctx):
+        identity = endpoint['ClientVpnEndpointId']
+        usage = 0
+        for connection in ctx.call('ec2', 'describe_client_vpn_connections',
+                                   'Connections', ClientVpnEndpointId=identity):
+            status = (connection.get('Status') or {}).get('Code')
+            if status not in CLIENT_VPN_CONNECTION_STATES:
+                raise NoData('Client VPN connection has an unknown status')
+            usage += status == 'active'
+        values.append((identity, usage, None))
+    return maximum(values, 'ClientVpnEndpoint', 'ec2:DescribeClientVpnConnections')
+
+
+def client_vpn_routes_per_association(ctx):
+    counts = {}
+    for endpoint in vpn_endpoints(ctx):
+        identity = endpoint['ClientVpnEndpointId']
+        for route in ctx.call('ec2', 'describe_client_vpn_routes', 'Routes',
+                              ClientVpnEndpointId=identity):
+            subnet = route.get('TargetSubnet')
+            if not subnet:
+                raise NoData('Client VPN route names no target network')
+            key = f'{identity}/{subnet}'
+            counts[key] = counts.get(key, 0) + 1
+    return maximum(((key, count, None) for key, count in counts.items()),
+                   'ClientVpnTargetNetwork', 'ec2:DescribeClientVpnRoutes')
+
+
+def capacity_blocks(ctx, family):
+    """Count this account's active capacity blocks of one instance family.
+
+    The quotas name a family ("P5", "TRN2"), not one size, so the family is
+    matched against the part of the instance type before the dot.
+    """
     reservations = ctx.call('ec2', 'describe_capacity_reservations', 'CapacityReservations')
     blocks = {r.get('CapacityBlockId') or r['CapacityReservationId'] for r in reservations
               if r.get('ReservationType') == 'capacity-block' and r.get('State') == 'active'
-              and r.get('InstanceType') == instance_type and r.get('OwnerId') == ctx.account
+              and str(r.get('InstanceType', '')).split('.')[0] == family
+              and r.get('OwnerId') == ctx.account
               and (not r.get('StartDate') or r['StartDate'] <= ctx.now)
               and (not r.get('EndDate') or ctx.now < r['EndDate'])}
     return dict(usage=len(blocks), source='ec2:DescribeCapacityReservations',
-                meta={'activeCapacityBlockIds': sorted(blocks)}, method='ACTIVE_BLOCK_COUNT')
+                meta={'instanceFamily': family, 'activeCapacityBlockIds': sorted(blocks)},
+                method='ACTIVE_BLOCK_COUNT')
 
 
 def dedicated_hosts(ctx, family):
@@ -275,8 +325,13 @@ CHECKS = [
     ('L-8EA77D34', 'Client VPN endpoints', lambda c: dict(usage=len(vpn_endpoints(c)), source='ec2:DescribeClientVpnEndpoints')),
     ('L-3E6EC3A3', 'VPN connections per region', lambda c: dict(usage=len(vpn_connections(c)), source='ec2:DescribeVpnConnections', method='ACCOUNT_COUNT')),
     ('L-B91E5754', 'VPN connections per VGW', vpn_connections_per_vgw),
-    ('L-2C8F52B3', 'Concurrent P4d Capacity Blocks per account', lambda c: capacity_blocks(c, 'p4d.24xlarge')),
-    ('L-CFF3E941', 'Concurrent P4de Capacity Blocks per account', lambda c: capacity_blocks(c, 'p4de.24xlarge')),
+    *[(code, f'Concurrent {label} Capacity Blocks per account',
+       partial(capacity_blocks, family=family))
+      for code, label, family in CAPACITY_BLOCK_FAMILIES],
+    ('L-C4B238BF', 'Concurrent client connections per Client VPN endpoint',
+     client_vpn_connections),
+    ('L-401D78F7', 'Routes per Client VPN target network association',
+     client_vpn_routes_per_association),
     ('L-5D439CF7', 'Verified Access Endpoints',
      lambda c: verified_access_count(c, 'describe_verified_access_endpoints',
                                      'VerifiedAccessEndpoints')),
