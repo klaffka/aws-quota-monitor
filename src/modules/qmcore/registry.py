@@ -9,6 +9,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.customer_profiles', 'profile'),
     ('modules.qmchecks.chime', 'chime'),
     ('modules.qmchecks.interconnect', 'interconnect'),
+    ('modules.qmchecks.rtbfabric', 'rtbfabric'),
     ('modules.qmchecks.tnb', 'tnb'),
     ('modules.qmchecks.drs', 'drs'),
     ('modules.qmchecks.schemas', 'schemas'),

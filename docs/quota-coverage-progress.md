@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,070 | 1,876 |
+| implemented | 2,075 | 1,881 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,451 | 4,257 |
-| uncovered | 7,630 | 6,141 |
+| covered | 4,456 | 4,262 |
+| uncovered | 7,625 | 6,136 |
 | unmeasurable | 3,214 | 2,976 |
 | measurable | 8,867 | 7,422 |
 
-Implemented measurement availability: **36.84%** of the whole union, or
-**50.20%** of the 8,867 quotas whose usage can be counted at all.
+Implemented measurement availability: **36.88%** of the whole union, or
+**50.25%** of the 8,867 quotas whose usage can be counted at all.
 
 3,214 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -63,6 +63,14 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured AWS RTB Fabric at 5 of 11 measurable catalog quotas: gateways across
+  both the requester and responder listings, links and certificate associations
+  per gateway, routing rules per link, and flow modules per link from the link
+  summaries. The external inbound and outbound link quotas would need the link's
+  connectivity and direction mapped onto AWS's external wording, which the API
+  does not state in those terms; availability zones per gateway would have to be
+  derived from the gateway's subnets through EC2; and the two `supported` quotas
+  describe a service capability rather than an inventory.
 - Completed AWS Telco Network Builder at 4 of 4 catalog quotas (function
   packages, network packages, network service instances, and the operations
   still `PROCESSING` or `CANCELLING`) and AWS Interconnect at 4 of 4 (created
