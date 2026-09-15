@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,103 | 1,889 |
+| implemented | 2,115 | 1,892 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,484 | 4,270 |
-| uncovered | 7,597 | 6,128 |
+| covered | 4,496 | 4,273 |
+| uncovered | 7,585 | 6,125 |
 | unmeasurable | 3,253 | 2,976 |
 | measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **37.12%** of the whole union, or
-**50.79%** of the 8,828 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.22%** of the whole union, or
+**50.93%** of the 8,828 quotas whose usage can be counted at all.
 
 3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -67,6 +67,18 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Completed AWS Migration Hub Orchestrator at 3 of 3 catalog quotas (workflows,
+  step groups per workflow, steps per step group), License Manager Linux
+  subscriptions at 1 of 1, EC2 fast launch at 1 of 1 (the largest configured
+  parallel launch count), and Amazon Connect outbound campaigns at 2 of 2. The
+  campaign summaries carry no state, so the active count asks
+  `GetCampaignStateBatch` in batches of 25 and raises `NoData` when a state
+  cannot be read rather than counting the campaign as inactive.
+- Measured AppFlow flows and connector profiles, and Inspector Classic
+  assessment targets, templates and runs. AppFlow's remaining quotas bound a
+  single run or record, are per-connector rates, or count executions that
+  `ListFlows` does not expose; `Instances in running assessments` counts the
+  instances an Inspector Classic run covers, which the run does not report.
 - Measured Amazon QuickSight approval policies at 4 of its 24 measurable catalog
   quotas: policies per account, policies per asset type, and the applicable and
   approver group lists on each policy. The visual, sheet control and calculated

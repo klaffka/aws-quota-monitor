@@ -17,6 +17,17 @@ from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
 from modules.qmchecks.rtbfabric import get_current_quotastatus_rtbfabric
 from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.dax import get_current_quotastatus_dax
+from modules.qmchecks.appflow import get_current_quotastatus_appflow
+from modules.qmchecks.connect_campaigns import (
+    get_current_quotastatus_connect_campaigns)
+from modules.qmchecks.ec2_fastlaunch import (
+    get_current_quotastatus_ec2fastlaunch)
+from modules.qmchecks.inspector_classic import (
+    get_current_quotastatus_inspector_classic)
+from modules.qmchecks.license_manager_linux_subscriptions import (
+    get_current_quotastatus_license_manager_linux_subscriptions)
+from modules.qmchecks.migrationhuborchestrator import (
+    get_current_quotastatus_migrationhuborchestrator)
 from modules.qmchecks.greengrass import get_current_quotastatus_greengrass
 from modules.qmchecks.quicksight import get_current_quotastatus_quicksight
 from modules.qmchecks.autoscaling_plans import get_current_quotastatus_autoscaling_plans
@@ -250,6 +261,14 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_rtbfabric(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_dax(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_appflow(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_connect_campaigns(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_ec2fastlaunch(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_inspector_classic(
+        ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_license_manager_linux_subscriptions(
+        ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_migrationhuborchestrator(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_greengrass(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_quicksight(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_autoscaling_plans(ctx=ctx, skip=official))

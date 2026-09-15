@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Migration Hub Orchestrator, Connect outbound campaign, Linux subscription,
+  EC2 fast launch, AppFlow and Inspector Classic measurements.
 - QuickSight approval policy and Greengrass V2 component measurements.
 - Complete Service Quotas request, Auto Scaling plan, Shield protection,
   Translate, CloudWatch RUM and CodeCommit coverage.
