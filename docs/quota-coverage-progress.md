@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,277 | 1,999 |
+| implemented | 2,320 | 2,042 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,658 | 4,380 |
-| uncovered | 7,423 | 6,018 |
+| covered | 4,701 | 4,423 |
+| uncovered | 7,380 | 5,975 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **38.56%** of the whole union, or
-**53.30%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **38.91%** of the whole union, or
+**53.79%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,21 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured AWS Elemental MediaLive at 20 catalog quotas, a service that had only
+  official metrics before: inputs grouped by push type, device, MediaConnect,
+  VPC destination and on-premises placement; channels by the codec and
+  resolution their input specification names and by whether they carry a CDI
+  specification; input security groups, multiplexes, networks, reservations, SDI
+  sources and signal maps; both template families; and nodes and channel
+  placement groups per cluster. `Pull Inputs` stays open because MediaLive names
+  the push direction in its input types but not the pull one.
+- Deepened Amazon FSx from 7 to 30 catalog quotas: storage capacity summed per
+  file system type and storage class, the per-file-system maxima, throughput and
+  IOPS read from each type's own configuration block, the Intelligent-Tiering
+  and provisioned read caches, file caches counted through `DescribeFileCaches`
+  rather than the file system listing, and backups grouped by file system type.
+  The catalog states these limits in GiB, MBps and IOPS, which is what the API
+  reports.
 - Deepened Amazon Forecast from 12 to 25 catalog quotas: dataset import jobs,
   datasets per dataset group, and the eleven parallel task counts. Forecast
   reports lifecycle statuses as `<VERB>_<STATE>`, so a resource counts as a

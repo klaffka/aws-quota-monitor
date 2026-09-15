@@ -24,10 +24,14 @@ def test_fsx_checks_filter_file_system_type_and_lustre_deployment():
         {'FileSystemType': 'LUSTRE', 'LustreConfiguration': {'DeploymentType': 'PERSISTENT_1'}},
         {'FileSystemType': 'LUSTRE', 'LustreConfiguration': {'DeploymentType': 'SCRATCH_1'}},
     ]
-    assert FSX_CHECKS[0][2](ctx)['usage'] == 1
-    assert FSX_CHECKS[3][2](ctx)['usage'] == 1
-    assert FSX_CHECKS[5][2](ctx)['usage'] == 1
-    assert FSX_CHECKS[6][2](ctx)['usage'] == 0
+    # Addressed by quota code, so the assertions survive a reordering.
+    def check(code):
+        return next(fn for quota, _, fn in FSX_CHECKS if quota == code)
+
+    assert check('L-C28C1403')(ctx)['usage'] == 1   # ONTAP file systems
+    assert check('L-9AFA1F09')(ctx)['usage'] == 1   # Lustre Persistent_1
+    assert check('L-C48231E5')(ctx)['usage'] == 1   # Lustre Scratch
+    assert check('L-5B89F9CE')(ctx)['usage'] == 0   # Windows file systems
 
 
 def test_lakeformation_administrators_read_data_lake_settings():
