@@ -39,6 +39,9 @@ All notable changes to this project are recorded here. Versions follow
 - CodeDeploy running-deployment instance, traffic route listener and GitHub
   token measurements, and the AgentCore generated-policy rolling window.
 - Keyspaces user-defined type measurements in both reference directions.
+- WAF Classic inventory and condition-depth measurements: rules, rate-based
+  rules, geo match sets, the filters of every match condition type, and logging
+  destinations per web ACL.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,671 uncovered rate quotas leave the measurable denominator.
