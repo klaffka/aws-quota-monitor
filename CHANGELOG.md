@@ -148,6 +148,10 @@ All notable changes to this project are recorded here. Versions follow
   channel groups, Timestream InfluxDB instances and Voice ID domains all
   reported zero usage with an OK status. A third test proves every paginated
   key exists in its operation's response.
+- 60 IAM actions in the collector policy named SDK client names rather than
+  service prefixes (`voice-id` for `voiceid`, `amp` for `aps`, `connectcases`
+  for `cases` and more), so those calls would have been denied; duplicate
+  grants inside a statement are gone and a test checks both.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a
