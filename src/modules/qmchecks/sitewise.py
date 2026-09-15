@@ -26,6 +26,34 @@ def count(ctx, method, key):
                 source=f'iotsitewise:{method}', method='ACCOUNT_COUNT')
 
 
+def portals(ctx):
+    return [required(portal, 'id', 'portal')
+            for portal in ctx.call('iotsitewise', 'list_portals', 'portalSummaries')]
+
+
+def projects(ctx):
+    """Return every project id. Projects are listed under one portal at a time,
+    and the listing is read in full before descending so the request order does
+    not depend on what the caller does with each project."""
+    return [(portal, required(project, 'id', 'project'))
+            for portal in portals(ctx)
+            for project in ctx.call('iotsitewise', 'list_projects', 'projectSummaries',
+                                    portalId=portal)]
+
+
+def projects_per_portal(ctx):
+    return maximum([(portal, len(ctx.call('iotsitewise', 'list_projects',
+                                          'projectSummaries', portalId=portal)), None)
+                    for portal in portals(ctx)],
+                   'IoTSiteWisePortal', 'iotsitewise:ListPortals+ListProjects')
+
+
+def per_project(ctx, method, key):
+    return maximum([(project, len(ctx.call('iotsitewise', method, key, projectId=project)), None)
+                    for _portal, project in projects(ctx)],
+                   'IoTSiteWiseProject', f'iotsitewise:ListProjects+{method}')
+
+
 def models(ctx, model_types):
     items = unique(ctx.call('iotsitewise', 'list_asset_models', 'assetModelSummaries',
                             assetModelTypes=sorted(model_types)), 'id', 'model')
@@ -334,6 +362,11 @@ CHECKS = [
     ('L-CB5C18A8', 'Asset models per Region per account',
      lambda ctx: model_count(ctx, {'ASSET_MODEL', 'COMPONENT_MODEL'})),
     ('L-A5652910', 'Portals per Region per account', lambda ctx: count(ctx, 'list_portals', 'portalSummaries')),
+    ('L-116F669B', 'Number of projects per portal', projects_per_portal),
+    ('L-81C6A4F0', 'Number of dashboards per project',
+     lambda ctx: per_project(ctx, 'list_dashboards', 'dashboardSummaries')),
+    ('L-AF558AF7', 'Number of root assets per project',
+     lambda ctx: per_project(ctx, 'list_project_assets', 'assetIds')),
     ('L-179151C6', 'Gateways per Region per account', lambda ctx: count(ctx, 'list_gateways', 'gatewaySummaries')),
     ('L-37C04251', 'Number of interface per Region per account',
      lambda ctx: model_count(ctx, {'INTERFACE'})),
