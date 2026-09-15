@@ -53,7 +53,9 @@ def test_appstream_and_iot_resource_counts():
     assert [check[2](ctx)['usage'] for check in APPSTREAM] == [1, 1, 1, 1, 1, 1]
     ctx.call.side_effect = None
     ctx.call.return_value = [{'jobTemplateArn': 'arn'}]
-    assert IOT[1][2](ctx)['usage'] == 1
+    # Address the check by its quota code; the list order is not a contract.
+    job_templates = next(check for check in IOT if check[0] == 'L-B2C87795')
+    assert job_templates[2](ctx)['usage'] == 1
 
 
 def test_iot_account_resource_counts_use_paginated_list_apis():

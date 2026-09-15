@@ -1222,6 +1222,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "iot:ListCustomMetrics"
           , "iot:ListStreams"
           , "iot:ListFleetMetrics"
+          , "iot:DescribeFleetMetric"
+          , "iot:GetIndexingConfiguration"
           , "iot:ListProvisioningTemplates"
           , "iot:ListProvisioningTemplateVersions"
           , "iot:ListPolicies"

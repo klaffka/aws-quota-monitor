@@ -113,7 +113,44 @@ def dynamic_thing_groups(ctx):
                 method='ACCOUNT_COUNT')
 
 
+def index_custom_fields(ctx, section):
+    """Count the custom fields configured for one fleet index.
+
+    GetIndexingConfiguration returns the configuration whether or not indexing
+    is enabled, and a disabled index simply has no custom fields.
+    """
+    configuration = ctx.call(IOT, 'get_indexing_configuration').get(section)
+    if not isinstance(configuration, dict):
+        raise NoData(f'IoT indexing configuration has no {section}')
+    fields = configuration.get('customFields') or []
+    if not isinstance(fields, list):
+        raise NoData(f'IoT {section} has an invalid custom field list')
+    return dict(usage=len(fields), source='iot:GetIndexingConfiguration',
+                method='ACCOUNT_COUNT')
+
+
+def percentiles_per_fleet_metric(ctx):
+    """Only a percentile aggregation carries values; the others carry none."""
+    values = []
+    for metric in ctx.call(IOT, 'list_fleet_metrics', 'fleetMetrics'):
+        name = metric.get('metricName')
+        if not isinstance(name, str) or not name:
+            raise NoData('IoT fleet metric is missing its name')
+        detail = ctx.call(IOT, 'describe_fleet_metric', metricName=name)
+        if detail.get('metricName') != name:
+            raise NoData('IoT fleet metric detail has a different identity')
+        aggregation = detail.get('aggregationType') or {}
+        values.append((name, len(aggregation.get('values') or ()), None))
+    return maximum(values, 'IoTFleetMetric', 'iot:ListFleetMetrics+DescribeFleetMetric')
+
+
 CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups', dynamic_thing_groups),
+          ('L-AE68DCD9', 'Maximum number of custom fields in AWS things index',
+           lambda ctx: index_custom_fields(ctx, 'thingIndexingConfiguration')),
+          ('L-8B2A08E6', 'Maximum number of custom fields in AWS thing groups index',
+           lambda ctx: index_custom_fields(ctx, 'thingGroupIndexingConfiguration')),
+          ('L-24513B55', 'Maximum number of percentile values per fleet metric',
+           percentiles_per_fleet_metric),
           ('L-B2C87795', 'Maximum number of job templates',
            lambda ctx: dict(usage=len(ctx.call('iot', 'list_job_templates', 'jobTemplates')),
                             source='iot:ListJobTemplates', method='ACCOUNT_COUNT')),
