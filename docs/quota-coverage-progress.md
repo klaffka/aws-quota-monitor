@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,115 | 1,892 |
+| implemented | 2,119 | 1,892 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,496 | 4,273 |
-| uncovered | 7,585 | 6,125 |
+| covered | 4,500 | 4,273 |
+| uncovered | 7,581 | 6,125 |
 | unmeasurable | 3,253 | 2,976 |
 | measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **37.22%** of the whole union, or
-**50.93%** of the 8,828 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.25%** of the whole union, or
+**50.97%** of the 8,828 quotas whose usage can be counted at all.
 
 3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -67,6 +67,12 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Completed the AWS Snow Family at 2 of 2 catalog quotas and VM Import/Export at
+  2 of 2. Snow devices are counted from the jobs that hold them, excluding jobs
+  that are `Complete` or `Cancelled`, and the Edge and Snowcone families are
+  separated by device type. The two VM Import/Export quotas cover different
+  operation families, so each counts only its own task inventories and only
+  tasks that are still `active` or `cancelling`.
 - Completed AWS Migration Hub Orchestrator at 3 of 3 catalog quotas (workflows,
   step groups per workflow, steps per step group), License Manager Linux
   subscriptions at 1 of 1, EC2 fast launch at 1 of 1 (the largest configured

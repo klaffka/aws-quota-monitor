@@ -17,6 +17,8 @@ from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
 from modules.qmchecks.rtbfabric import get_current_quotastatus_rtbfabric
 from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.dax import get_current_quotastatus_dax
+from modules.qmchecks.snowball import get_current_quotastatus_snowball
+from modules.qmchecks.vmimportexport import get_current_quotastatus_vmimportexport
 from modules.qmchecks.appflow import get_current_quotastatus_appflow
 from modules.qmchecks.connect_campaigns import (
     get_current_quotastatus_connect_campaigns)
@@ -261,6 +263,8 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_rtbfabric(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_dax(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_snowball(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_vmimportexport(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_appflow(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_connect_campaigns(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_ec2fastlaunch(ctx=ctx, skip=official))

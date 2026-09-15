@@ -12,6 +12,8 @@ _CHECK_MODULES = (
     ('modules.qmchecks.rtbfabric', 'rtbfabric'),
     ('modules.qmchecks.tnb', 'tnb'),
     ('modules.qmchecks.dax', 'dax'),
+    ('modules.qmchecks.snowball', 'snowball'),
+    ('modules.qmchecks.vmimportexport', 'vmimportexport'),
     ('modules.qmchecks.appflow', 'appflow'),
     ('modules.qmchecks.connect_campaigns', 'connect-campaigns'),
     ('modules.qmchecks.ec2_fastlaunch', 'ec2fastlaunch'),

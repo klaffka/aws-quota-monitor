@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Complete Snow Family and VM Import/Export coverage.
 - Migration Hub Orchestrator, Connect outbound campaign, Linux subscription,
   EC2 fast launch, AppFlow and Inspector Classic measurements.
 - QuickSight approval policy and Greengrass V2 component measurements.
