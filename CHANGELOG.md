@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Complete Service Quotas request, Auto Scaling plan, Shield protection,
+  Translate, CloudWatch RUM and CodeCommit coverage.
 - Complete DAX and License Manager user subscription coverage, and Textract
   in-progress adapter version measurements.
 - AWS RTB Fabric gateway, link and routing measurements.

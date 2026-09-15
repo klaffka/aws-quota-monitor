@@ -17,6 +17,12 @@ from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
 from modules.qmchecks.rtbfabric import get_current_quotastatus_rtbfabric
 from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.dax import get_current_quotastatus_dax
+from modules.qmchecks.autoscaling_plans import get_current_quotastatus_autoscaling_plans
+from modules.qmchecks.codecommit import get_current_quotastatus_codecommit
+from modules.qmchecks.rum import get_current_quotastatus_rum
+from modules.qmchecks.servicequotas import get_current_quotastatus_servicequotas
+from modules.qmchecks.shield import get_current_quotastatus_shield
+from modules.qmchecks.translate import get_current_quotastatus_translate
 from modules.qmchecks.drs import get_current_quotastatus_drs
 from modules.qmchecks.license_manager_user_subscriptions import (
     get_current_quotastatus_license_manager_user_subscriptions)
@@ -242,6 +248,12 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_rtbfabric(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_dax(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_autoscaling_plans(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_codecommit(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_rum(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_servicequotas(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_shield(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_translate(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_drs(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_license_manager_user_subscriptions(
         ctx=ctx, skip=official))

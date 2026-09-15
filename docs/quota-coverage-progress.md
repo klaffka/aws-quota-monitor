@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,085 | 1,882 |
+| implemented | 2,096 | 1,885 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,466 | 4,263 |
-| uncovered | 7,615 | 6,135 |
+| covered | 4,477 | 4,266 |
+| uncovered | 7,604 | 6,132 |
 | unmeasurable | 3,253 | 2,976 |
 | measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **36.97%** of the whole union, or
-**50.59%** of the 8,828 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.06%** of the whole union, or
+**50.71%** of the 8,828 quotas whose usage can be counted at all.
 
 3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -67,6 +67,13 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Completed six smaller services from their own inventories: Service Quotas at
+  2 of 2 (requests still `PENDING` or `CASE_OPENED`, in total and per quota),
+  AWS Auto Scaling plans at 3 of 3 (plans, instructions per plan, target
+  tracking configurations per instruction), Shield Advanced at 2 of 2 (Elastic
+  IP and load balancer protections, split by the protected resource's ARN),
+  Amazon Translate at 2 of 2 (custom terminologies and the batch jobs still
+  running), CloudWatch RUM at 1 of 1 and CodeCommit at 1 of 1.
 - Completed Amazon DynamoDB Accelerator at 5 of 5 catalog quotas (total nodes,
   nodes per cluster from the `TotalNodes` each cluster reports, parameter groups,
   subnet groups and subnets per subnet group) and AWS License Manager user
