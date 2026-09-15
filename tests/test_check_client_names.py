@@ -15,6 +15,14 @@ from botocore import xform_name
 # sdk_call, which reports the absence as UNSUPPORTED rather than an error.
 RETIRED = {'evidently', 'iotanalytics', 'iotevents', 'qldb', 'robomaker'}
 CHECKS = Path('src/modules/qmchecks')
+# Subpackages hold call sites too; a flat glob left ec2, vpc and lambda_checks
+# unguarded, which is how DescribeLaunchTemplates kept an OwnerId it rejects.
+MODULES = tuple(sorted(path for path in CHECKS.rglob('*.py')
+                       if path.name != '__init__.py'))
+
+
+def module_id(path):
+    return path.relative_to(CHECKS).with_suffix('').as_posix().replace('/', '.')
 
 
 def _literals(tree):
@@ -69,11 +77,11 @@ def service_names(path):
             if service}
 
 
-@pytest.mark.parametrize('path', sorted(CHECKS.glob('*.py')), ids=lambda p: p.stem)
+@pytest.mark.parametrize('path', MODULES, ids=module_id)
 def test_every_called_service_has_an_sdk_client(path):
     available = set(boto3.Session(region_name='eu-central-1').get_available_services())
     unknown = service_names(path) - available - RETIRED
-    assert not unknown, f'{path.name} calls clients botocore does not ship: {unknown}'
+    assert not unknown, f'{module_id(path)} calls clients botocore does not ship: {unknown}'
 
 
 def test_retired_services_are_still_listed_as_retired():
@@ -82,7 +90,7 @@ def test_retired_services_are_still_listed_as_retired():
     assert not RETIRED & available
 
 
-@pytest.mark.parametrize('path', sorted(CHECKS.glob('*.py')), ids=lambda p: p.stem)
+@pytest.mark.parametrize('path', MODULES, ids=module_id)
 def test_every_called_method_exists_on_its_client(path):
     """A renamed or never-existing operation only fails at runtime otherwise."""
     session = boto3.Session(region_name='eu-central-1')
@@ -93,7 +101,7 @@ def test_every_called_method_exists_on_its_client(path):
             continue
         if not hasattr(session.client(service), method):
             missing.append(f'{service}.{method}')
-    assert not missing, f'{path.name} calls operations the SDK has not: {missing}'
+    assert not missing, f'{module_id(path)} calls operations the SDK has not: {missing}'
 
 
 def _output_members(session, service, method):
@@ -106,7 +114,7 @@ def _output_members(session, service, method):
     return None
 
 
-@pytest.mark.parametrize('path', sorted(CHECKS.glob('*.py')), ids=lambda p: p.stem)
+@pytest.mark.parametrize('path', MODULES, ids=module_id)
 def test_every_paginated_key_exists_in_the_response(path):
     """A wrong key reports zero usage with an OK status: a silent undercount."""
     session = boto3.Session(region_name='eu-central-1')
@@ -119,10 +127,10 @@ def test_every_paginated_key_exists_in_the_response(path):
         members = _output_members(session, service, method)
         if members is not None and key not in members:
             wrong.append(f'{service}.{method}[{key}]')
-    assert not wrong, f'{path.name} reads response keys that do not exist: {wrong}'
+    assert not wrong, f'{module_id(path)} reads response keys that do not exist: {wrong}'
 
 
-@pytest.mark.parametrize('path', sorted(CHECKS.glob('*.py')), ids=lambda p: p.stem)
+@pytest.mark.parametrize('path', MODULES, ids=module_id)
 def test_every_call_passes_parameters_the_operation_accepts(path):
     """A wrong or missing parameter name only fails once the call is made."""
     session = boto3.Session(region_name='eu-central-1')
@@ -141,4 +149,4 @@ def test_every_call_passes_parameters_the_operation_accepts(path):
         if unknown or missing:
             wrong.append(f'{service}.{method}: unknown={sorted(unknown)} '
                          f'missing={sorted(missing)}')
-    assert not wrong, f'{path.name} calls operations with wrong parameters: {wrong}'
+    assert not wrong, f'{module_id(path)} calls operations with wrong parameters: {wrong}'

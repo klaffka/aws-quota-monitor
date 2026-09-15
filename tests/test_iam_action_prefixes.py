@@ -71,14 +71,14 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
     import boto3
     from botocore import xform_name
 
-    from tests.test_check_client_names import RETIRED, _call_sites, CHECKS as MODULES
+    from tests.test_check_client_names import MODULES, RETIRED, _call_sites, module_id
 
     session = boto3.Session(region_name='eu-central-1')
     available = set(session.get_available_services())
     policy = POLICY.read_text(encoding='utf-8')
     granted = {match.group(2) for match in ACTION.finditer(policy)}
     models, ungranted = {}, []
-    for path in sorted(MODULES.glob('*.py')):
+    for path in MODULES:
         for service, method in _call_sites(path, {'call'}, arity=2):
             if not service or not method or service in RETIRED \
                     or service not in available or service in VERB_AUTHORISED:
@@ -90,5 +90,5 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
             if operation is None:
                 continue
             if S3_ALIASES.get(operation, operation) not in granted:
-                ungranted.append(f'{path.name}: {service}:{operation}')
+                ungranted.append(f'{module_id(path)}: {service}:{operation}')
     assert not ungranted, f'operations called without an IAM grant: {ungranted}'
