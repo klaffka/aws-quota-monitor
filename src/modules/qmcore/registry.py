@@ -147,7 +147,6 @@ _CHECK_MODULES = (
     ('modules.qmchecks.directconnect', 'directconnect'),
     ('modules.qmchecks.iot', 'iot'),
     ('modules.qmchecks.iotcore', 'iotcore'),
-    ('modules.qmchecks.iotcore', 'iotcore'),
     ('modules.qmchecks.appsync', 'appsync'),
     ('modules.qmchecks.config_service', 'config'),
     ('modules.qmchecks.dms_resources', 'dms'),
