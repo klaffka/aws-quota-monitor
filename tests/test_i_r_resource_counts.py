@@ -13,14 +13,25 @@ from modules.qmchecks.rekognition import project_policies_per_project
 
 
 def test_internet_monitor_resources_use_maximum_per_monitor():
+    # Only GetMonitor returns a monitor's resources.
     ctx = Mock()
     ctx.call.side_effect = [
         [{'MonitorName': 'one'}, {'MonitorName': 'two'}],
-        [{'Resource': 'a'}],
-        [{'Resource': 'a'}, {'Resource': 'b'}, {'Resource': 'c'}],
+        {'MonitorName': 'one', 'Resources': ['a']},
+        {'MonitorName': 'two', 'Resources': ['a', 'b', 'c']},
     ]
     result = resources_per_monitor(ctx)
     assert (result['usage'], result['resource_id']) == (3, 'two')
+
+
+def test_internet_monitor_rejects_an_answer_for_another_monitor():
+    from modules.qmcore.aws import NoData
+
+    ctx = Mock()
+    ctx.call.side_effect = [[{'MonitorName': 'one'}],
+                            {'MonitorName': 'other', 'Resources': []}]
+    with pytest.raises(NoData, match='different monitor'):
+        resources_per_monitor(ctx)
 
 
 def test_kinesis_analytics_application_count_is_paginated():

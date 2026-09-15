@@ -139,6 +139,9 @@ All notable changes to this project are recorded here. Versions follow
   names clients botocore ships. The retired Evidently, IoT Analytics, IoT
   Events, QLDB and RoboMaker clients report as unsupported through one shared
   helper instead of failing the run.
+- Internet Monitor called a `ListMonitoredResources` operation the SDK has
+  never had; a monitor's resources come from `GetMonitor`. A second test now
+  proves every operation a check names exists on its client.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

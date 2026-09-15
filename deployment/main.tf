@@ -734,7 +734,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "rolesanywhere:ListProfiles"
           , "rolesanywhere:ListTrustAnchors"
           , "internetmonitor:ListMonitors"
-          , "internetmonitor:ListMonitoredResources"
+          , "internetmonitor:GetMonitor"
           , "imagebuilder:ListComponents"
           , "imagebuilder:ListWorkflows"
           , "oam:ListSinks"
