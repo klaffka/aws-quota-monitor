@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,096 | 1,885 |
+| implemented | 2,103 | 1,889 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,477 | 4,266 |
-| uncovered | 7,604 | 6,132 |
+| covered | 4,484 | 4,270 |
+| uncovered | 7,597 | 6,128 |
 | unmeasurable | 3,253 | 2,976 |
 | measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **37.06%** of the whole union, or
-**50.71%** of the 8,828 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.12%** of the whole union, or
+**50.79%** of the 8,828 quotas whose usage can be counted at all.
 
 3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -67,6 +67,25 @@ regression. Approaching 100% of the measurable base remains open.
 
 ## Latest verified changes
 
+- Measured Amazon QuickSight approval policies at 4 of its 24 measurable catalog
+  quotas: policies per account, policies per asset type, and the applicable and
+  approver group lists on each policy. The visual, sheet control and calculated
+  field quotas live inside an analysis or dashboard definition rather than in an
+  inventory, the Quick Automate quotas have no listing operation, and
+  `Data Prep: Fields per dataset` counts fields inside a dataset's preparation
+  tables, which `DataPrepConfiguration` exposes only as source, transform and
+  destination table maps.
+- Measured AWS IoT Greengrass at 3 of 17 catalog quotas from the V2 API:
+  components in the account's own `PRIVATE` scope, versions per component, and
+  core device thing name length. The recipe, artifact and deployment document
+  size quotas bound a single document. The five group quotas belong to the V1
+  model, whose definition versions are addressed by ARN while the API takes a
+  definition id and version id pair, so they stay open rather than being reached
+  through ARN parsing. Sources:
+  [QuickSight quotas](https://docs.aws.amazon.com/quicksight/latest/user/limits.html),
+  [ListApprovalPolicies](https://docs.aws.amazon.com/quicksight/latest/APIReference/API_ListApprovalPolicies.html),
+  [Greengrass V2 quotas](https://docs.aws.amazon.com/greengrass/v2/developerguide/quotas.html),
+  [ListComponents](https://docs.aws.amazon.com/greengrass/v2/APIReference/API_ListComponents.html).
 - Completed six smaller services from their own inventories: Service Quotas at
   2 of 2 (requests still `PENDING` or `CASE_OPENED`, in total and per quota),
   AWS Auto Scaling plans at 3 of 3 (plans, instructions per plan, target

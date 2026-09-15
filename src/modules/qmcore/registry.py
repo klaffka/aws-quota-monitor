@@ -12,6 +12,8 @@ _CHECK_MODULES = (
     ('modules.qmchecks.rtbfabric', 'rtbfabric'),
     ('modules.qmchecks.tnb', 'tnb'),
     ('modules.qmchecks.dax', 'dax'),
+    ('modules.qmchecks.greengrass', 'greengrass'),
+    ('modules.qmchecks.quicksight', 'quicksight'),
     ('modules.qmchecks.autoscaling_plans', 'autoscaling-plans'),
     ('modules.qmchecks.codecommit', 'codecommit'),
     ('modules.qmchecks.rum', 'rum'),

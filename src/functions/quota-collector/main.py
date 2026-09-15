@@ -17,6 +17,8 @@ from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
 from modules.qmchecks.rtbfabric import get_current_quotastatus_rtbfabric
 from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.dax import get_current_quotastatus_dax
+from modules.qmchecks.greengrass import get_current_quotastatus_greengrass
+from modules.qmchecks.quicksight import get_current_quotastatus_quicksight
 from modules.qmchecks.autoscaling_plans import get_current_quotastatus_autoscaling_plans
 from modules.qmchecks.codecommit import get_current_quotastatus_codecommit
 from modules.qmchecks.rum import get_current_quotastatus_rum
@@ -248,6 +250,8 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_rtbfabric(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_dax(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_greengrass(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_quicksight(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_autoscaling_plans(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_codecommit(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_rum(ctx=ctx, skip=official))
