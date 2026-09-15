@@ -46,7 +46,8 @@ def user_defined_functions(ctx, per_database=False):
     for database_name in database_names(ctx):
         functions = unique_items(
             ctx.call('glue', 'get_user_defined_functions', 'UserDefinedFunctions',
-                     DatabaseName=database_name), 'FunctionName', 'function')
+                     DatabaseName=database_name, Pattern='*'),
+            'FunctionName', 'function')
         for function in functions:
             actual_database = function.get('DatabaseName')
             if actual_database not in {None, database_name}:

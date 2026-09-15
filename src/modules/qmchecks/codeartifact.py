@@ -9,9 +9,10 @@ def domains(ctx):
 def repositories_per_domain(ctx):
     values = []
     for domain in domains(ctx):
-        repos = ctx.call('codeartifact', 'list_repositories', 'repositories', domain=domain['name'])
+        repos = ctx.call('codeartifact', 'list_repositories_in_domain', 'repositories',
+                         domain=domain['name'])
         values.append((domain['name'], len(repos), None))
-    return maximum(values, 'CodeArtifactDomain', 'codeartifact:ListRepositories')
+    return maximum(values, 'CodeArtifactDomain', 'codeartifact:ListRepositoriesInDomain')
 
 
 CHECKS = [

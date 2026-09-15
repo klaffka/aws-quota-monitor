@@ -24,8 +24,9 @@ def git_connections_per_project(ctx):
         for project in ctx.call('datazone', 'list_projects', 'items', domainIdentifier=domain_id):
             project_id = project.get('id') or project.get('projectId')
             if project_id:
-                values.append((project_id, len(ctx.call('datazone', 'list_connections', 'items',
-                                                        projectIdentifier=project_id, type='GIT')), None))
+                values.append((project_id, len(ctx.call(
+                    'datazone', 'list_connections', 'items', domainIdentifier=domain_id,
+                    projectIdentifier=project_id, type='GIT')), None))
     return maximum(values, 'DataZoneProject', 'datazone:ListConnections(type=GIT)')
 
 

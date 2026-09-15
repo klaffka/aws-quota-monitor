@@ -1,5 +1,5 @@
 """AWS IAM Access Analyzer regional resource-count quotas."""
-from modules.qmcore.aws import CheckContext, maximum, session_from_env
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 
 def analyzers(ctx):
@@ -14,11 +14,13 @@ def analyzer_count(ctx, analyzer_type):
 def archive_rules_per_analyzer(ctx):
     values = []
     for analyzer in analyzers(ctx):
-        arn = analyzer.get('arn')
-        if not arn:
-            continue
-        rules = ctx.call('accessanalyzer', 'list_archive_rules', 'archiveRules', analyzerArn=arn)
-        values.append((arn, len(rules), None))
+        # ListArchiveRules is addressed by analyzer name; the ARN is rejected.
+        name, arn = analyzer.get('name'), analyzer.get('arn')
+        if not name:
+            raise NoData('Access Analyzer analyzer is missing its name')
+        rules = ctx.call('accessanalyzer', 'list_archive_rules', 'archiveRules',
+                         analyzerName=name)
+        values.append((arn or name, len(rules), None))
     return maximum(values, 'AccessAnalyzer', 'accessanalyzer:ListArchiveRules')
 
 

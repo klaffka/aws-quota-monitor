@@ -11,6 +11,11 @@ def count(service, method, key):
                           source=f'{service}:{method}', method='ACCOUNT_COUNT')
 
 
+def namespace_filter(namespace_id):
+    """ListServices has no namespace parameter; it takes a filter instead."""
+    return {'Name': 'NAMESPACE_ID', 'Values': [namespace_id], 'Condition': 'EQ'}
+
+
 def cloud_map_parent_max(ctx, method, key, **kwargs):
     values = []
     for namespace in ctx.call('servicediscovery', 'list_namespaces', 'Namespaces'):
@@ -18,7 +23,7 @@ def cloud_map_parent_max(ctx, method, key, **kwargs):
         if not namespace_id:
             continue
         for service in ctx.call('servicediscovery', 'list_services', 'Services',
-                                NamespaceId=namespace_id):
+                                Filters=[namespace_filter(namespace_id)]):
             service_id = service.get('Id')
             if service_id and method == 'list_instances':
                 items = ctx.call('servicediscovery', method, key, ServiceId=service_id)
@@ -34,7 +39,7 @@ def cloud_map_namespace_max(ctx):
             continue
         total = 0
         for service in ctx.call('servicediscovery', 'list_services', 'Services',
-                                NamespaceId=namespace_id):
+                                Filters=[namespace_filter(namespace_id)]):
             service_id = service.get('Id')
             if service_id:
                 total += len(ctx.call('servicediscovery', 'list_instances', 'Instances',
@@ -49,7 +54,8 @@ def cloud_map_custom_attributes_max(ctx):
         namespace_id = namespace.get('Id')
         if not namespace_id:
             continue
-        for service in ctx.call('servicediscovery', 'list_services', 'Services', NamespaceId=namespace_id):
+        for service in ctx.call('servicediscovery', 'list_services', 'Services',
+                                Filters=[namespace_filter(namespace_id)]):
             service_id = service.get('Id')
             if not service_id:
                 continue

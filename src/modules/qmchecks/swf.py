@@ -1,5 +1,15 @@
-"""Amazon Simple Workflow Service domain counts."""
-from modules.qmcore.aws import CheckContext, maximum, session_from_env
+"""Amazon Simple Workflow Service domain counts.
+
+Workflow and activity types have separate listings, and counting open
+executions needs an explicit start-time window.
+"""
+from datetime import timedelta
+
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
+
+# SWF keeps an execution for at most a year, so a window of one year and a day
+# cannot miss an execution that is still open.
+EXECUTION_RETENTION = timedelta(days=366)
 
 
 def workflow_types_per_domain(ctx):
@@ -9,12 +19,12 @@ def workflow_types_per_domain(ctx):
         if not name:
             continue
         total = 0
-        for workflow_type in ('WORKFLOW', 'ACTIVITY'):
-            total += len(ctx.call('swf', 'list_workflow_types', 'typeInfos',
-                                  domain=name, registrationStatus='REGISTERED',
-                                  workflowType=workflow_type))
+        for method in ('list_workflow_types', 'list_activity_types'):
+            total += len(ctx.call('swf', method, 'typeInfos', domain=name,
+                                  registrationStatus='REGISTERED'))
         values.append((name, total, None))
-    return maximum(values, 'SWFDomain', 'swf:ListWorkflowTypes')
+    return maximum(values, 'SWFDomain',
+                   'swf:ListWorkflowTypes+ListActivityTypes')
 
 
 def open_workflows_per_domain(ctx):
@@ -22,7 +32,11 @@ def open_workflows_per_domain(ctx):
     for domain in ctx.call('swf', 'list_domains', 'domainInfos', registrationStatus='REGISTERED'):
         name = domain.get('name')
         if name:
-            result = ctx.call('swf', 'count_open_workflow_executions', domain=name)
+            result = ctx.call('swf', 'count_open_workflow_executions', domain=name,
+                              startTimeFilter={'oldestDate':
+                                               ctx.now - EXECUTION_RETENTION})
+            if result.get('truncated'):
+                raise NoData('SWF truncated the open execution count')
             values.append((name, result.get('count', 0), None))
     return maximum(values, 'SWFDomain', 'swf:CountOpenWorkflowExecutions')
 

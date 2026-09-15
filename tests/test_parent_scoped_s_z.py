@@ -1,4 +1,9 @@
+from datetime import datetime, timezone
 from unittest.mock import Mock
+
+import pytest
+
+from modules.qmcore.aws import NoData
 
 def test_s3_replication_rules_per_bucket():
     from modules.qmchecks.s3 import replication_rules_per_bucket
@@ -135,8 +140,15 @@ def test_swf_parent_scoped_counts():
     ]
     assert workflow_types_per_domain(ctx)['usage'] == 4
     ctx = Mock()
+    ctx.now = datetime(2026, 9, 15, tzinfo=timezone.utc)
     ctx.call.side_effect = [[{'name': 'd1'}, {'name': 'd2'}], {'count': 4}, {'count': 2}]
     assert open_workflows_per_domain(ctx)['usage'] == 4
+    # A truncated count would silently understate the open executions.
+    ctx = Mock()
+    ctx.now = datetime(2026, 9, 15, tzinfo=timezone.utc)
+    ctx.call.side_effect = [[{'name': 'd1'}], {'count': 1000, 'truncated': True}]
+    with pytest.raises(NoData, match='truncated'):
+        open_workflows_per_domain(ctx)
 
 
 def test_voice_id_parent_scoped_counts():

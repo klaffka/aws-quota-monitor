@@ -8,10 +8,12 @@ from modules.qmchecks.securityhub import CHECKS
 def test_access_analyzer_counts_types_and_archive_rules_per_analyzer():
     ctx = Mock()
     ctx.call.return_value = [
-        {'type': 'ACCOUNT', 'arn': 'arn:account'}, {'type': 'ORGANIZATION', 'arn': 'arn:org'}]
+        {'type': 'ACCOUNT', 'name': 'account', 'arn': 'arn:account'},
+        {'type': 'ORGANIZATION', 'name': 'org', 'arn': 'arn:org'}]
     assert analyzer_count(ctx, 'ACCOUNT')['usage'] == 1
     ctx.call.side_effect = [
-        [{'type': 'ACCOUNT', 'arn': 'arn:account'}, {'type': 'ORGANIZATION', 'arn': 'arn:org'}],
+        [{'type': 'ACCOUNT', 'name': 'account', 'arn': 'arn:account'},
+        {'type': 'ORGANIZATION', 'name': 'org', 'arn': 'arn:org'}],
         [{'id': 'rule-1'}, {'id': 'rule-2'}], [{'id': 'rule-3'}],
     ]
     result = archive_rules_per_analyzer(ctx)

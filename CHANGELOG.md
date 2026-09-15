@@ -152,6 +152,15 @@ All notable changes to this project are recorded here. Versions follow
   service prefixes (`voice-id` for `voiceid`, `amp` for `aps`, `connectcases`
   for `cases` and more), so those calls would have been denied; duplicate
   grants inside a statement are gone and a test checks both.
+- Thirteen calls passed parameters their operation does not accept or omitted
+  required ones: Access Analyzer archive rules by ARN instead of name, both
+  Cognito listings without the required page size, CodeArtifact repositories
+  with a `domain` that operation has not, Cloud Map services with a namespace
+  instead of a filter, DataZone connections without their domain, EventBridge
+  targets as `RuleName`, both FIS detail calls, Glue user-defined functions
+  without a pattern, IoT dynamic groups through a filter `ListThingGroups` has
+  not, and SWF activity types and open executions. A fourth call-site test now
+  checks every parameter name against the operation.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

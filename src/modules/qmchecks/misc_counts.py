@@ -125,7 +125,7 @@ CHECKS = {
     'social-messaging': [('L-8479D5F2', 'WhatsApp Business Accounts per account', lambda c: dict(usage=len(c.call('socialmessaging', 'list_linked_whatsapp_business_accounts', 'linkedAccounts')), source='socialmessaging:ListLinkedWhatsAppBusinessAccounts', method='ACCOUNT_COUNT'))],
     'ssm-quicksetup': [('L-D1C554CF', 'Configuration managers per account', lambda c: dict(usage=len(c.call('ssm-quicksetup', 'list_configuration_managers', 'ConfigurationManagersList')), source='ssm-quicksetup:ListConfigurationManagers', method='ACCOUNT_COUNT'))],
     'ssm-sap': [('L-C8103580', 'SAP applications per Region in account', lambda c: dict(usage=len(c.call('ssm-sap', 'list_applications', 'Applications')), source='ssm-sap:ListApplications', method='ACCOUNT_COUNT'))],
-    'glacier': [('L-D1C67346', 'Vaults per account', lambda c: dict(usage=len(c.call('glacier', 'list_vaults', 'VaultList')), source='glacier:ListVaults', method='ACCOUNT_COUNT'))],
+    'glacier': [('L-D1C67346', 'Vaults per account', lambda c: dict(usage=len(c.call('glacier', 'list_vaults', 'VaultList', accountId='-')), source='glacier:ListVaults', method='ACCOUNT_COUNT'))],
     'dataexchange': [('L-52E2E63A', 'Data sets per account', lambda c: dict(usage=len(c.call('dataexchange', 'list_data_sets', 'DataSets')), source='dataexchange:ListDataSets', method='ACCOUNT_COUNT'))],
     'rbin': [
         ('L-629917A2', 'Rules per Region', rbin_rule_count),

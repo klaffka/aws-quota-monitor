@@ -106,7 +106,7 @@ def experiment_templates(ctx):
         summaries[identity] = item
     details = []
     for identity in sorted(summaries):
-        item = ctx.call('fis', 'get_experiment_template', experimentTemplateId=identity).get(
+        item = ctx.call('fis', 'get_experiment_template', id=identity).get(
             'experimentTemplate')
         if not isinstance(item, dict) or item.get('id') != identity:
             raise NoData('FIS experiment template detail has a different identity')
@@ -149,7 +149,7 @@ def active_experiments(ctx):
         summary_status = summaries[identity]['state']['status']
         if summary_status in TERMINAL_EXPERIMENT_STATES:
             continue
-        item = ctx.call('fis', 'get_experiment', experimentId=identity).get('experiment')
+        item = ctx.call('fis', 'get_experiment', id=identity).get('experiment')
         if not isinstance(item, dict) or item.get('id') != identity:
             raise NoData('FIS experiment detail has a different identity')
         state = item.get('state')

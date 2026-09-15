@@ -38,13 +38,13 @@ def template_responses():
         key('list_experiment_templates'): {
             'experimentTemplates': [{'id': 't-2'}, {'id': 't-1'}],
         },
-        key('get_experiment_template', experimentTemplateId='t-1'): {
+        key('get_experiment_template', id='t-1'): {
             'experimentTemplate': {
                 'id': 't-1', 'actions': {'a': {}}, 'stopConditions': [], 'targets': {},
                 'targetAccountConfigurationsCount': 2,
             },
         },
-        key('get_experiment_template', experimentTemplateId='t-2'): {
+        key('get_experiment_template', id='t-2'): {
             'experimentTemplate': {
                 'id': 't-2', 'actions': {'a': {}, 'b': {}, 'c': {}},
                 'stopConditions': [{}, {}], 'targets': {},
@@ -106,7 +106,7 @@ def experiment_responses(status='running', *, multi_account=False):
                 {'id': 'exp-1', 'state': {'status': status}},
             ],
         },
-        key('get_experiment', experimentId='exp-1'): {'experiment': detail},
+        key('get_experiment', id='exp-1'): {'experiment': detail},
         key('list_experiment_resolved_targets', experimentId='exp-1'): {
             'resolvedTargets': [
                 {'resourceType': 'aws:ec2:instance', 'targetName': 'dynamic',

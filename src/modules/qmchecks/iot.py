@@ -98,10 +98,22 @@ def files_per_stream(ctx):
     return maximum(values, 'IoTStream', 'iot:DescribeStream')
 
 
-CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups',
-           lambda ctx: dict(usage=len(ctx.call('iot', 'list_thing_groups', 'thingGroups',
-                                                thingGroupType='DYNAMIC')),
-                            source='iot:ListThingGroups', method='ACCOUNT_COUNT')),
+def dynamic_thing_groups(ctx):
+    """ListThingGroups cannot filter by kind; a dynamic group has a query."""
+    usage = 0
+    for group in ctx.call('iot', 'list_thing_groups', 'thingGroups'):
+        name = group.get('groupName')
+        if not isinstance(name, str) or not name:
+            raise NoData('IoT thing group is missing its name')
+        detail = ctx.call('iot', 'describe_thing_group', thingGroupName=name)
+        if detail.get('thingGroupName') != name:
+            raise NoData('IoT thing group detail has a different identity')
+        usage += bool(detail.get('queryString'))
+    return dict(usage=usage, source='iot:ListThingGroups+DescribeThingGroup',
+                method='ACCOUNT_COUNT')
+
+
+CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups', dynamic_thing_groups),
           ('L-B2C87795', 'Maximum number of job templates',
            lambda ctx: dict(usage=len(ctx.call('iot', 'list_job_templates', 'jobTemplates')),
                             source='iot:ListJobTemplates', method='ACCOUNT_COUNT')),

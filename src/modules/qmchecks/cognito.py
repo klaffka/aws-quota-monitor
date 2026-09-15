@@ -1,14 +1,16 @@
 """Amazon Cognito regional user-pool inventory."""
 from modules.qmcore.aws import CheckContext, session_from_env
 
+# ListUserPools requires a page size; 60 is the documented maximum.
+PAGE_SIZE = 60
 
 CHECKS = [
     ('L-66E6DF30', 'User pools per account',
-     lambda ctx: dict(usage=len(ctx.call('cognito-idp', 'list_user_pools', 'UserPools')),
+     lambda ctx: dict(usage=len(ctx.call('cognito-idp', 'list_user_pools', 'UserPools', MaxResults=PAGE_SIZE)),
                       source='cognito-idp:ListUserPools', method='ACCOUNT_COUNT')),
     ('L-71267F98', 'Custom domains per account',
      lambda ctx: dict(usage=sum(bool(ctx.call('cognito-idp', 'describe_user_pool', UserPoolId=p['Id'])['UserPool'].get('CustomDomain'))
-                                  for p in ctx.call('cognito-idp', 'list_user_pools', 'UserPools')),
+                                  for p in ctx.call('cognito-idp', 'list_user_pools', 'UserPools', MaxResults=PAGE_SIZE)),
                       source='cognito-idp:ListUserPools+DescribeUserPool', method='ACCOUNT_COUNT')),
 ]
 

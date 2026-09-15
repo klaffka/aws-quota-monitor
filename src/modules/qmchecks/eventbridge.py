@@ -12,7 +12,7 @@ def targets_per_rule(ctx):
     for rule in ctx.call('events', 'list_rules', 'Rules'):
         name = rule.get('Name')
         if name:
-            values.append((name, len(ctx.call('events', 'list_targets_by_rule', 'Targets', RuleName=name)), None))
+            values.append((name, len(ctx.call('events', 'list_targets_by_rule', 'Targets', Rule=name)), None))
     return maximum(values, 'EventBridgeRule', 'events:ListTargetsByRule')
 
 
