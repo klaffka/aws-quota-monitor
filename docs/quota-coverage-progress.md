@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,394 | 2,076 |
+| implemented | 2,407 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,775 | 4,457 |
-| uncovered | 7,306 | 5,941 |
+| covered | 4,788 | 4,457 |
+| uncovered | 7,293 | 5,941 |
 | unmeasurable | 4,998 | 3,055 |
 | measurable | 7,083 | 7,343 |
 
-Implemented measurement availability: **39.52%** of the whole union, or
-**67.41%** of the 7,083 quotas whose usage can be counted at all.
+Implemented measurement availability: **39.63%** of the whole union, or
+**67.60%** of the 7,083 quotas whose usage can be counted at all.
 
 4,998 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
