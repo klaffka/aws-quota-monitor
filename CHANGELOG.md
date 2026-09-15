@@ -29,6 +29,8 @@ All notable changes to this project are recorded here. Versions follow
 - Storage Gateway tape, volume, cache and upload buffer capacity measurements.
 - Application Migration Service server, wave, job and action measurements.
 - HealthOmics run, task, store, share and import job measurements.
+- Resilience Hub V2 service, system, policy, journey and input source
+  measurements, read through the second-generation client.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,656 uncovered rate quotas leave the measurable denominator.
