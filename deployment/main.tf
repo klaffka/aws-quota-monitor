@@ -1439,6 +1439,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "resource-explorer-2:ListViews"
           , "neptune-graph:ListGraphs"
           , "mq:ListBrokers"
+          , "mq:DescribeBroker"
           , "mq:ListConfigurations"
           , "mq:ListConfigurationRevisions"
           , "elasticloadbalancing:DescribeAccountLimits"
