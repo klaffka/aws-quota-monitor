@@ -22,6 +22,8 @@ def test_datazone_environments_are_counted_per_domain():
     check = next(item[2] for item in __import__('modules.qmchecks.datazone', fromlist=['CHECKS']).CHECKS
                  if item[0] == 'L-EDF6298B')
     ctx = Mock()
-    ctx.call.side_effect = [[{'id': 'domain-1'}], [{'id': 'env-1'}, {'id': 'env-2'}]]
+    # The listing is scoped to a project, so the domain sums its projects.
+    ctx.call.side_effect = [[{'id': 'domain-1'}], [{'id': 'project-1'}],
+                            [{'id': 'env-1'}, {'id': 'env-2'}]]
     result = check(ctx)
     assert (result['usage'], result['resource_id']) == (2, 'domain-1')

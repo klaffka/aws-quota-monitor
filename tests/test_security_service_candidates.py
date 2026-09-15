@@ -35,5 +35,8 @@ def test_transfer_checks_use_paginated_resource_keys():
         return [{'id': 'one'}, {'id': 'two'}]
     ctx.call.side_effect = calls
     usages = [check(ctx)['usage'] for _, _, check in TRANSFER_CHECKS]
-    assert usages[:7] == [2] * 7
+    # Agreements are listed per server, so two servers of two agreements make four.
+    assert usages[:3] == [2] * 3
+    assert usages[3] == 4
+    assert usages[4:7] == [2] * 3
     assert usages[7:] == [1, 1, 2, 2, 0]

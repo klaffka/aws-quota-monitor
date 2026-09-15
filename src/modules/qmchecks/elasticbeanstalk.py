@@ -14,7 +14,7 @@ CHECKS = [
                     source='elasticbeanstalk:DescribeApplicationVersions', method='ACCOUNT_COUNT')),
     ('L-E593A077', 'Custom platform versions',
      lambda c: dict(usage=len(c.call('elasticbeanstalk', 'list_platform_versions', 'PlatformSummaryList',
-                                     Filters=[{'Operator': 'EQ', 'Name': 'PlatformStatus', 'Values': ['Ready']}])) ,
+                                     Filters=[{'Operator': '=', 'Type': 'PlatformStatus', 'Values': ['Ready']}])) ,
                     source='elasticbeanstalk:ListPlatformVersions', method='ACCOUNT_COUNT')),
 ]
 

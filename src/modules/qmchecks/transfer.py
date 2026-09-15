@@ -7,6 +7,16 @@ def resource_count(ctx, method, key):
                 source=f'transfer:{method}', method='ACCOUNT_COUNT')
 
 
+def per_server(ctx, method, key):
+    """Sum an inventory that is only listable per server, never per account."""
+    usage = 0
+    for server in ctx.call('transfer', 'list_servers', 'Servers'):
+        server_id = server.get('ServerId')
+        if server_id:
+            usage += len(ctx.call('transfer', method, key, ServerId=server_id))
+    return dict(usage=usage, source=f'transfer:ListServers+{method}', method='ACCOUNT_COUNT')
+
+
 def vpc_endpoint_servers(ctx):
     servers = [server for server in ctx.call('transfer', 'list_servers', 'Servers')
                if server.get('EndpointType') == 'VPC_ENDPOINT']
@@ -50,7 +60,8 @@ CHECKS = [
     ('L-7E767654', 'Web apps per account', lambda ctx: resource_count(ctx, 'list_web_apps', 'WebApps')),
     ('L-858EB316', 'Profiles per account', lambda ctx: resource_count(ctx, 'list_profiles', 'Profiles')),
     ('L-8A2575E3', 'Workflows per account', lambda ctx: resource_count(ctx, 'list_workflows', 'Workflows')),
-    ('L-C08739CA', 'Agreements per account', lambda ctx: resource_count(ctx, 'list_agreements', 'Agreements')),
+    ('L-C08739CA', 'Agreements per account',
+     lambda ctx: per_server(ctx, 'list_agreements', 'Agreements')),
     ('L-6E386A05', 'Servers per account', lambda ctx: resource_count(ctx, 'list_servers', 'Servers')),
     ('L-C0FDC60E', 'Certificates per account', lambda ctx: resource_count(ctx, 'list_certificates', 'Certificates')),
     ('L-A6509B77', 'Connectors per account', lambda ctx: resource_count(ctx, 'list_connectors', 'Connectors')),

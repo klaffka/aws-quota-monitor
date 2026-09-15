@@ -10,7 +10,8 @@ import boto3
 import pytest
 from botocore.stub import Stubber
 
-from modules.qmchecks import amplifyuibuilder, datazone, fms, forecast, securityhub
+from modules.qmchecks import (amplifyuibuilder, datazone, elasticbeanstalk, fms,
+                              forecast, securityhub, transfer)
 from modules.qmchecks.ec2 import ec2
 from modules.qmcore.aws import CheckContext
 
@@ -120,3 +121,52 @@ APP = {'appId': 'app-1', 'appArn': 'arn:app', 'name': 'app', 'description': '',
        'enableBranchAutoBuild': False, 'enableBasicAuth': False}
 BACKEND = {'backendEnvironmentArn': 'arn:env', 'environmentName': 'staging',
            'createTime': MOMENT, 'updateTime': MOMENT}
+
+
+def test_transfer_agreements_are_counted_per_server():
+    """ListAgreements requires a ServerId, so the account total sums the servers."""
+    ctx = context('transfer', 'L-C08739CA')
+    with Stubber(ctx.client('transfer')) as stub:
+        stub.add_response('list_servers',
+                          {'Servers': [{'ServerId': 's-' + '1' * 17, 'Arn': 'arn:aws:transfer:eu-central-1:1'},
+                                       {'ServerId': 's-' + '2' * 17, 'Arn': 'arn:aws:transfer:eu-central-1:2'}]}, {})
+        stub.add_response('list_agreements', {'Agreements': [{'AgreementId': 'a-' + '1' * 17}]},
+                          {'ServerId': 's-' + '1' * 17})
+        stub.add_response('list_agreements', {'Agreements': [{'AgreementId': 'a-' + '2' * 17},
+                                                             {'AgreementId': 'a-' + '3' * 17}]},
+                          {'ServerId': 's-' + '2' * 17})
+        assert check(transfer, 'L-C08739CA')(ctx)['usage'] == 3
+        stub.assert_no_pending_responses()
+
+
+def test_custom_platform_versions_filter_on_the_platform_status_type():
+    """PlatformFilter names the attribute Type; Name is not one of its members."""
+    ctx = context('elasticbeanstalk', 'L-E593A077')
+    with Stubber(ctx.client('elasticbeanstalk')) as stub:
+        stub.add_response('list_platform_versions',
+                          {'PlatformSummaryList': [{'PlatformArn': 'arn:platform'}]},
+                          {'Filters': [{'Type': 'PlatformStatus', 'Operator': '=',
+                                        'Values': ['Ready']}]})
+        assert check(elasticbeanstalk, 'L-E593A077')(ctx)['usage'] == 1
+        stub.assert_no_pending_responses()
+
+
+def test_datazone_environments_are_listed_per_project():
+    """ListEnvironments requires a projectIdentifier alongside the domain."""
+    ctx = context('datazone', 'L-EDF6298B')
+    with Stubber(ctx.client('datazone')) as stub:
+        stub.add_response('list_domains',
+                          {'items': [{'id': 'dzd-1', 'arn': 'arn:domain', 'name': 'domain',
+                                      'managedAccountId': '123456789012',
+                                      'status': 'AVAILABLE', 'createdAt': MOMENT}]}, {})
+        stub.add_response('list_projects', {'items': [{'id': 'prj-1', 'domainId': 'dzd-1',
+                                                       'name': 'project', 'createdBy': 'me'}]},
+                          {'domainIdentifier': 'dzd-1'})
+        stub.add_response('list_environments', {'items': [{'id': 'env-1', 'name': 'env',
+                                                           'createdBy': 'me', 'provider': 'aws',
+                                                           'projectId': 'prj-1',
+                                                           'domainId': 'dzd-1'}]},
+                          {'domainIdentifier': 'dzd-1', 'projectIdentifier': 'prj-1'})
+        result = check(datazone, 'L-EDF6298B')(ctx)
+        assert (result['usage'], result['resource_id']) == (1, 'dzd-1')
+        stub.assert_no_pending_responses()
