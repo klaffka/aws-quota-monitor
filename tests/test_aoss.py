@@ -73,4 +73,5 @@ def test_aoss_read_permissions_are_deployed():
     for action in ('GetSecurityConfig', 'GetSecurityPolicy', 'GetAccessPolicy',
                    'ListLifecyclePolicies', 'BatchGetLifecyclePolicy',
                    'ListCollectionGroups', 'GetAccountSettings'):
-        assert f'"opensearchserverless:{action}"' in policy
+        # The IAM prefix is aoss, not the SDK client name.
+        assert f'"aoss:{action}"' in policy

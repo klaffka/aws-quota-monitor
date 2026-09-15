@@ -132,4 +132,5 @@ def test_extended_checks_registered_and_permissions_present():
     assert {('cases', code) for code, _, _ in cases.EXTENDED_CHECKS} <= custom_keys()
     policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ['ListFields', 'ListFieldOptions', 'ListLayouts', 'GetLayout']:
-        assert f'"connectcases:{action}"' in policy
+        # Connect Cases authorises under the cases prefix.
+        assert f'"cases:{action}"' in policy

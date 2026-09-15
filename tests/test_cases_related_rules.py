@@ -184,4 +184,5 @@ def test_remaining_content_quota_checks_are_registered_with_permissions():
     assert {('cases', code) for code in codes} <= custom_keys()
     policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ('SearchAllRelatedItems', 'BatchGetCaseRule', 'GetTemplate'):
-        assert f'"connectcases:{action}"' in policy
+        # Connect Cases authorises under the cases prefix.
+        assert f'"cases:{action}"' in policy
