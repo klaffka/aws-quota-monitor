@@ -859,6 +859,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "redshift:DescribeClusterSnapshots"
           , "redshift:DescribeClusterParameterGroups"
           , "redshift:DescribeClusterSubnetGroups"
+          , "redshift:DescribeEventSubscriptions"
+          , "redshift:DescribeReservedNodes"
           , "timestream:ListDatabases"
           , "timestream:ListTables"
           , "timestream:ListScheduledQueries"

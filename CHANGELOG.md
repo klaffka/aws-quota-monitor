@@ -31,6 +31,8 @@ All notable changes to this project are recorded here. Versions follow
 - HealthOmics run, task, store, share and import job measurements.
 - Resilience Hub V2 service, system, policy, journey and input source
   measurements, read through the second-generation client.
+- Redshift event subscription, reserved node, subnet group and snapshot
+  restore-access measurements.
 - A fourth unmeasurable rule that reads the period AWS states for a quota, and
   wording rules for the `Rate of`, `Request rate for` and named token bucket
   forms, so 1,656 uncovered rate quotas leave the measurable denominator.
