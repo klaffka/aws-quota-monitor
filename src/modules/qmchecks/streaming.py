@@ -1,8 +1,9 @@
 """MediaLive and MediaPackage regional resource-count quotas."""
 from modules.qmcore.aws import CheckContext, session_from_env
 
-CUSTOM_KEYS = {('medialive', code) for code in ('L-D1AFAF75', 'L-7BC53EAF')} | {
-    ('mediapackage', 'L-352B8598')}
+CUSTOM_KEYS = {('medialive', code) for code in ('L-D1AFAF75', 'L-7BC53EAF',
+                                                'L-9E4BC4C0', 'L-A825B11C')} | {
+    ('mediapackage', code) for code in ('L-352B8598', 'L-7F7EDDDF')}
 
 
 def resource(service, method, key):
@@ -26,7 +27,7 @@ def get_current_quotastatus_streaming(session=None, *, ctx=None, skip=()):
         entries.extend(context.run('medialive', [
             ('L-D1AFAF75', 'Channels', resource('medialive', 'list_channels', 'Channels')),
             ('L-7BC53EAF', 'Clusters', resource('medialive', 'list_clusters', 'Clusters')),
-            ('L-9E4BC4C0', 'CloudWatch Alarm Templates', resource('medialive', 'list_cloudwatch_alarm_templates', 'CloudWatchAlarmTemplates')),
+            ('L-9E4BC4C0', 'CloudWatch Alarm Templates', resource('medialive', 'list_cloud_watch_alarm_templates', 'CloudWatchAlarmTemplates')),
             ('L-A825B11C', 'EventBridge Rule Templates', resource('medialive', 'list_event_bridge_rule_templates', 'EventBridgeRuleTemplates')),
         ], skip))
     if any(service == 'mediapackage' for service, _ in context.quotas):

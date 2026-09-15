@@ -8,7 +8,7 @@ ERROR in production too, where nothing but a DynamoDB row records it.
 """
 import pytest
 
-from tests.shape_harness import entries, run
+from tests.shape_harness import entries, entry_points, run, run_entry
 
 # Checks the harness cannot represent. Each needs a reason, and the set may
 # only shrink: it is the list of checks nothing offline can vouch for.
@@ -59,3 +59,30 @@ def test_the_allowlist_only_covers_checks_that_still_need_it():
                 if result['qualityStatus'] == 'ERROR':
                     stale.discard((service, result['quotaCode']))
     assert not stale, f'allowlisted checks that now pass: {sorted(stale)}'
+
+
+ENTRY_POINTS = sorted(entry_points())
+
+
+@pytest.mark.parametrize('module, entry, keys', ENTRY_POINTS, ids=lambda value: str(value))
+@pytest.mark.parametrize('populated', [True, False], ids=['populated', 'empty'])
+def test_every_entry_point_module_runs_without_error(module, entry, keys, populated):
+    """These modules build their checks when called, so CHECKS discovery misses them."""
+    failures = [f"{result['quotaCode']}: {result['qualityReason'].splitlines()[0]}"
+                for result in run_entry(entry, keys, populated=populated)
+                if result['qualityStatus'] == 'ERROR'
+                and (result['serviceCode'], result['quotaCode']) not in ALLOWED]
+    assert not failures, module
+
+
+@pytest.mark.parametrize('module, entry, keys', ENTRY_POINTS, ids=lambda value: str(value))
+def test_every_entry_point_declares_the_quotas_it_measures(module, entry, keys):
+    """CUSTOM_KEYS is what coverage counts; a quota missing from it is measured
+    every ten minutes and reported to nobody."""
+    from importlib import import_module
+
+    declared = set(import_module(module).CUSTOM_KEYS)
+    measured = {(result['serviceCode'], result['quotaCode'])
+                for result in run_entry(entry, sorted(declared))}
+    assert measured == declared, {'undeclared': sorted(measured - declared),
+                                  'unmeasured': sorted(declared - measured)}

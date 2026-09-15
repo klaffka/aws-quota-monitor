@@ -138,6 +138,38 @@ def entries():
             yield module_name, service, list(checks)
 
 
+def entry_points():
+    """Yield (module name, entry point, quota keys) for the modules `entries`
+    cannot see, because they build their checks when the collector calls them.
+
+    ``account_services`` is absent on purpose: it matches the catalog by quota
+    name rather than by code, so a synthetic catalog would decide what it
+    measures. tests/test_account_services.py covers it against a real client.
+    """
+    covered = {module for module, _service, _checks in entries()}
+    for module_name, _service in _CHECK_MODULES:
+        if module_name in covered:
+            continue
+        module = import_module(module_name)
+        keys = getattr(module, 'CUSTOM_KEYS', None)
+        if not keys:
+            continue
+        entry = next((getattr(module, name) for name in dir(module)
+                      if name.startswith('get_current_quotastatus_')), None)
+        if entry is not None:
+            yield module_name, entry, sorted(keys)
+
+
+def run_entry(entry, keys, populated=True):
+    """Run a module through its collector entry point against the same stubs."""
+    session = boto3.Session(region_name=REGION)
+    quotas = [{'ServiceCode': service, 'QuotaCode': code, 'Value': 100, 'Unit': 'Count'}
+              for service, code in keys]
+    ctx = CheckContext(session, quotas, account=ACCOUNT, now=MOMENT)
+    ctx.call = ShapeCall(session, populated=populated)
+    return entry(ctx=ctx)
+
+
 def run(service, checks, populated=True):
     """Run one module's checks and return (measurements, recorded call sites)."""
     session = boto3.Session(region_name=REGION)

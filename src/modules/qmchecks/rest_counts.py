@@ -1,8 +1,9 @@
 """Additional direct resource-count checks discovered from the quota catalog."""
 from modules.qmcore.aws import CheckContext, maximum, session_from_env
 
-CUSTOM_KEYS = {('application-signals', 'L-3FECAFD0'), ('aps', 'L-8873DB23'),
-               ('voiceid', 'L-CF9F1A9B')}
+CUSTOM_KEYS = {('application-signals', 'L-3FECAFD0'), ('aps', 'L-8873DB23')} | {
+    ('voiceid', code) for code in ('L-CF9F1A9B', 'L-3790424B', 'L-65FE7850',
+                                   'L-38B73369', 'L-55441DAB')}
 
 
 def count(service, method, key):

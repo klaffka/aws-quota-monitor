@@ -1,11 +1,18 @@
 """Resource-count quotas for Clean Rooms, Verified Permissions and App Mesh."""
 from modules.qmcore.aws import CheckContext, maximum, session_from_env
 
+# A protected query or job occupies its slot until it reaches a terminal state.
+# ListProtectedQueries filters by one status per request, so asking for the
+# ongoing ones costs three bounded calls instead of reading the whole history.
+ONGOING_QUERY_STATES = ('SUBMITTED', 'STARTED', 'CANCELLING')
+ONGOING_JOB_STATES = ('SUBMITTED', 'STARTED', 'CANCELLING')
+
 CUSTOM_KEYS = {
     ('cleanrooms', code) for code in ('L-F60C2030', 'L-99A163CB', 'L-7CEACCA0',
                                       'L-AF88CE55', 'L-25AC34A7', 'L-6359BE00',
                                       'L-DBDCEC0D', 'L-4596E0C1', 'L-6FE25843',
-                                      'L-F7B26AF5')
+                                      'L-F7B26AF5', 'L-40165B7B', 'L-F04AAAFE',
+                                      'L-B45D79BC', 'L-844B7ECC')
 } | {('verifiedpermissions', code) for code in ('L-919F2C9C', 'L-97BDA0CF')}
 
 
@@ -37,7 +44,42 @@ def cleanrooms_checks(ctx):
                     collaborationIdentifier=cid) if member.get('status') == 'INVITED']
                 values.append((cid, len(invited), None))
         return maximum(values, 'Collaboration', 'cleanrooms:ListMembers(status=INVITED)')
+    def ongoing_per_membership(c, method, key, states):
+        """Return (membership, ongoing count) for every membership."""
+        values = []
+        for membership in c.call('cleanrooms', 'list_memberships', 'membershipSummaries'):
+            mid = membership.get('id')
+            if not mid:
+                continue
+            ongoing = sum(len(c.call('cleanrooms', method, key,
+                                     membershipIdentifier=mid, status=state))
+                          for state in states)
+            values.append((mid, ongoing))
+        return values
+
+    def ongoing_account(method, key, states, source):
+        def check(c):
+            values = ongoing_per_membership(c, method, key, states)
+            return dict(usage=sum(count for _mid, count in values),
+                        source=source, method='ACCOUNT_SUM')
+        return check
+
+    def ongoing_membership(method, key, states, source):
+        def check(c):
+            values = ongoing_per_membership(c, method, key, states)
+            return maximum([(mid, count, None) for mid, count in values],
+                           'Membership', source)
+        return check
+
+    queries = ('list_protected_queries', 'protectedQueries', ONGOING_QUERY_STATES,
+               'cleanrooms:ListProtectedQueries(ongoing)')
+    jobs = ('list_protected_jobs', 'protectedJobs', ONGOING_JOB_STATES,
+            'cleanrooms:ListProtectedJobs(ongoing)')
     return [
+        ('L-40165B7B', 'Concurrent SQL queries per account', ongoing_account(*queries)),
+        ('L-F04AAAFE', 'Concurrent ongoing queries per membership', ongoing_membership(*queries)),
+        ('L-B45D79BC', 'Concurrent PySpark jobs per account', ongoing_account(*jobs)),
+        ('L-844B7ECC', 'Concurrent ongoing job per membership', ongoing_membership(*jobs)),
         ('L-F60C2030', 'Collaborations created per account',
          lambda c: dict(usage=len(c.call('cleanrooms', 'list_collaborations', 'collaborationList')),
                         source='cleanrooms:ListCollaborations', method='ACCOUNT_COUNT')),
