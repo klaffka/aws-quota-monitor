@@ -94,6 +94,7 @@ LIST_SPECS = [
     ('L-DFA239E1', 'Notifications per instance', 'list_notifications', 'NotificationSummaryList', {}),
     ('L-F4C86B27', 'Email addresses per instance', 'search_email_addresses', 'EmailAddresses', {}),
     ('L-3828FBF0', 'Predefined attributes per instance', 'list_predefined_attributes', 'PredefinedAttributeSummaryList', {}),
+    ('L-D945C9A8', 'Agent status per instance', 'list_agent_statuses', 'AgentStatusSummaryList', {}),
 ]
 INTEGRATION_SPECS = [
     ('L-FC6A5030', 'APPLICATION'),
@@ -117,6 +118,10 @@ PARENT_SPECS = [
      'list_data_table_attributes', 'Attributes', 'DataTableId', {}),
     ('L-74395C97', 'Primary attributes per data table', 'list_data_tables', 'DataTableSummaryList',
      'list_data_table_attributes', 'Attributes', 'DataTableId', {'primary': True}),
+    ('L-735CD262', 'Values per data table', 'list_data_tables', 'DataTableSummaryList',
+     'list_data_table_values', 'Values', 'DataTableId', {}),
+    ('L-7B867368', 'Additional email addresses per queue', 'list_queues', 'QueueSummaryList',
+     'list_queue_email_addresses', 'EmailAddressMetadataList', 'QueueId', {}),
 ]
 CHECKS = [
     ('L-AA17A6B9', 'Amazon Connect instance count',

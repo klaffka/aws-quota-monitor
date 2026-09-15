@@ -23,6 +23,8 @@ All notable changes to this project are recorded here. Versions follow
 - Deeper AppSync, CodePipeline, CodeDeploy and Resilience Hub measurements
   beyond their top-level inventories.
 - Support permit measurements.
+- Connect agent status, data table value and queue email address measurements,
+  and Pinpoint import job, event campaign and journey activity measurements.
 - MWAA Serverless, Migration Hub Strategy, Security Agent, Snow Device
   Management, Compute Optimizer automation, DevOps agent, observability
   centralization, organizational unit and S3 on Outposts measurements.
@@ -106,6 +108,10 @@ All notable changes to this project are recorded here. Versions follow
 
 - The shared call cache rejected datetime arguments, which the APIs that take a
   time window need.
+- Pinpoint listings sent the page token as `NextToken`, which those APIs reject,
+  and called the nonexistent `GetJourneys`; projects were also read unpaginated.
+- The IoT Events checks now report the missing SDK client as unsupported instead
+  of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a
   farm alone, though they take a fleet and a queue; both now sum their children.
 - Corrected the OpenSearch UI `ListApplications` IAM service prefix to `es`.

@@ -13,18 +13,19 @@ def test_pinpoint_projects_read_nested_get_apps_response():
 
 
 def test_pinpoint_active_campaigns_and_journeys_cover_all_apps_and_pages():
+    # Pinpoint sends the next page token back as `Token`, not `NextToken`.
     ctx = Mock()
 
     def call(_service, method, **kwargs):
         if method == 'get_apps':
             return {'ApplicationsResponse': {'Item': [{'Id': 'one'}, {'Id': 'two'}]}}
         if method == 'get_campaigns':
-            if kwargs.get('ApplicationId') == 'one' and 'NextToken' not in kwargs:
+            if kwargs.get('ApplicationId') == 'one' and 'Token' not in kwargs:
                 return {'CampaignsResponse': {'Item': [{'State': 'ACTIVE'}], 'NextToken': 'next'}}
             if kwargs.get('ApplicationId') == 'one':
                 return {'CampaignsResponse': {'Item': [{'State': 'COMPLETED'}]}}
             return {'CampaignsResponse': {'Item': [{'State': 'ACTIVE'}, {'State': 'DRAFT'}]}}
-        if method == 'get_journeys':
+        if method == 'list_journeys':
             return {'JourneysResponse': {'Item': [{'State': 'ACTIVE'}]}}
         raise AssertionError(method)
 

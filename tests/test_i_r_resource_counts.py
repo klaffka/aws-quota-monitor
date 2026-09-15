@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+import pytest
+
 from modules.qmchecks.internetmonitor import resources_per_monitor
 from modules.qmchecks.kinesisanalytics import CHECKS as KINESIS_ANALYTICS_CHECKS
 from modules.qmchecks.imagebuilder import CHECKS as IMAGEBUILDER_CHECKS
@@ -83,3 +85,15 @@ def test_rekognition_project_policies_use_maximum_per_project():
     ]
     result = project_policies_per_project(ctx)
     assert (result['usage'], result['resource_id']) == (2, 'two')
+
+
+def test_iot_events_reports_the_missing_client_as_unsupported():
+    """botocore no longer ships an iotevents client; the run must not error."""
+    import boto3
+    from modules.qmchecks.iotevents import alarm_models
+    from modules.qmcore.aws import CheckContext, Unsupported
+
+    ctx = CheckContext(boto3.Session(region_name='eu-central-1'),
+                       account='123456789012')
+    with pytest.raises(Unsupported, match='no AWS IoT Events client'):
+        alarm_models(ctx)

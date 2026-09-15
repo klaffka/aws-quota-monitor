@@ -1,26 +1,44 @@
-"""Amazon Pinpoint regional project resource quota."""
-from modules.qmcore.aws import CheckContext, maximum, session_from_env
+"""Amazon Pinpoint project, campaign, journey and import job quotas.
+
+The attribute and parameter quotas bound one request or one endpoint record,
+and the sending quotas meter a rolling 24-hour period.
+"""
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
+
+PINPOINT = 'pinpoint'
+IMPORT_JOB_STATES = {'CREATED', 'PREPARING_FOR_INITIALIZATION', 'INITIALIZING',
+                     'PROCESSING', 'PENDING_JOB', 'COMPLETING', 'COMPLETED',
+                     'FAILING', 'FAILED'}
+RUNNING_IMPORT_STATES = {'CREATED', 'PREPARING_FOR_INITIALIZATION', 'INITIALIZING',
+                         'PROCESSING', 'PENDING_JOB', 'COMPLETING'}
 
 
-def projects(ctx):
-    response = ctx.call('pinpoint', 'get_apps')
-    return response.get('ApplicationsResponse', {}).get('Item', [])
+def _pages(ctx, method, response_key, **arguments):
+    """Read all Pinpoint pages, whose item lists are nested in response objects.
 
-
-def _items(ctx, method, response_key, application_id):
-    """Read all Pinpoint pages, whose item lists are nested in response objects."""
+    Every Pinpoint listing takes the page token as `Token` and returns the next
+    one as `NextToken`, so the two names cannot be used interchangeably.
+    """
     items, token = [], None
     while True:
-        kwargs = {'ApplicationId': application_id}
+        kwargs = dict(arguments)
         if token:
-            kwargs['NextToken'] = token
-        response = ctx.call('pinpoint', method, **kwargs)
+            kwargs['Token'] = token
+        response = ctx.call(PINPOINT, method, **kwargs)
         nested = response.get(response_key, {})
         items.extend(nested.get('Item', []))
         new_token = nested.get('NextToken')
         if not new_token or new_token == token:
             return items
         token = new_token
+
+
+def projects(ctx):
+    return _pages(ctx, 'get_apps', 'ApplicationsResponse')
+
+
+def _items(ctx, method, response_key, application_id):
+    return _pages(ctx, method, response_key, ApplicationId=application_id)
 
 
 def active_campaigns(ctx):
@@ -48,8 +66,56 @@ def active_in_app_campaigns_per_project(ctx):
 
 def active_journeys(ctx):
     return sum(sum(journey.get('State') == 'ACTIVE'
-                   for journey in _items(ctx, 'get_journeys', 'JourneysResponse', app['Id']))
+                   for journey in _items(ctx, 'list_journeys', 'JourneysResponse', app['Id']))
                for app in projects(ctx))
+
+
+def concurrent_import_jobs(ctx):
+    usage = 0
+    for app in projects(ctx):
+        for job in _items(ctx, 'get_import_jobs', 'ImportJobsResponse', app['Id']):
+            status = job.get('JobStatus')
+            if status not in IMPORT_JOB_STATES:
+                raise NoData('Pinpoint import job has an unknown status')
+            usage += status in RUNNING_IMPORT_STATES
+    return dict(usage=usage, source='pinpoint:GetApps+GetImportJobs',
+                method='ACCOUNT_COUNT')
+
+
+def event_based_campaigns(ctx):
+    """A campaign is event based when its schedule carries an event filter."""
+    usage = 0
+    for app in projects(ctx):
+        for campaign in _items(ctx, 'get_campaigns', 'CampaignsResponse', app['Id']):
+            schedule = campaign.get('Schedule') or {}
+            usage += bool(schedule.get('EventFilter'))
+    return dict(usage=usage, source='pinpoint:GetApps+GetCampaigns',
+                method='ACCOUNT_COUNT')
+
+
+def active_event_triggered_journeys(ctx):
+    usage = 0
+    for app in projects(ctx):
+        for journey in _items(ctx, 'list_journeys', 'JourneysResponse', app['Id']):
+            condition = journey.get('StartCondition') or {}
+            usage += (journey.get('State') == 'ACTIVE'
+                      and bool(condition.get('EventStartCondition')))
+    return dict(usage=usage, source='pinpoint:GetApps+ListJourneys',
+                method='ACCOUNT_COUNT')
+
+
+def activities_per_journey(ctx):
+    values = []
+    for app in projects(ctx):
+        for journey in _items(ctx, 'list_journeys', 'JourneysResponse', app['Id']):
+            identity = journey.get('Id')
+            if not isinstance(identity, str) or not identity:
+                raise NoData('Pinpoint journey is missing its identity')
+            activities = journey.get('Activities') or {}
+            if not isinstance(activities, dict):
+                raise NoData('Pinpoint journey has an invalid activity map')
+            values.append((identity, len(activities), None))
+    return maximum(values, 'PinpointJourney', 'pinpoint:ListJourneys')
 
 
 def _templates(ctx):
@@ -113,11 +179,17 @@ CHECKS = [
     ('L-75AFB9F3', 'Active campaigns per account',
      lambda ctx: dict(usage=active_campaigns(ctx), source='pinpoint:GetApps+GetCampaigns', method='ACCOUNT_COUNT')),
     ('L-D9507B3D', 'Maximum number of active journeys per account',
-     lambda ctx: dict(usage=active_journeys(ctx), source='pinpoint:GetApps+GetJourneys', method='ACCOUNT_COUNT')),
+     lambda ctx: dict(usage=active_journeys(ctx), source='pinpoint:GetApps+ListJourneys', method='ACCOUNT_COUNT')),
     ('L-EF46E894', 'Maximum number of message templates per account',
      lambda ctx: dict(usage=_templates(ctx), source='pinpoint:ListTemplates', method='ACCOUNT_COUNT')),
     ('L-2555226F', 'Maximum number of versions per template', template_versions_per_template),
     ('L-952D08C7', 'Active in-app campaigns per project', active_in_app_campaigns_per_project),
+    ('L-4BC0A2FD', 'Number of concurrent import jobs', concurrent_import_jobs),
+    ('L-CC53764D', 'Number of event-based campaigns', event_based_campaigns),
+    ('L-692A3DD2', 'Maximum number of active event triggered journeys per account',
+     active_event_triggered_journeys),
+    ('L-08122D1D', 'Maximum number of journey activities per journey',
+     activities_per_journey),
 ]
 
 
