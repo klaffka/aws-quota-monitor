@@ -16,7 +16,8 @@ def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
     assert rows == [{'serviceCode': 'servicediscovery', 'total': 2, 'implemented': 1,
                      'compatibleMetric': 0, 'covered': 1, 'coveredPct': 50.0,
                      'uncovered': 1, 'uncoveredCodes': ['uncovered'], 'implementedPct': 50.0,
-                     'unmeasurable': 0, 'measurable': 2, 'measurablePct': 50.0}]
+                     'unmeasurable': 0, 'measurable': 2, 'measurablePct': 50.0,
+                     'countable': 1, 'size_or_period': 0, 'rate_shaped': 0}]
 
 
 def test_catalog_loader_accepts_quotas_wrapper_and_table(tmp_path):
@@ -337,3 +338,21 @@ def test_bare_operation_rates_and_api_throttle_limits_are_excluded():
     row, = catalog_coverage(quotas, set())
     # Only a single operation name may precede the bare word "rate".
     assert (row['unmeasurable'], row['measurable']) == (2, 2)
+
+
+def test_the_largest_gaps_section_matches_the_catalog():
+    """The section drifted from the catalog within a week of being written."""
+    from pathlib import Path
+    from scripts.quota_coverage import merge_catalogs, render_gaps
+    rows = catalog_coverage(merge_catalogs(['tests/fixtures/quota-catalog-union.json']))
+    document = Path('docs/quota-coverage-progress.md').read_text(encoding='utf-8')
+    assert render_gaps(rows) in document
+
+
+def test_every_measurable_uncovered_quota_has_exactly_one_shape():
+    """The shapes partition the gap, so they must add up to it and not overlap."""
+    from scripts.quota_coverage import GAP_SHAPES, merge_catalogs
+    rows = catalog_coverage(merge_catalogs(['tests/fixtures/quota-catalog-union.json']))
+    shapes = sum(sum(row[shape] for row in rows) for shape, _note in GAP_SHAPES)
+    gap = sum(row['uncovered'] - row['unmeasurable'] for row in rows)
+    assert shapes == gap

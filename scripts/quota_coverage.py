@@ -119,6 +119,32 @@ UNMEASURABLE_RULES = (
 )
 
 
+# A bound on one payload, document or retention period exists only while a
+# request is in flight, so no inventory can report it after the fact.
+SIZE_OR_PERIOD = re.compile(
+    r'\b(size|length|bytes|kb|mb|gb|kib|mib|gib|tib|characters?|payload|duration|'
+    r'timeout|retention|expiration|age|depth|ttl|width|resolution|bitrate)\b',
+    re.IGNORECASE)
+# A rate no exclusion rule matched, because the name names neither a window nor
+# an operation. These stay measurable, but a check would have to invent a window.
+RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bper (second|minute|hour|day)\b',
+                         re.IGNORECASE)
+
+
+def gap_shape(quota: dict) -> str:
+    """Classify a measurable, uncovered quota by what its name describes.
+
+    The shape says what the remaining work is: a countable quota needs an
+    inventory, the others need a source that does not exist yet.
+    """
+    name = _name(quota)
+    if RATE_SHAPED.search(name):
+        return 'rate_shaped'
+    if SIZE_OR_PERIOD.search(name):
+        return 'size_or_period'
+    return 'countable'
+
+
 def unmeasurable(quota: dict) -> str | None:
     """Return why this quota's usage cannot be counted at all, or None.
 
@@ -141,6 +167,7 @@ def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | Non
               for q in account_catalog([normalize_quota(q) for q in quotas])}
     services = defaultdict(lambda: {'total': 0, 'implemented': 0, 'compatibleMetric': 0,
                                     'covered': 0, 'uncovered': 0, 'unmeasurable': 0,
+                                    'countable': 0, 'size_or_period': 0, 'rate_shaped': 0,
                                     'uncoveredCodes': []})
     for (service, code), quota in sorted(unique.items()):
         row = services[service]
@@ -154,7 +181,10 @@ def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | Non
         else:
             row['uncovered'] += 1
             row['uncoveredCodes'].append(code)
-            row['unmeasurable'] += int(unmeasurable(quota) is not None)
+            if unmeasurable(quota) is not None:
+                row['unmeasurable'] += 1
+            else:
+                row[gap_shape(quota)] += 1
     result = []
     for service, row in sorted(services.items()):
         total, measurable = row['total'], row['total'] - row['unmeasurable']
@@ -231,6 +261,41 @@ def totals(rows: list[dict]) -> dict:
     return {measure: sum(row[measure] for row in rows) for measure in MEASURES}
 
 
+GAP_SHAPES = (
+    ('countable', 'a genuine inventory that a check could count'),
+    ('size_or_period', 'the bound applies to one payload, document or retention '
+                       'period, so there is a value to read only while a request is in flight'),
+    ('rate_shaped', 'a rate no exclusion rule matches, because the name states '
+                    'neither a window nor an operation'),
+)
+GAP_LABELS = {'countable': 'countable', 'size_or_period': 'size or period',
+              'rate_shaped': 'rate-shaped'}
+
+
+def render_gaps(rows: list[dict], limit: int = 12) -> str:
+    """Render the measurable-but-uncovered quotas by shape and by service.
+
+    Hand-maintained, this section drifted from the catalog within a week; the
+    shape rules live in ``gap_shape`` so the table can be regenerated.
+    """
+    current = totals(rows)
+    shapes = {shape: sum(row[shape] for row in rows) for shape, _note in GAP_SHAPES}
+    open_measurable = current['uncovered'] - current['unmeasurable']
+    lines = [f'{open_measurable:,} quotas are measurable and still uncovered. Sorting them by '
+             'what their', 'names describe shows what the remaining work actually is:', '',
+             '| Shape | Quotas | What it would take |', '| --- | ---: | --- |']
+    for shape, note in GAP_SHAPES:
+        lines.append(f'| {GAP_LABELS[shape]} | {shapes[shape]:,} | {note} |')
+    lines += ['', 'The countable ones are spread thin. The twelve largest holdings:', '',
+              '| Service | Catalog | Covered | Uncovered | Unmeasurable | Countable |',
+              '| --- | ---: | ---: | ---: | ---: | ---: |']
+    ranked = sorted(rows, key=lambda row: (-row['countable'], row['serviceCode']))[:limit]
+    for row in ranked:
+        lines.append(f"| {row['serviceCode']} | {row['total']} | {row['covered']} | "
+                     f"{row['uncovered']} | {row['unmeasurable']} | {row['countable']} |")
+    return '\n'.join(lines)
+
+
 def update_progress(rows: list[dict], path: str) -> None:
     """Rewrite the progress document's union column and headline percentages.
 
@@ -250,6 +315,11 @@ def update_progress(rows: list[dict], path: str) -> None:
     document = re.sub(r'\*\*[\d.]+%\*\* of the [\d,]+ quotas',
                       f"**{measurable:.2f}%** of the {current['measurable']:,} quotas",
                       document, count=1)
+    # The gap section is generated whole, between its heading and the prose that
+    # explains which of the largest holdings are blocked and why.
+    document = re.sub(r'(## Largest remaining gaps\n\n).*?(\n\n"Countable" classifies)',
+                      lambda match: match.group(1) + render_gaps(rows) + match.group(2),
+                      document, count=1, flags=re.DOTALL)
     Path(path).write_text(document, encoding='utf-8')
 
 
@@ -281,12 +351,15 @@ def main() -> int:
                         help='Zusammengeführten Katalog als Fixture schreiben')
     parser.add_argument('--update-progress', metavar='PATH',
                         help='Zahlen im Fortschrittsdokument aktualisieren')
+    parser.add_argument('--gaps', action='store_true',
+                        help='Messbare, noch offene Quotas nach Form ausgeben')
     args = parser.parse_args()
     merged = merge_catalogs(args.input)
     if args.write_catalog:
         print(f'{write_catalog(merged, args.write_catalog)} Quotas -> {args.write_catalog}')
     rows = catalog_coverage(merged)
-    print(json.dumps(rows, indent=2, ensure_ascii=False) if args.format == 'json' else render_table(rows))
+    print(json.dumps(rows, indent=2, ensure_ascii=False) if args.format == 'json'
+          else render_gaps(rows) if args.gaps else render_table(rows))
     if args.update_progress:
         update_progress(rows, args.update_progress)
     if args.update_baseline:
