@@ -76,6 +76,9 @@ Total open entries: **3203**
 
 ## amplifyuibuilder
 
+- `L-E4AD9560` — Views per app: the SDK ships no view listing. The client offers
+  only `ListCodegenJobs`, `ListComponents`, `ListForms`, `ListTagsForResource`
+  and `ListThemes`, so there is no inventory to count.
 - `L-4FE3AB63` — Component size
 - `L-A25B72F2` — Form size
 - `L-CA57203B` — View size

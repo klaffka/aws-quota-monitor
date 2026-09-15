@@ -6,13 +6,18 @@ def domains(ctx):
     return ctx.call('datazone', 'list_domains', 'items')
 
 
-def maximum_per_domain(ctx, method, key):
+def maximum_per_domain(ctx, method, key, **kwargs):
     values = []
     for domain in domains(ctx):
         identifier = domain.get('id') or domain.get('domainId')
-        items = ctx.call('datazone', method, key, domainIdentifier=identifier)
+        items = ctx.call('datazone', method, key, domainIdentifier=identifier, **kwargs)
         values.append((identifier, len(items), None))
     return maximum(values, 'DataZoneDomain', f'datazone:{method}')
+
+
+def searched_per_domain(ctx, scope):
+    """DataZone exposes assets and glossaries only through Search, not a listing."""
+    return maximum_per_domain(ctx, 'search', 'items', searchScope=scope)
 
 
 def git_connections_per_project(ctx):
@@ -31,9 +36,11 @@ def git_connections_per_project(ctx):
 
 
 CHECKS = [
-    ('L-06335BC6', 'Assets', lambda ctx: maximum_per_domain(ctx, 'list_assets', 'items')),
-    ('L-2C2845D2', 'Glossaries', lambda ctx: maximum_per_domain(ctx, 'list_glossaries', 'items')),
-    ('L-9EF33583', 'Asset Types', lambda ctx: maximum_per_domain(ctx, 'list_asset_types', 'items')),
+    ('L-06335BC6', 'Assets', lambda ctx: searched_per_domain(ctx, 'ASSET')),
+    ('L-2C2845D2', 'Glossaries', lambda ctx: searched_per_domain(ctx, 'GLOSSARY')),
+    ('L-9EF33583', 'Asset Types',
+     lambda ctx: maximum_per_domain(ctx, 'search_types', 'items',
+                                    managed=True, searchScope='ASSET_TYPE')),
     ('L-EDF6298B', 'Environments in a domain',
      lambda ctx: maximum_per_domain(ctx, 'list_environments', 'items')),
     ('L-FAD0E7F7', 'Git connections per project', git_connections_per_project),

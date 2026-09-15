@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from modules.qmchecks.fms import (apps_lists, policy_scope, protocols_lists,
+from modules.qmchecks.fms import (PAGE_SIZE, apps_lists, policy_scope, protocols_lists,
                                   managed_list_maximum, network_firewall_cidrs,
                                   network_firewall_capacity,
                                   network_acl_rules, resources_per_set, tags_per_policy,
@@ -49,8 +49,11 @@ def test_managed_lists_are_explicitly_custom():
     ctx = Context()
     assert len(apps_lists(ctx)) == 1
     assert len(protocols_lists(ctx)) == 1
-    assert ('list_apps_lists', 'AppsLists', {'DefaultLists': False}) in ctx.calls
-    assert ('list_protocols_lists', 'ProtocolsLists', {'DefaultLists': False}) in ctx.calls
+    # Both operations require MaxResults, so it travels with every request.
+    assert ('list_apps_lists', 'AppsLists',
+            {'DefaultLists': False, 'MaxResults': PAGE_SIZE}) in ctx.calls
+    assert ('list_protocols_lists', 'ProtocolsLists',
+            {'DefaultLists': False, 'MaxResults': PAGE_SIZE}) in ctx.calls
 
 
 def test_resource_sets_deduplicate_resource_identity():

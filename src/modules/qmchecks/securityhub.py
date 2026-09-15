@@ -15,7 +15,8 @@ CHECKS = [
     ('L-1AA69D21', 'Custom insights',
      lambda ctx: resource_count(ctx, 'get_insights', 'Insights')),
     ('L-6E4302A5', 'Security Hub member accounts',
-     lambda ctx: resource_count(ctx, 'get_members', 'Members')),
+     # GetMembers requires the account IDs this check exists to discover.
+     lambda ctx: resource_count(ctx, 'list_members', 'Members')),
     ('L-387C829B', 'Security Hub outstanding invitations',
      lambda ctx: dict(usage=ctx.call('securityhub', 'get_invitations_count').get('InvitationsCount', 0),
                       source='securityhub:GetInvitationsCount', method='ACCOUNT_COUNT')),

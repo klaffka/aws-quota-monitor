@@ -10,6 +10,10 @@ def required(item, field, subject):
     return value
 
 
+# ListAppsLists and ListProtocolsLists both require MaxResults.
+PAGE_SIZE = 100
+
+
 def unique(ctx, method, key, id_field, **kwargs):
     result = {}
     for item in ctx.call('fms', method, key, **kwargs):
@@ -21,11 +25,13 @@ def unique(ctx, method, key, id_field, **kwargs):
 
 
 def apps_lists(ctx):
-    return unique(ctx, 'list_apps_lists', 'AppsLists', 'ListId', DefaultLists=False)
+    return unique(ctx, 'list_apps_lists', 'AppsLists', 'ListId',
+                  DefaultLists=False, MaxResults=PAGE_SIZE)
 
 
 def protocols_lists(ctx):
-    return unique(ctx, 'list_protocols_lists', 'ProtocolsLists', 'ListId', DefaultLists=False)
+    return unique(ctx, 'list_protocols_lists', 'ProtocolsLists', 'ListId',
+                  DefaultLists=False, MaxResults=PAGE_SIZE)
 
 
 def list_maximum(items, field, resource_type, source):

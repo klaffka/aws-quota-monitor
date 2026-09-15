@@ -13,11 +13,12 @@ def test_databrew_resource_counts_use_paginated_lists():
     assert [check[2](ctx)['usage'] for check in DATABREW_CHECKS] == [1] * len(DATABREW_CHECKS)
 
 
-def test_amplify_ui_resources_are_maximum_per_app():
+def test_amplify_ui_resources_are_maximum_per_app_and_environment():
     ctx = Mock()
-    ctx.call.side_effect = [[{'appId': 'a'}], [{'id': 'theme'}]]
+    ctx.call.side_effect = [[{'appId': 'a'}], [{'environmentName': 'staging'}],
+                            [{'id': 'theme'}]]
     result = UI_CHECKS[0][2](ctx)
-    assert (result['usage'], result['resource_id']) == (1, 'a')
+    assert (result['usage'], result['resource_id']) == (1, 'a/staging')
 
 
 def test_evs_environments_and_hosts_are_counted():

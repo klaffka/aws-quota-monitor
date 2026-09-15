@@ -60,7 +60,8 @@ def public_ami_count(ctx):
 
 
 def launch_templates(ctx):
-    return ctx.call('ec2', 'describe_launch_templates', 'LaunchTemplates', OwnerId=ctx.account)
+    # DescribeLaunchTemplates has no OwnerId parameter; it returns the account's own templates.
+    return ctx.call('ec2', 'describe_launch_templates', 'LaunchTemplates')
 
 
 def launch_template_count(ctx):
