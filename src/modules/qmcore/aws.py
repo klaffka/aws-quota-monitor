@@ -70,7 +70,10 @@ class CheckContext:
         return self.clients[service]
 
     def call(self, service, method, key=None, **kwargs):
-        cache_key = (service, method, key, json.dumps(kwargs, sort_keys=True))
+        # default=str keeps datetimes usable as arguments; several APIs take a
+        # time window and the key only has to be stable, not round-trippable.
+        cache_key = (service, method, key,
+                     json.dumps(kwargs, sort_keys=True, default=str))
         if cache_key not in self.cache:
             try:
                 client = self.client(service)

@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- IoT job, security profile, stream, audit, endpoint, rule and thing group
+  measurements.
 - Comprehend job, flywheel and inference unit measurements, and Lambda capacity
   provider, MicroVM image and VPC interface measurements.
 - Deadline Cloud association and License Manager grant, token and entitlement measurements.
@@ -102,6 +104,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
+- The shared call cache rejected datetime arguments, which the APIs that take a
+  time window need.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a
   farm alone, though they take a fleet and a queue; both now sum their children.
 - Corrected the OpenSearch UI `ListApplications` IAM service prefix to `es`.

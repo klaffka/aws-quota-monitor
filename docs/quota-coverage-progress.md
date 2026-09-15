@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,361 | 2,076 |
+| implemented | 2,377 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,742 | 4,457 |
-| uncovered | 7,339 | 5,941 |
+| covered | 4,758 | 4,457 |
+| uncovered | 7,323 | 5,941 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **39.25%** of the whole union, or
-**54.26%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **39.38%** of the whole union, or
+**54.45%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,21 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened AWS IoT from 7 to 15 catalog quotas and IoT Core from 7 to 15.
+  Jobs are filtered server side by status and target selection; security profile
+  behaviours come from the profile detail and the profiles per target are
+  inverted from the per-profile target listing; files per stream, on-demand
+  audits in progress within a bounded seven-day window, and metric dimensions.
+  IoT Core gains domain configurations, topic rule destinations, actions per
+  rule, resource-specific logging configurations, registration tasks, and the
+  attributes, hierarchy depth and direct children of each thing group, where the
+  depth comes from the ancestors the group already reports rather than a walk.
+  The MQTT protocol quotas stay open: unacknowledged publishes, topic aliases,
+  subscriptions per connection and shared subscription groups live in the broker
+  rather than in an inventory.
+- Fixed the shared call cache, which built its key with `json.dumps` and so
+  rejected any datetime argument. Several APIs take a time window; the key only
+  has to be stable, not round-trippable.
 - Deepened Amazon Comprehend from 1 to 20 catalog quotas: the nine active job
   counts, one per job kind, plus document classifiers and entity recognizers
   still training, flywheels by status, datasets being created and per flywheel
