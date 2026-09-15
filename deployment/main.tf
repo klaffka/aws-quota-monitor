@@ -369,6 +369,12 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           "lambda:GetAccountSettings",
           "lambda:GetFunctionConfiguration",
           "lambda:ListFunctions",
+          "lambda:ListCapacityProviders",
+          "lambda:ListFunctionVersionsByCapacityProvider",
+          "lambda:ListNetworkConnectors",
+          "lambda:ListMicrovmImages",
+          "lambda:ListMicrovmImageVersions",
+          "ec2:DescribeNetworkInterfaces",
           "lambda:GetPolicy",
           "lambda:ListAliases",
           "lambda:ListEventSourceMappings"
@@ -1152,6 +1158,20 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "rekognition:DescribeProjects"
           , "rekognition:DescribeProjectVersions"
           , "comprehend:ListEndpoints"
+          , "comprehend:ListDocumentClassificationJobs"
+          , "comprehend:ListDominantLanguageDetectionJobs"
+          , "comprehend:ListEntitiesDetectionJobs"
+          , "comprehend:ListEventsDetectionJobs"
+          , "comprehend:ListKeyPhrasesDetectionJobs"
+          , "comprehend:ListPiiEntitiesDetectionJobs"
+          , "comprehend:ListSentimentDetectionJobs"
+          , "comprehend:ListTargetedSentimentDetectionJobs"
+          , "comprehend:ListTopicsDetectionJobs"
+          , "comprehend:ListDocumentClassifiers"
+          , "comprehend:ListEntityRecognizers"
+          , "comprehend:ListFlywheels"
+          , "comprehend:ListDatasets"
+          , "comprehend:ListFlywheelIterationHistory"
           , "textract:ListAdapters"
           , "directconnect:DescribeDirectConnectGateways"
           , "directconnect:DescribeLags"

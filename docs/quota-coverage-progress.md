@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,336 | 2,052 |
+| implemented | 2,361 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,717 | 4,433 |
-| uncovered | 7,364 | 5,965 |
+| covered | 4,742 | 4,457 |
+| uncovered | 7,339 | 5,941 |
 | unmeasurable | 3,342 | 3,055 |
 | measurable | 8,739 | 7,343 |
 
-Implemented measurement availability: **39.04%** of the whole union, or
-**53.98%** of the 8,739 quotas whose usage can be counted at all.
+Implemented measurement availability: **39.25%** of the whole union, or
+**54.26%** of the 8,739 quotas whose usage can be counted at all.
 
 3,342 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -82,6 +82,17 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened Amazon Comprehend from 1 to 20 catalog quotas: the nine active job
+  counts, one per job kind, plus document classifiers and entity recognizers
+  still training, flywheels by status, datasets being created and per flywheel
+  by type, running flywheel iterations, and inference units per account and per
+  endpoint. Comprehend filters every listing server side, so each unfinished
+  status is asked for rather than walking a service's whole job history.
+- Added Lambda capacity providers and their function versions, network
+  connectors, MicroVM images and their versions, and the elastic network
+  interfaces Lambda attaches per VPC, which EC2 reports as interfaces of type
+  `lambda`. Capacity providers are listed by ARN, which the version listing also
+  accepts as its name argument.
 - Deepened AWS Deadline Cloud from 9 to 16 catalog quotas and corrected two
   that could never have worked: `ListWorkers` takes a fleet and `ListJobs` takes
   a queue, so both were being called with a farm alone. Each now sums its

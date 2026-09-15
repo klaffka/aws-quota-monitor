@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Comprehend job, flywheel and inference unit measurements, and Lambda capacity
+  provider, MicroVM image and VPC interface measurements.
 - Deadline Cloud association and License Manager grant, token and entitlement measurements.
 - MediaLive inventory and FSx capacity, IOPS, cache and backup measurements.
 - Forecast parallel task and dataset group measurements.

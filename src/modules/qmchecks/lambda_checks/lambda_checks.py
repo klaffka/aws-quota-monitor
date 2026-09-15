@@ -1,4 +1,5 @@
 """Lambda configuration quotas. Sizes use bytes with explicit unit conversion."""
+from collections import Counter
 from botocore.exceptions import ClientError
 from modules.qmcore.aws import CheckContext, maximum, Unsupported, session_from_env
 
@@ -108,6 +109,61 @@ def unsupported(reason):
     raise Unsupported(reason)
 
 
+LAMBDA = 'lambda'
+MICROVMS = 'lambda-microvms'
+CORE = 'lambda-core'
+
+
+def _identity(item, field, subject):
+    value = item.get(field)
+    if not isinstance(value, str) or not value:
+        raise Unsupported(f'Lambda {subject} is missing its identity')
+    return value
+
+
+def capacity_providers(ctx):
+    """Providers are listed by ARN, which the version listing also accepts."""
+    return [_identity(provider, 'CapacityProviderArn', 'capacity provider')
+            for provider in ctx.call(LAMBDA, 'list_capacity_providers',
+                                     'CapacityProviders')]
+
+
+def versions_per_capacity_provider(ctx):
+    values = [(arn, len(ctx.call(LAMBDA, 'list_function_versions_by_capacity_provider',
+                                 'FunctionVersions', CapacityProviderName=arn)), None)
+              for arn in capacity_providers(ctx)]
+    return maximum(values, 'LambdaCapacityProvider',
+                   'lambda:ListFunctionVersionsByCapacityProvider')
+
+
+def microvm_images(ctx):
+    return [_identity(image, 'imageArn', 'MicroVM image')
+            for image in ctx.call(MICROVMS, 'list_microvm_images', 'items')]
+
+
+def versions_per_microvm_image(ctx):
+    values = [(arn, len(ctx.call(MICROVMS, 'list_microvm_image_versions', 'items',
+                                 imageIdentifier=arn)), None)
+              for arn in microvm_images(ctx)]
+    return maximum(values, 'LambdaMicrovmImage',
+                   'lambda-microvms:ListMicrovmImageVersions')
+
+
+def network_interfaces_per_vpc(ctx):
+    """Lambda's VPC attachments are the EC2 interfaces of type ``lambda``."""
+    counts = Counter()
+    for interface in ctx.call('ec2', 'describe_network_interfaces',
+                              'NetworkInterfaces',
+                              Filters=[{'Name': 'interface-type',
+                                        'Values': ['lambda']}]):
+        vpc = interface.get('VpcId')
+        if not isinstance(vpc, str) or not vpc:
+            raise Unsupported('Lambda network interface names no VPC')
+        counts[vpc] += 1
+    return maximum(((vpc, count, None) for vpc, count in counts.items()),
+                   'Vpc', 'ec2:DescribeNetworkInterfaces')
+
+
 CHECKS = [
     ('L-2ACBD22F', 'Function and layer storage', storage),
     ('L-75F48B05', 'Deployment package size (direct upload)', direct_upload_package_size),
@@ -116,6 +172,22 @@ CHECKS = [
     ('L-6581F036', 'Environment variable size', lambda c: sized(c, 'L-6581F036', environment_size, 'lambda:ListFunctions')),
     ('L-07A00131', 'Function resource-based policy', policies),
     ('L-C952DDE4', 'Kafka Event Source Mappings in default mode on Lambda Managed Instances', kafka_default_mode),
+    ('L-F864D568', 'Capacity providers',
+     lambda c: dict(usage=len(capacity_providers(c)),
+                    source='lambda:ListCapacityProviders', method='ACCOUNT_COUNT')),
+    ('L-96779E29', 'Function versions per capacity provider',
+     versions_per_capacity_provider),
+    ('L-5E779850', 'Network connectors',
+     lambda c: dict(usage=len(c.call(CORE, 'list_network_connectors',
+                                     'NetworkConnectors')),
+                    source='lambda-core:ListNetworkConnectors',
+                    method='ACCOUNT_COUNT')),
+    ('L-942E56BE', 'Number of MicroVM images',
+     lambda c: dict(usage=len(microvm_images(c)),
+                    source='lambda-microvms:ListMicrovmImages',
+                    method='ACCOUNT_COUNT')),
+    ('L-F8BECE9C', 'Versions per MicroVM Image', versions_per_microvm_image),
+    ('L-9FEE3D26', 'Elastic network interfaces per VPC', network_interfaces_per_vpc),
 ]
 
 
