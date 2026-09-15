@@ -10,9 +10,10 @@ def test_misc_management_resource_counts():
     for checks in (WA, CONTACTS):
         context = Mock(); context.call.side_effect = [[{}]] * len(checks)
         assert [check[2](context)['usage'] for check in checks] == [1] * len(checks)
-    for checks in (DATASETS,):
-        context = Mock(); context.call.return_value = [{}]
-        assert checks[0][2](context)['usage'] == 1
+    # Data sets carry an identity and an asset type; see tests/test_dataexchange.py.
+    context = Mock()
+    context.call.return_value = [{'Id': 'set-1', 'AssetType': 'S3_SNAPSHOT'}]
+    assert DATASETS[0][2](context)['usage'] == 1
     context = Mock()
     context.call.side_effect = [
         [{'Identifier': 'RULE0000001'}],
