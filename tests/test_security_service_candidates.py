@@ -19,7 +19,11 @@ def test_macie_checks_use_paginated_resource_keys():
             return {'invitationsCount': 2}
         return [{'id': 'one'}, {'id': 'two'}]
     ctx.call.side_effect = calls
-    assert all(check(ctx)['usage'] == 2 for _, _, check in MACIE_CHECKS)
+    # The job-scoped checks descend into a job definition and are covered by
+    # tests/test_gamelift_macie_inventories.py against a real client.
+    scoped = {'L-14954719', 'L-3572300B'}
+    assert all(check(ctx)['usage'] == 2
+               for code, _name, check in MACIE_CHECKS if code not in scoped)
 
 
 def test_transfer_checks_use_paginated_resource_keys():

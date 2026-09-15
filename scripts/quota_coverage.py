@@ -262,7 +262,7 @@ def totals(rows: list[dict]) -> dict:
 
 
 GAP_SHAPES = (
-    ('countable', 'a genuine inventory that a check could count'),
+    ('countable', 'the name describes a count; whether an API exposes that inventory has to be checked quota by quota'),
     ('size_or_period', 'the bound applies to one payload, document or retention '
                        'period, so there is a value to read only while a request is in flight'),
     ('rate_shaped', 'a rate no exclusion rule matches, because the name states '
@@ -317,7 +317,7 @@ def update_progress(rows: list[dict], path: str) -> None:
                       document, count=1)
     # The gap section is generated whole, between its heading and the prose that
     # explains which of the largest holdings are blocked and why.
-    document = re.sub(r'(## Largest remaining gaps\n\n).*?(\n\n"Countable" classifies)',
+    document = re.sub(r'(## Largest remaining gaps\n\n).*?(\n\nThe two tables above)',
                       lambda match: match.group(1) + render_gaps(rows) + match.group(2),
                       document, count=1, flags=re.DOTALL)
     Path(path).write_text(document, encoding='utf-8')
