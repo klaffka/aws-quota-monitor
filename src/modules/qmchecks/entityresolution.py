@@ -7,10 +7,10 @@ def count(ctx, method, key):
 
 
 CHECKS = [
-    ('L-60DAF647', 'Matching workflows', lambda ctx: count(ctx, 'list_matching_workflows', 'workflows')),
-    ('L-C5A3094C', 'ID mapping workflows', lambda ctx: count(ctx, 'list_id_mapping_workflows', 'workflows')),
-    ('L-FBA1B7BB', 'ID namespaces', lambda ctx: count(ctx, 'list_id_namespaces', 'idNamespaces')),
-    ('L-00E43259', 'Schema mappings', lambda ctx: count(ctx, 'list_schema_mappings', 'schemaMappings')),
+    ('L-60DAF647', 'Matching workflows', lambda ctx: count(ctx, 'list_matching_workflows', 'workflowSummaries')),
+    ('L-C5A3094C', 'ID mapping workflows', lambda ctx: count(ctx, 'list_id_mapping_workflows', 'workflowSummaries')),
+    ('L-FBA1B7BB', 'ID namespaces', lambda ctx: count(ctx, 'list_id_namespaces', 'idNamespaceSummaries')),
+    ('L-00E43259', 'Schema mappings', lambda ctx: count(ctx, 'list_schema_mappings', 'schemaList')),
 ]
 
 

@@ -18,7 +18,7 @@ CHECKS = [
      lambda ctx: resource_count(ctx, 'list_resources', 'ResourceInfoList')),
     ('L-3E3798DF', 'Number of data lake administrators', administrators),
     ('L-F165AF61', 'Number of LF tags per account',
-     lambda ctx: resource_count(ctx, 'list_lf_tags', 'LFTagList')),
+     lambda ctx: resource_count(ctx, 'list_lf_tags', 'LFTags')),
 ]
 
 

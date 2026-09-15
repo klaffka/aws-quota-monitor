@@ -334,7 +334,7 @@ CHECKS = [
     ('L-CB5C18A8', 'Asset models per Region per account',
      lambda ctx: model_count(ctx, {'ASSET_MODEL', 'COMPONENT_MODEL'})),
     ('L-A5652910', 'Portals per Region per account', lambda ctx: count(ctx, 'list_portals', 'portalSummaries')),
-    ('L-179151C6', 'Gateways per Region per account', lambda ctx: count(ctx, 'list_gateways', 'gateways')),
+    ('L-179151C6', 'Gateways per Region per account', lambda ctx: count(ctx, 'list_gateways', 'gatewaySummaries')),
     ('L-37C04251', 'Number of interface per Region per account',
      lambda ctx: model_count(ctx, {'INTERFACE'})),
     ('L-D8008DC7', 'Number of properties at root of each asset model of type ASSET_MODEL',

@@ -20,9 +20,9 @@ def sets_per_detector(ctx, method, key, source):
 CHECKS = [
     ('L-FA6D6E3D', 'Detectors', detector_count),
     ('L-AFBA2260', 'Trusted IP sets',
-     lambda ctx: sets_per_detector(ctx, 'list_ip_sets', 'IpSets', 'guardduty:ListIPSets')),
+     lambda ctx: sets_per_detector(ctx, 'list_ip_sets', 'IpSetIds', 'guardduty:ListIPSets')),
     ('L-2C0E14B9', 'Threat intel sets',
-     lambda ctx: sets_per_detector(ctx, 'list_threat_intel_sets', 'ThreatIntelSets',
+     lambda ctx: sets_per_detector(ctx, 'list_threat_intel_sets', 'ThreatIntelSetIds',
                                    'guardduty:ListThreatIntelSets')),
     ('L-9ABF7A23', 'Filters',
      lambda ctx: sets_per_detector(ctx, 'list_filters', 'FilterNames', 'guardduty:ListFilters')),
