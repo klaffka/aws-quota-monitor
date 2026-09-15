@@ -110,7 +110,7 @@ def dlm_share_targets(ctx):
 CHECKS = {
     'servicecatalog': [('L-7C3CEC2B', 'Applications per region', lambda c: dict(usage=len(c.call('servicecatalog-appregistry', 'list_applications', 'applications')), source='servicecatalog-appregistry:ListApplications', method='ACCOUNT_COUNT'))],
     'scn': [('L-4AF12E50', 'AWS Supply Chain instances per account', lambda c: dict(usage=len(c.call('supplychain', 'list_instances', 'instances')), source='supplychain:ListInstances', method='ACCOUNT_COUNT'))],
-    'timestream-influxdb': [('L-61ADAB7E', 'Database instances per account', lambda c: dict(usage=len(c.call('timestream-influxdb', 'list_db_instances', 'dbInstances')), source='timestream-influxdb:ListDbInstances', method='ACCOUNT_COUNT'))],
+    'timestream-influxdb': [('L-61ADAB7E', 'Database instances per account', lambda c: dict(usage=len(c.call('timestream-influxdb', 'list_db_instances', 'items')), source='timestream-influxdb:ListDbInstances', method='ACCOUNT_COUNT'))],
     'wisdom': [
         ('L-B9FB65B0', 'Knowledge bases per account', lambda c: dict(usage=len(c.call('wisdom', 'list_knowledge_bases', 'knowledgeBaseSummaries')), source='wisdom:ListKnowledgeBases', method='ACCOUNT_COUNT')),
         ('L-5558F50C', 'Assistants per account', lambda c: dict(usage=len(c.call('wisdom', 'list_assistants', 'assistantSummaries')), source='wisdom:ListAssistants', method='ACCOUNT_COUNT')),

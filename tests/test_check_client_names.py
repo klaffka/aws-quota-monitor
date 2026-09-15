@@ -9,6 +9,7 @@ from pathlib import Path
 
 import boto3
 import pytest
+from botocore import xform_name
 
 # These services were retired from botocore. Their checks route through
 # sdk_call, which reports the absence as UNSUPPORTED rather than an error.
@@ -77,3 +78,29 @@ def test_every_called_method_exists_on_its_client(path):
         if not hasattr(session.client(service), method):
             missing.append(f'{service}.{method}')
     assert not missing, f'{path.name} calls operations the SDK has not: {missing}'
+
+
+def _output_members(session, service, method):
+    """Return the output members of one operation, or None if it has none."""
+    model = session.client(service).meta.service_model
+    for name in model.operation_names:
+        if xform_name(name) == method:
+            shape = model.operation_model(name).output_shape
+            return set(shape.members) if shape is not None else set()
+    return None
+
+
+@pytest.mark.parametrize('path', sorted(CHECKS.glob('*.py')), ids=lambda p: p.stem)
+def test_every_paginated_key_exists_in_the_response(path):
+    """A wrong key reports zero usage with an OK status: a silent undercount."""
+    session = boto3.Session(region_name='eu-central-1')
+    available = set(session.get_available_services())
+    wrong = []
+    for service, method, key in _call_sites(path, {'call'}, arity=3):
+        if not service or not method or not key or service in RETIRED \
+                or service not in available:
+            continue
+        members = _output_members(session, service, method)
+        if members is not None and key not in members:
+            wrong.append(f'{service}.{method}[{key}]')
+    assert not wrong, f'{path.name} reads response keys that do not exist: {wrong}'

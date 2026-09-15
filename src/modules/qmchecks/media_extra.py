@@ -94,7 +94,7 @@ MEDIACONNECT_CHECKS = [
 
 def max_channels_per_group(c):
     values = []
-    for group in c.call('mediapackagev2', 'list_channel_groups', 'ChannelGroups'):
+    for group in c.call('mediapackagev2', 'list_channel_groups', 'Items'):
         name = group.get('ChannelGroupName')
         values.append((name, len(c.call('mediapackagev2', 'list_channels', 'Items', ChannelGroupName=name)), None))
     return maximum(values, 'ChannelGroup', 'mediapackagev2:ListChannels')
@@ -102,7 +102,7 @@ def max_channels_per_group(c):
 
 def max_endpoints_per_channel(c):
     values = []
-    for group in c.call('mediapackagev2', 'list_channel_groups', 'ChannelGroups'):
+    for group in c.call('mediapackagev2', 'list_channel_groups', 'Items'):
         group_name = group.get('ChannelGroupName')
         for channel in c.call('mediapackagev2', 'list_channels', 'Items', ChannelGroupName=group_name):
             name = channel.get('ChannelName')
@@ -118,7 +118,7 @@ def get_current_quotastatus_media_extra(session=None, *, ctx=None, skip=()):
         entries.extend(context.run('mediaconnect', MEDIACONNECT_CHECKS, skip))
     if any(service == 'mediapackagev2' for service, _ in context.quotas):
         entries.extend(context.run('mediapackagev2', [
-            ('L-A7040149', 'Channel Groups', count('mediapackagev2', 'list_channel_groups', 'ChannelGroups')),
+            ('L-A7040149', 'Channel Groups', count('mediapackagev2', 'list_channel_groups', 'Items')),
             ('L-55777135', 'Channels per channel group', max_channels_per_group),
             ('L-305BEE26', 'Origin endpoints per channel', max_endpoints_per_channel),
         ], skip))

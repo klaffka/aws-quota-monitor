@@ -12,7 +12,7 @@ def count(service, method, key):
 
 def voice_id_parent_max(ctx, method, key, code_kwargs=None):
     values = []
-    for domain in ctx.call('voice-id', 'list_domains', 'Domains'):
+    for domain in ctx.call('voice-id', 'list_domains', 'DomainSummaries'):
         did = domain.get('DomainId')
         if did:
             kwargs = {'DomainId': did}
@@ -37,7 +37,7 @@ def get_current_quotastatus_rest_counts(session=None, *, ctx=None, skip=()):
         ], skip))
     if any(service == 'voiceid' for service, _ in context.quotas):
         entries.extend(context.run('voiceid', [
-            ('L-CF9F1A9B', 'Domains per region', count('voice-id', 'list_domains', 'Domains')),
+            ('L-CF9F1A9B', 'Domains per region', count('voice-id', 'list_domains', 'DomainSummaries')),
             ('L-3790424B', 'Watchlists per domain', lambda c: voice_id_parent_max(c, 'list_watchlists', 'WatchlistSummaries')),
             ('L-65FE7850', 'Speakers per domain', lambda c: voice_id_parent_max(c, 'list_speakers', 'SpeakerSummaries')),
             ('L-38B73369', 'Active fraudster registration jobs per domain', lambda c: voice_id_parent_max(c, 'list_fraudster_registration_jobs', 'JobSummaries', {'JobStatus': 'IN_PROGRESS'})),

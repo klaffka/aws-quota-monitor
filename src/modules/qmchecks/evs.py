@@ -4,17 +4,17 @@ from modules.qmcore.aws import CheckContext, maximum, session_from_env
 
 def hosts_per_environment(ctx):
     values = []
-    for env in ctx.call('evs', 'list_environments', 'environments'):
+    for env in ctx.call('evs', 'list_environments', 'environmentSummaries'):
         identifier = env.get('environmentId')
         if identifier:
-            values.append((identifier, len(ctx.call('evs', 'list_environment_hosts', 'hosts',
+            values.append((identifier, len(ctx.call('evs', 'list_environment_hosts', 'environmentHosts',
                                                    environmentId=identifier)), None))
     return maximum(values, 'EVSEnvironment', 'evs:ListEnvironmentHosts')
 
 
 CHECKS = [
     ('L-27E780D9', 'Environment count per AWS account',
-     lambda c: dict(usage=len(c.call('evs', 'list_environments', 'environments')),
+     lambda c: dict(usage=len(c.call('evs', 'list_environments', 'environmentSummaries')),
                     source='evs:ListEnvironments', method='ACCOUNT_COUNT')),
     ('L-96A49955', 'Host count per EVS environment', hosts_per_environment),
 ]

@@ -142,6 +142,12 @@ All notable changes to this project are recorded here. Versions follow
 - Internet Monitor called a `ListMonitoredResources` operation the SDK has
   never had; a monitor's resources come from `GetMonitor`. A second test now
   proves every operation a check names exists on its client.
+- Twelve listings read a response key the API does not return, so Backup report
+  plans and plan versions, Cloud9 environments, EVS environments and hosts,
+  GameLift matchmaking configurations, GuardDuty detectors, MediaPackage v2
+  channel groups, Timestream InfluxDB instances and Voice ID domains all
+  reported zero usage with an OK status. A third test proves every paginated
+  key exists in its operation's response.
 - The IoT Events checks now report the missing SDK client as unsupported instead
   of failing with an unknown-service error.
 - Deadline Cloud worker and job counts called ListWorkers and ListJobs with a

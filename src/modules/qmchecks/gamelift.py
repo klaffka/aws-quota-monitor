@@ -25,7 +25,7 @@ CHECKS = [
      lambda c: dict(usage=len(c.call('gamelift', 'list_locations', 'Locations')),
                     source='gamelift:ListLocations', method='ACCOUNT_COUNT')),
     ('L-73F6E300', 'Matchmaking configurations',
-     lambda c: dict(usage=len(c.call('gamelift', 'describe_matchmaking_configurations', 'MatchmakingConfigurations')),
+     lambda c: dict(usage=len(c.call('gamelift', 'describe_matchmaking_configurations', 'Configurations')),
                     source='gamelift:DescribeMatchmakingConfigurations', method='ACCOUNT_COUNT')),
     ('L-8AE49BBD', 'Matchmaking rule sets',
      lambda c: dict(usage=len(c.call('gamelift', 'describe_matchmaking_rule_sets', 'RuleSets')),

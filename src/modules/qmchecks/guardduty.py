@@ -3,7 +3,7 @@ from modules.qmcore.aws import CheckContext, maximum, session_from_env
 
 
 def detectors(ctx):
-    return ctx.call('guardduty', 'list_detectors', 'detectorIds')
+    return ctx.call('guardduty', 'list_detectors', 'DetectorIds')
 
 
 def detector_count(ctx):

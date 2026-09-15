@@ -20,7 +20,7 @@ def framework_controls(ctx):
 
 def frameworks_per_report_plan(ctx):
     values = []
-    for plan in ctx.call('backup', 'list_report_plans', 'ReportPlansList'):
+    for plan in ctx.call('backup', 'list_report_plans', 'ReportPlans'):
         name = plan.get('ReportPlanName')
         if name:
             details = ctx.call('backup', 'describe_report_plan', ReportPlanName=name)
@@ -46,7 +46,7 @@ CHECKS = [
          'BackupVault', 'backup:ListRecoveryPointsByBackupVault')),
     ('L-9122A82F', 'Versions per backup plan',
      lambda ctx: maximum([(p.get('BackupPlanId'), len(ctx.call(
-         'backup', 'list_backup_plan_versions', 'Versions', BackupPlanId=p.get('BackupPlanId'))), None)
+         'backup', 'list_backup_plan_versions', 'BackupPlanVersionsList', BackupPlanId=p.get('BackupPlanId'))), None)
          for p in ctx.call('backup', 'list_backup_plans', 'BackupPlansList')],
          'BackupPlan', 'backup:ListBackupPlanVersions')),
     ('L-B4021FB0', 'Framework controls per Region per account', framework_controls),
