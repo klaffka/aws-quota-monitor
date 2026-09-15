@@ -538,6 +538,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "securityagent:ListThreatModels"
           , "securityagent:ListThreatModelJobs"
           , "snow-device-management:ListTasks"
+          , "supportauthz:ListSupportPermits"
           , "dax:DescribeClusters"
           , "dax:DescribeParameterGroups"
           , "dax:DescribeSubnetGroups"

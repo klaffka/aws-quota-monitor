@@ -17,6 +17,7 @@ from modules.qmchecks.interconnect import get_current_quotastatus_interconnect
 from modules.qmchecks.rtbfabric import get_current_quotastatus_rtbfabric
 from modules.qmchecks.tnb import get_current_quotastatus_tnb
 from modules.qmchecks.dax import get_current_quotastatus_dax
+from modules.qmchecks.supportauthz import get_current_quotastatus_supportauthz
 from modules.qmchecks.aco_automation import (
     get_current_quotastatus_aco_automation)
 from modules.qmchecks.aidevops import get_current_quotastatus_aidevops
@@ -280,6 +281,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_rtbfabric(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_tnb(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_dax(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_supportauthz(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_aco_automation(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_aidevops(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_controltower(ctx=ctx, skip=official))

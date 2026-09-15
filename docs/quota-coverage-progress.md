@@ -17,15 +17,15 @@ with the single-export figure kept for comparison.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,135 | 1,901 |
+| implemented | 2,136 | 1,901 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,516 | 4,282 |
-| uncovered | 7,565 | 6,116 |
+| covered | 4,517 | 4,282 |
+| uncovered | 7,564 | 6,116 |
 | unmeasurable | 3,253 | 2,976 |
 | measurable | 8,828 | 7,422 |
 
-Implemented measurement availability: **37.38%** of the whole union, or
-**51.16%** of the 8,828 quotas whose usage can be counted at all.
+Implemented measurement availability: **37.39%** of the whole union, or
+**51.17%** of the 8,828 quotas whose usage can be counted at all.
 
 3,253 quotas are excluded from the second denominator by three rules in
 `quota_coverage.py`, matched on the quota name and applied in this order:
@@ -63,10 +63,14 @@ have excluded six countable Textract quotas.
 
 Custom and compatible metric counts overlap; covered is their union.
 `tests/fixtures/coverage-baseline.json` holds these totals and CI fails on any
-regression. Approaching 100% of the measurable base remains open.
+regression. Approaching 100% of the measurable base remains open; the section below
+records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Added Support permits per account, the last reachable quota in the
+  zero-coverage set, and checked every remaining service against the SDK. What
+  is left is recorded under `Services with no coverage at all`.
 - Reached the end of what the SDK exposes for the remaining zero-coverage
   services. Measured MWAA Serverless workflows, versions per workflow and
   concurrent runs; Migration Hub Strategy active imports and servers per
@@ -371,6 +375,36 @@ regression. Approaching 100% of the measurable base remains open.
 - Added 140 EC2 dedicated-host family quotas, with ownership/family checks and explicit unknown states during recovery.
 - Added EKS native cluster quota L-1194D53C and corrected external registration quota L-FDFA5F81.
 - Corrected central AppStream registration and the offline coverage tool: native AWS fields, aliases, account scope and union with official metrics.
+
+## Services with no coverage at all
+
+Every service that reports zero covered quotas has been checked against the SDK.
+15 services with 111 measurable quotas remain, for two distinct reasons.
+
+**No SDK client (80 quotas, 7 services).** `botocore` ships no client for
+`lookoutmetrics` (30), `qt-platform` (15), `simspaceweaver` (14),
+`lookoutvision` (13), `cloudshell` (4), `kiro` (2), `sms` (2) or `eks-mcp` (1).
+There is no call to make, and the collector's own service guard skips them.
+
+**The API exposes no usable inventory (31 quotas, 8 services).**
+
+| Service | Quotas | What the API gives instead |
+| --- | ---: | --- |
+| `signer` | 19 | every quota is `Rate of <Operation> requests`; see below |
+| `cognito-sync` | 5 | `ListDatasets` needs an identity, so counting datasets per identity means enumerating every identity in every pool |
+| `signin` | 2 | `ListResourcePermissionStatements` returns a statement's `sid` and `condition`, never the policy body the size quota bounds |
+| `account-access` | 1 | `ListEntitlements` requires a mandatory filter naming a role, and no operation lists the roles |
+| `codeguru-reviewer` | 1 | `Allowed Code Reviews` is an entitlement, not the count `ListCodeReviews` returns |
+| `emr-serverless` | 1 | applications report their maximum capacity, never the vCPUs currently in use |
+| `ssm-guiconnect` | 1 | the client has no listing operation at all |
+| `eks-mcp`, `aco-automation`, `supportauthz` | rates | covered by the rules above |
+
+The 19 `signer` quotas are the largest single judgement call. Their names state
+no window, so the `API_RATE` rule deliberately does not match them and they stay
+in the measurable base, holding the reported figure down by roughly two tenths
+of a percent. Matching `Rate of <Operation> requests` would exclude 1,107 quotas
+across 39 services on an inference about AWS's wording; that inference is not
+worth the point it would add.
 
 ## Largest remaining gaps
 

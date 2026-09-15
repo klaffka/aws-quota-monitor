@@ -12,6 +12,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.rtbfabric', 'rtbfabric'),
     ('modules.qmchecks.tnb', 'tnb'),
     ('modules.qmchecks.dax', 'dax'),
+    ('modules.qmchecks.supportauthz', 'supportauthz'),
     ('modules.qmchecks.aco_automation', 'aco-automation'),
     ('modules.qmchecks.aidevops', 'aidevops'),
     ('modules.qmchecks.controltower', 'controltower'),

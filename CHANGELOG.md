@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Support permit measurements.
 - MWAA Serverless, Migration Hub Strategy, Security Agent, Snow Device
   Management, Compute Optimizer automation, DevOps agent, observability
   centralization, organizational unit and S3 on Outposts measurements.

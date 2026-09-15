@@ -219,3 +219,20 @@ def test_every_new_check_is_registered_for_reporting():
             (controltower, 'controltower'), (s3_outposts, 's3-outposts')):
         registered = {code for name, code in custom_keys() if name == service}
         assert {code for code, _, _ in module.CHECKS} <= registered, service
+
+
+def test_support_permits_are_counted_once():
+    from modules.qmchecks import supportauthz
+    ctx = context('supportauthz', 'L-EDDA9F00')
+    with Stubber(ctx.client('supportauthz')) as stub:
+        permit = {'name': 'p1', 'status': 'ACTIVE', 'createdAt': NOW,
+                  'permit': {'actions': {'actions': ['support:DescribeCases']},
+                             'resources': {'allResourcesInRegion': {}}},
+                  'signingKeyInfo': {'kmsKey': 'arn:aws:kms:eu-central-1:'
+                                               '123456789012:key/abcd'}}
+        stub.add_response('list_support_permits', {'supportPermits': [
+            dict(permit, arn='arn:aws:supportauthz::123456789012:permit/p1'),
+            dict(permit, arn='arn:aws:supportauthz::123456789012:permit/p2'),
+            dict(permit, arn='arn:aws:supportauthz::123456789012:permit/p1')]}, {})
+        assert supportauthz.support_permits(ctx)['usage'] == 2
+        stub.assert_no_pending_responses()
