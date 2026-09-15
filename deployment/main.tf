@@ -826,6 +826,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "wafv2:GetIPSet"
           , "wafv2:GetRegexPatternSet"
           , "wafv2:ListResourcesForWebACL"
+          , "wafv2:GetWebACL"
           , "waf-regional:ListWebACLs"
           , "waf-regional:GetWebACL"
           , "waf-regional:ListRegexPatternSets"
