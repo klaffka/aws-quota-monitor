@@ -86,6 +86,28 @@ def ingestion_jobs_per_data_source(ctx):
                    'KnowledgeBaseDataSource', SOURCE_INGESTION)
 
 
+# Listed by the API itself. Only a running execution occupies the account's
+# concurrency; the other four states are terminal.
+FLOW_EXECUTION_STATES = {'Running', 'Succeeded', 'Failed', 'TimedOut', 'Aborted'}
+SOURCE_FLOW_EXECUTIONS = 'bedrock-agent:ListFlows+bedrock-agent-runtime:ListFlowExecutions'
+
+
+def flow_executions(ctx):
+    """The executions are listed per flow; the quota counts them per account."""
+    usage = 0
+    for flow in ctx.call('bedrock-agent', 'list_flows', 'flowSummaries'):
+        identity = flow.get('id')
+        if not isinstance(identity, str) or not identity:
+            raise NoData('Bedrock flow is missing its identity')
+        for execution in ctx.call('bedrock-agent-runtime', 'list_flow_executions',
+                                  'flowExecutionSummaries', flowIdentifier=identity):
+            status = execution.get('status')
+            if status not in FLOW_EXECUTION_STATES:
+                raise NoData('Bedrock flow execution has an unknown status')
+            usage += status == 'Running'
+    return dict(usage=usage, source=SOURCE_FLOW_EXECUTIONS, method='ACCOUNT_SUM')
+
+
 def _policy_builds(ctx):
     """Yield (policy ARN, unfinished build count) for every reasoning policy."""
     for policy in ctx.call('bedrock', 'list_automated_reasoning_policies',
@@ -129,4 +151,5 @@ CHECKS = [
     ('L-1B9EB555', '(Automated Reasoning) Concurrent policy builds per account',
      policy_builds_per_account),
     ('L-908FAEE3', '(Automated Reasoning) Concurrent builds per policy', builds_per_policy),
+    ('L-F1613626', '(Flows) Flow executions per account', flow_executions),
 ]

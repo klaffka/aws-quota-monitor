@@ -1181,6 +1181,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "bedrock:ListKnowledgeBases"
           , "bedrock:ListAgents"
           , "bedrock:ListFlows"
+          , "bedrock:ListFlowExecutions"
           , "bedrock:ListPrompts"
           , "bedrock:ListDataSources"
           , "bedrock:ListAgentAliases"

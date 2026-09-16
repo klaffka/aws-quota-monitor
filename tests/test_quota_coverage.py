@@ -469,3 +469,26 @@ def test_the_period_rules_leave_real_counts_alone(name):
     """The words appear in names that still describe an inventory."""
     from scripts.quota_coverage import gap_shape
     assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'countable'
+
+
+@pytest.mark.parametrize('name', [
+    '(Data Automation) Maximum number of Blueprints per Start Inference request (Images)',
+    '(Knowledge Bases) Files to ingest per IngestKnowledgeBaseDocuments job.',
+    'Events per PutAuditEvents request',
+    'CR.1X workers per PySpark job',
+])
+def test_a_bound_on_one_named_request_is_not_an_inventory(name):
+    """AWS names the operation between "per" and "request", which hid these."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'size_or_period'
+
+
+@pytest.mark.parametrize('name', [
+    'Concurrent jobs per on-demand queue',
+    'Files per stream',
+    'Reports per instance',
+])
+def test_the_named_request_rule_leaves_per_parent_counts_alone(name):
+    """"Per <parent>" is an inventory; only a named operation is a request."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'countable'
