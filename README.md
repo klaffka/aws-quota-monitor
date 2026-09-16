@@ -275,9 +275,9 @@ name that reads like a count does not mean an API can answer it:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 880 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
-| size or period | 722 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
-| rate-shaped | 299 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
+| countable | 862 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| size or period | 734 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| rate-shaped | 305 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
 | organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
 

@@ -125,14 +125,27 @@ UNMEASURABLE_RULES = (
 )
 
 
-# A bound on one payload, document or retention period exists only while a
-# request is in flight, so no inventory can report it after the fact.
+# A bound on one payload or document exists only while a request is in flight,
+# and a bound stated in time units is a period rather than a count however the
+# name reads: CodeDeploy's "Minutes until a deployment fails" and "AWS Lambda
+# deployment run in hours" are the deployment's clock, not an inventory.
+#
+# The time units are matched in the plural only, because English uses the
+# singular attributively: Connect's "Historical actuals 15 or 30 minute interval
+# file count" counts files and merely describes their interval, while every
+# quota that really names a period writes "hours", "minutes" or "seconds".
 SIZE_OR_PERIOD = re.compile(
     r'\b(size|length|bytes|kb|mb|gb|kib|mib|gib|tib|characters?|payload|duration|'
-    r'timeout|retention|expiration|age|depth|ttl|width|resolution|bitrate)\b',
+    r'timeout|retention|expiration|age|depth|ttl|width|resolution|bitrate|'
+    r'hours|minutes|seconds|milliseconds)\b',
     re.IGNORECASE)
 # A rate no exclusion rule matched, because the name names neither a window nor
 # an operation. These stay measurable, but a check would have to invent a window.
+# A window stated in whole days is matched explicitly and first, because it also
+# names an hour: "Basic image scans per 24 hours" counts sends over a day, not a
+# duration, and "emails ... per 24-hour period" is the same shape spelled out.
+DAY_WINDOW = re.compile(r'per \d+[- ]?hours?\b|per \d+[- ]?hour period\b'
+                        r'|during a \d+-hour period\b', re.IGNORECASE)
 RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bper (second|minute|hour|day)\b',
                          re.IGNORECASE)
 
@@ -185,7 +198,7 @@ def gap_shape(quota: dict) -> str:
     name = _name(quota)
     if ORGANIZATION_SCOPED.search(name):
         return 'cross_account'
-    if RATE_SHAPED.search(name):
+    if DAY_WINDOW.search(name) or RATE_SHAPED.search(name):
         return 'rate_shaped'
     if SIZE_OR_PERIOD.search(name) or VOLUME.search(name):
         return 'size_or_period'
@@ -311,8 +324,8 @@ def totals(rows: list[dict]) -> dict:
 
 GAP_SHAPES = (
     ('countable', 'the name describes a count; whether an API exposes that inventory has to be checked quota by quota'),
-    ('size_or_period', 'the bound applies to one payload, document or retention '
-                       'period, so there is a value to read only while a request is in flight'),
+    ('size_or_period', 'the bound applies to one payload or document, or states a '
+                       'period in time units, so there is no inventory to count'),
     ('rate_shaped', 'a rate no exclusion rule matches, because the name states '
                     'neither a window nor an operation'),
     ('no_sdk_client', 'botocore ships no client for the service any more, so no '

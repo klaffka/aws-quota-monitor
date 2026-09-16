@@ -5,6 +5,11 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
+### Changed
+
+- Quotas stating a clock in hours, minutes or seconds, or an allowance per
+  twenty-four hours, are no longer ranked as countable inventory work.
+
 ### Added
 
 - A project logo, and a README header carrying the coverage figure, with a test
