@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"
+     role="img" aria-label="AWS Quota Monitor">
+  <title>AWS Quota Monitor</title>
+  <defs>
+    <linearGradient id="measured" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3DBF9B"/>
+      <stop offset="100%" stop-color="#7FC768"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="26" fill="#12293A"/>
+
+  <!-- The quota: a 240-degree dial, open at the bottom. -->
+  <path d="M 27.6 91 A 42 42 0 1 1 100.4 91"
+        fill="none" stroke="#24455C" stroke-width="10" stroke-linecap="round"/>
+  <!-- Measured usage, well short of the limit. -->
+  <path d="M 27.6 91 A 42 42 0 0 1 84.2 33.2"
+        fill="none" stroke="url(#measured)" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Alert threshold, marked across the dial rather than on it. -->
+  <path d="M 95.4 59.8 L 112.5 54.2"
+        stroke="#E8593D" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Needle, resting at the measured value. -->
+  <path d="M 64 70 L 76 48.1" stroke="#EAF2F6" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="64" cy="70" r="6.5" fill="#EAF2F6"/>
+</svg>
