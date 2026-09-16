@@ -412,3 +412,24 @@ def test_a_service_the_sdk_dropped_outranks_the_organization_scope():
     from scripts.quota_coverage import gap_shape
     assert gap_shape({'ServiceCode': 'robomaker',
                       'QuotaName': 'Robots per organization'}) == 'no_sdk_client'
+
+
+def test_the_readme_badge_and_shape_table_match_the_catalog():
+    """The README repeats the figures in three places; all three must agree."""
+    import re
+    from pathlib import Path
+    from scripts.quota_coverage import GAP_LABELS, GAP_SHAPES, merge_catalogs
+    rows = catalog_coverage(merge_catalogs(['tests/fixtures/quota-catalog-union.json']))
+    current = totals(rows)
+    readme = Path('README.md').read_text(encoding='utf-8')
+
+    badge = re.search(r'badge/coverage-([\d.]+)%25%20of%20measurable%20quotas', readme)
+    assert badge, 'the README coverage badge has moved'
+    assert badge.group(1) == f"{current['covered'] / current['measurable'] * 100:.2f}"
+
+    for shape, _note in GAP_SHAPES:
+        expected = sum(row[shape] for row in rows)
+        row = re.search(rf'^\| {re.escape(GAP_LABELS[shape])} \| ([\d,]+) \|', readme,
+                        flags=re.MULTILINE)
+        assert row, f'the README shape table has no {GAP_LABELS[shape]} row'
+        assert int(row.group(1).replace(',', '')) == expected, GAP_LABELS[shape]

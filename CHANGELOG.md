@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- A project logo, and a README header carrying the coverage figure, with a test
+  that fails when either the badge or the gap-shape table drifts from the catalog.
 - Service Catalog delegated administrator measurement, and an
   `organization-wide` gap shape so quotas counted across every member account
   stop being ranked as the measurement work to do next.
