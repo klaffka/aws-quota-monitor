@@ -7,6 +7,9 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Service Catalog delegated administrator measurement, and an
+  `organization-wide` gap shape so quotas counted across every member account
+  stop being ranked as the measurement work to do next.
 - IoT security profile behaviour value, job target, fleet index filter, command
   parameter and command execution concurrency measurements.
 - Bedrock Data Automation blueprints per project and modality, agent

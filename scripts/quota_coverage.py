@@ -160,6 +160,17 @@ SDK_REMOVED = frozenset({
 })
 
 
+# A quota AWS counts over every account in the organization. This collector
+# holds one account's credentials, so what the other members hold is invisible
+# to it however readable the local half is: EC2 capacity blocks are reported
+# per account and per organization side by side, and only the first is
+# answerable here. A quota this matches that some API does answer, such as
+# Service Catalog's delegated administrators, counts as covered before the
+# shapes are consulted and never reaches this rule.
+ORGANIZATION_SCOPED = re.compile(
+    r'per (AWS )?organization\b|across the organization|organization-wide', re.IGNORECASE)
+
+
 def gap_shape(quota: dict) -> str:
     """Classify a measurable, uncovered quota by what its name describes.
 
@@ -172,6 +183,8 @@ def gap_shape(quota: dict) -> str:
     if quota.get('ServiceCode') in SDK_REMOVED:
         return 'no_sdk_client'
     name = _name(quota)
+    if ORGANIZATION_SCOPED.search(name):
+        return 'cross_account'
     if RATE_SHAPED.search(name):
         return 'rate_shaped'
     if SIZE_OR_PERIOD.search(name) or VOLUME.search(name):
@@ -202,7 +215,8 @@ def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | Non
     services = defaultdict(lambda: {'total': 0, 'implemented': 0, 'compatibleMetric': 0,
                                     'covered': 0, 'uncovered': 0, 'unmeasurable': 0,
                                     'countable': 0, 'size_or_period': 0, 'rate_shaped': 0,
-                                    'no_sdk_client': 0, 'uncoveredCodes': []})
+                                    'no_sdk_client': 0, 'cross_account': 0,
+                                    'uncoveredCodes': []})
     for (service, code), quota in sorted(unique.items()):
         row = services[service]
         row['total'] += 1
@@ -303,9 +317,12 @@ GAP_SHAPES = (
                     'neither a window nor an operation'),
     ('no_sdk_client', 'botocore ships no client for the service any more, so no '
                       'inventory can be read until AWS restores one'),
+    ('cross_account', 'the quota is counted over every account in the organization, '
+                      'which one account\'s credentials cannot see'),
 )
 GAP_LABELS = {'countable': 'countable', 'size_or_period': 'size or period',
-              'rate_shaped': 'rate-shaped', 'no_sdk_client': 'no SDK client'}
+              'rate_shaped': 'rate-shaped', 'no_sdk_client': 'no SDK client',
+              'cross_account': 'organization-wide'}
 
 
 def render_gaps(rows: list[dict], limit: int = 12) -> str:
