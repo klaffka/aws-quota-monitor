@@ -15,16 +15,20 @@ def test_transfer_users_per_server_uses_maximum():
     assert result['usage'] == 2 and result['resource_id'] == 's1'
 
 
+def by_code(code):
+    return next(fn for quota, _name, fn in BACKUP_CHECKS if quota == code)
+
+
 def test_backup_recovery_points_and_plan_versions():
     ctx = Mock()
     ctx.call.side_effect = [
         [{'BackupVaultName': 'v1'}], [{'RecoveryPointArn': 'r1'}, {'RecoveryPointArn': 'r2'}],
     ]
-    assert BACKUP_CHECKS[4][2](ctx)['usage'] == 2
+    assert by_code('L-514878B6')(ctx)['usage'] == 2
     ctx.call.side_effect = [
         [{'BackupPlanId': 'p1'}], [{'VersionId': '1'}, {'VersionId': '2'}, {'VersionId': '3'}],
     ]
-    assert BACKUP_CHECKS[5][2](ctx)['usage'] == 3
+    assert by_code('L-9122A82F')(ctx)['usage'] == 3
 
 
 def test_backup_framework_controls_and_report_plan_frameworks_are_counted():

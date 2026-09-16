@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Entity Resolution matching, provider-service and ID-mapping job concurrency,
+  and AWS Backup in-flight backup and copy job measurements.
 - MediaConvert queue concurrency, reserved transcode slot and custom preset
   measurements, and Transfer Family certificate, SSH key and directory access
   measurements.
