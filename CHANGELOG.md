@@ -7,6 +7,9 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Auto Scaling per-group policy, scheduled action, notification, lifecycle hook
+  and attachment measurements, and Cognito per-user-pool app, group, identity
+  provider, resource server and scope measurements.
 - GameLift fleet creation-limit policy and server process measurements.
 - Bedrock flow execution concurrency, and the batch quotas the second catalog
   export reissued under a new code for an already-mapped model.
