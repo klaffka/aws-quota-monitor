@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,643 | 2,076 |
+| implemented | 2,655 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,024 | 4,457 |
-| uncovered | 7,057 | 5,941 |
+| covered | 5,036 | 4,457 |
+| uncovered | 7,045 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.59%** of the whole union, or
-**71.14%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.69%** of the whole union, or
+**71.31%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,20 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured twelve per-parent quotas in Auto Scaling and Cognito, the densest
+  pair of services left. Auto Scaling needs almost no calls for them: policies,
+  scheduled actions and notifications are listed for the whole account and each
+  entry names its group, so the per-group maxima are grouped rather than
+  fetched, and the classic load balancers and target groups travel with the
+  group itself. Only the lifecycle hooks are listed per group. A topic notified
+  about several events is returned once per event type, so the SNS quota counts
+  distinct topics rather than rows; counting rows would have reported a group
+  with one topic and three events as three.
+  Step adjustments are counted per policy rather than per group, because that
+  is what the quota bounds. Cognito's apps, groups, identity providers and
+  resource servers are per user pool, and the scopes are per resource server.
+  `Groups per user` stays open: it would need a walk through every user in
+  every pool.
 - Let the catalog's own unit decide what a quota measures, which moved 58
   quotas out of `countable` without measuring anything. GameLift's `Build
   capacity` and `Script capacity` read as inventories and are stated in
@@ -715,12 +729,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,038 quotas are measurable and still uncovered. Sorting them by what their
+2,026 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 769 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 757 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
