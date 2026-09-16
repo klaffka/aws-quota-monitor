@@ -42,6 +42,11 @@ MODEL_QUOTAS = [
     ('L-A0300844', 'anthropic.claude-sonnet-4-5-20250929-v1:0', 'base'),
     ('L-3CCB3548', 'meta.llama3-2-11b-instruct-v1:0', 'base'),
     ('L-89923E2C', 'meta.llama3-2-90b-instruct-v1:0', 'base'),
+    # The two catalog exports issue a second code for the same model under the
+    # same display name. Adding the twin identifies no new model.
+    ('L-5C48945B', 'qwen.qwen3-235b-a22b-2507-v1:0', 'base'),
+    ('L-87CD099E', 'qwen.qwen3-32b-v1:0', 'base'),
+    ('L-FEA282F8', 'qwen.qwen3-coder-30b-a3b-v1:0', 'base'),
 ]
 TERMINAL = {'Completed', 'PartiallyCompleted', 'Failed', 'Stopped', 'Expired'}
 COUNTED = {'Submitted', 'InProgress'}

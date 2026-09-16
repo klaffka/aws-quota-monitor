@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Bedrock flow execution concurrency, and the batch quotas the second catalog
+  export reissued under a new code for an already-mapped model.
 - IoT TwinMaker component type property and inheritance measurements, and Glue
   schema version and schema version metadata measurements.
 - Entity Resolution matching, provider-service and ID-mapping job concurrency,

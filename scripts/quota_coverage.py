@@ -156,6 +156,11 @@ VOLUME = re.compile(r'\b(records?|tokens?|rows?|columns?|data points?|characters
                     r'|\bsum of training and validation\b|\bamount of\b'
                     r'|\bper (call|request|invocation)\b|\bin a \w+ call\b',
                     re.IGNORECASE)
+# The same bound, written with the operation named in between: "Blueprints per
+# Start Inference request", "Files to ingest per IngestKnowledgeBaseDocuments
+# job". The operation name is capitalised, which is what separates these from
+# "Reports per instance" and every other per-parent inventory.
+NAMED_REQUEST = re.compile(r'\bper [A-Z][\w-]*(?: [\w-]+)* (request|job)\b')
 
 
 # Service Quotas still lists these services, but botocore ships no client for
@@ -200,7 +205,7 @@ def gap_shape(quota: dict) -> str:
         return 'cross_account'
     if DAY_WINDOW.search(name) or RATE_SHAPED.search(name):
         return 'rate_shaped'
-    if SIZE_OR_PERIOD.search(name) or VOLUME.search(name):
+    if SIZE_OR_PERIOD.search(name) or VOLUME.search(name) or NAMED_REQUEST.search(name):
         return 'size_or_period'
     return 'countable'
 
