@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,599 | 2,076 |
+| implemented | 2,606 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,980 | 4,457 |
-| uncovered | 7,101 | 5,941 |
+| covered | 4,987 | 4,457 |
+| uncovered | 7,094 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.22%** of the whole union, or
-**70.52%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.28%** of the whole union, or
+**70.62%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,28 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Deepened AWS IoT by 7 catalog quotas. Security profile behaviours are counted
+  by the elements in each behaviour's threshold list rather than by the
+  behaviours themselves, and a machine-learning behaviour, which carries no
+  list, counts as zero. Job targets come from the job detail, because the
+  listing omits them. The named shadow and geo location filters turned out not
+  to bound a single query after all: they configure the fleet index for the
+  whole account and `GetIndexingConfiguration` reports both, whether or not
+  indexing is enabled. Commands report their mandatory parameters from the
+  command detail, and command execution concurrency is asked for one unfinished
+  status at a time, because IoT filters executions server side. `iotcore`
+  names the dynamic thing group quota under its own code and now shares the
+  existing check.
+  Three IoT quotas stay open for reasons of their own. `Maximum number of CA
+  certificates with the same subject field` would need the subject parsed out
+  of each certificate's PEM, which `DescribeCACertificate` returns but no
+  dependency here can read. `Maximum number of policies that can be attached to
+  a certificate or Amazon Cognito identity` can be counted for certificates but
+  not for Cognito identities, which IoT cannot enumerate, so the maximum could
+  silently sit on the half that is invisible. The remaining `iotcore` gap is
+  the MQTT broker: unacknowledged publishes, topic aliases, subscriptions per
+  connection and shared subscription groups live in the connection rather than
+  in an inventory.
 - Deepened Amazon Bedrock by 13 catalog quotas. The Data Automation blueprints
   per project are counted per modality: a project names its blueprints by ARN
   alone, so each one's `DOCUMENT`, `IMAGE`, `AUDIO` or `VIDEO` type comes from
@@ -569,12 +591,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,082 quotas are measurable and still uncovered. Sorting them by what their
+2,075 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 913 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 906 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 722 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
 | rate-shaped | 299 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
@@ -586,9 +608,9 @@ The countable ones are spread thin. The twelve largest holdings:
 | bedrock | 809 | 118 | 691 | 146 | 65 |
 | connect | 361 | 37 | 324 | 283 | 35 |
 | pinpoint | 132 | 10 | 122 | 52 | 31 |
-| iotcore | 240 | 16 | 224 | 173 | 26 |
-| iot | 179 | 18 | 161 | 112 | 23 |
+| iotcore | 240 | 17 | 223 | 173 | 25 |
 | ec2 | 1751 | 207 | 1544 | 1526 | 18 |
+| iot | 179 | 24 | 155 | 112 | 17 |
 | lambda | 70 | 13 | 57 | 28 | 16 |
 | sagemaker | 1913 | 1819 | 94 | 77 | 16 |
 | chime | 83 | 13 | 70 | 51 | 14 |
