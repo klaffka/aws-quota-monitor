@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/klaffka/aws-quota-monitor/actions/workflows/ci.yml"><img src="https://github.com/klaffka/aws-quota-monitor/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/coverage-70.80%25%20of%20measurable%20quotas-3DBF9B" alt="Quota coverage">
+  <img src="https://img.shields.io/badge/coverage-70.91%25%20of%20measurable%20quotas-3DBF9B" alt="Quota coverage">
   <img src="https://img.shields.io/badge/python-3.14-24455C" alt="Python 3.14">
 </p>
 
@@ -275,7 +275,7 @@ name that reads like a count does not mean an API can answer it:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 862 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 854 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 734 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 305 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
@@ -288,9 +288,9 @@ reported share without measuring anything. Each is guarded — one test fails if
 botocore ships a dropped service again, another if AWS starts publishing a usage
 metric for a quota measured only because it had none.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 5,000 of
-12,081 catalog quotas with an implemented measurement method (41.39%), including
-official metrics, which is 70.80% of the 7,062 measurable quotas. It also lists
+The [current coverage audit](docs/quota-coverage-progress.md) records 5,008 of
+12,081 catalog quotas with an implemented measurement method (41.45%), including
+official metrics, which is 70.91% of the 7,062 measurable quotas. It also lists
 the largest remaining gaps; near-total coverage has not yet been achieved.
 
 Clean Rooms ML has methods for 140/148 catalog quotas (94.6%). Training-instance

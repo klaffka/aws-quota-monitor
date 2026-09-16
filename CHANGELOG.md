@@ -5,6 +5,12 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
+### Added
+
+- MediaConvert queue concurrency, reserved transcode slot and custom preset
+  measurements, and Transfer Family certificate, SSH key and directory access
+  measurements.
+
 ### Changed
 
 - Quotas stating a clock in hours, minutes or seconds, or an allowance per
