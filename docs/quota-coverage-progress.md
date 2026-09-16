@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,619 | 2,076 |
+| implemented | 2,627 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,000 | 4,457 |
-| uncovered | 7,081 | 5,941 |
+| covered | 5,008 | 4,457 |
+| uncovered | 7,073 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.39%** of the whole union, or
-**70.80%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.45%** of the whole union, or
+**70.91%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,22 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured eight MediaConvert and Transfer Family quotas. MediaConvert's
+  concurrency limits need no job walk at all: `ListQueues` reports each queue's
+  progressing job count, its pricing plan and its reserved slots, so one call
+  answers the per-account total, the busiest on-demand queue, the default queue
+  and the reserved transcode slots. AWS marks the queue it creates itself as
+  `SYSTEM`, which is what identifies the default one. Custom output presets are
+  the `CUSTOM` half of the preset listing.
+  Transfer's three are per-parent. Certificates come from the profile detail,
+  because the certificate listing does not say which profile holds one. SSH keys
+  come from `ListUsers`, which reports the count directly, and only for
+  service-managed servers, since a directory-backed server has no users Transfer
+  stores keys for. Directory accesses are counted only on directory-backed
+  servers for the same reason: counting both kinds would have doubled the
+  reported usage of each, which the mock test now pins.
+  `Concurrent jobs queries per account` stays open: it bounds calls to
+  `ListJobs` rather than anything the account holds.
 - Narrowed `countable` where the name gave it away. Eighteen quotas described a
   clock or a daily allowance rather than an inventory: CodeDeploy states nine of
   its limits in hours, minutes and seconds, and Pinpoint, QuickSight and ECR
@@ -639,12 +655,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,062 quotas are measurable and still uncovered. Sorting them by what their
+2,054 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 862 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 854 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 734 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 305 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
