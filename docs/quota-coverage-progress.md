@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,640 | 2,076 |
+| implemented | 2,643 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,021 | 4,457 |
-| uncovered | 7,060 | 5,941 |
+| covered | 5,024 | 4,457 |
+| uncovered | 7,057 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.56%** of the whole union, or
-**71.10%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.59%** of the whole union, or
+**71.14%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,30 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Let the catalog's own unit decide what a quota measures, which moved 58
+  quotas out of `countable` without measuring anything. GameLift's `Build
+  capacity` and `Script capacity` read as inventories and are stated in
+  gigabytes; twenty other quotas are bytes and fifteen are seconds or
+  milliseconds. This is the same kind of rule as `PERIOD_RATE`, which already
+  trusts the catalog's stated period over the wording, and it is stronger than
+  any wording rule because AWS wrote it down. Only units that describe
+  something other than a count are consulted: `Count` and the empty `None` that
+  most of the catalog carries leave the decision to the name.
+  Bare bit units are left to the name on purpose. EC2 states `VPC Attachment
+  Bandwidth` in gigabits and means gigabits per second, so a bit unit settles
+  nothing; `bandwidth` is matched as a rate instead, and a unit that names a
+  period of its own, such as `Megabits/Second`, is a rate whatever the name.
+  Two wording rules followed the same reasoning: an allowance `per month`,
+  `per week` or `per year` counts events over a window rather than things, as
+  does a rolling `in last 365 days`, and both are matched before `days` is read
+  as a period.
+- Measured three GameLift fleet configuration limits. The resource creation
+  limit policy carries `NewGameSessionsPerCreator` and `PolicyPeriodInMinutes`,
+  and a fleet that configures no policy holds none of the quota rather than
+  dropping out of the maximum. Server processes are counted by their concurrent
+  executions rather than by entries in the configuration, because the quota
+  bounds the processes on one instance; only a managed EC2 fleet has a runtime
+  configuration at all, since an Anywhere fleet brings its own compute.
 - Took the Bedrock quick wins and left the rest explained. Three batch quotas
   were already mapped under a different code: the two catalog exports issue
   `Qwen3 235B`, `Qwen3 32B` and `Qwen3 Coder 30B` twice, so adding the twins
@@ -691,14 +715,14 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,041 quotas are measurable and still uncovered. Sorting them by what their
+2,038 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 830 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
-| size or period | 745 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
-| rate-shaped | 305 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
+| countable | 769 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
 | organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
 
@@ -708,16 +732,16 @@ The countable ones are spread thin. The twelve largest holdings:
 | --- | ---: | ---: | ---: | ---: | ---: |
 | bedrock | 809 | 122 | 687 | 146 | 55 |
 | connect | 361 | 37 | 324 | 283 | 35 |
-| pinpoint | 132 | 10 | 122 | 52 | 28 |
-| iotcore | 240 | 17 | 223 | 173 | 25 |
-| iot | 179 | 24 | 155 | 112 | 17 |
-| lambda | 70 | 13 | 57 | 28 | 16 |
+| pinpoint | 132 | 10 | 122 | 52 | 27 |
+| iotcore | 240 | 17 | 223 | 173 | 20 |
 | chime | 83 | 13 | 70 | 51 | 14 |
 | deadline | 32 | 16 | 16 | 0 | 14 |
 | forecast | 40 | 25 | 15 | 0 | 14 |
-| kinesisvideo | 98 | 3 | 95 | 70 | 13 |
+| lambda | 70 | 13 | 57 | 28 | 13 |
 | redshift | 29 | 14 | 15 | 0 | 13 |
-| transcribe | 120 | 21 | 99 | 72 | 13 |
+| iot | 179 | 24 | 155 | 112 | 11 |
+| kinesisvideo | 98 | 3 | 95 | 70 | 11 |
+| quicksight | 24 | 4 | 20 | 0 | 11 |
 
 The two tables above are generated by `quota_coverage.py --update-progress`;
 `gap_shape` holds the rules that sort a name into a shape. "Countable"

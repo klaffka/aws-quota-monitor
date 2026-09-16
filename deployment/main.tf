@@ -1273,6 +1273,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "iot:DescribeStream"
           , "iot:ListAuditTasks"
           , "gamelift:DescribeFleetAttributes"
+          , "gamelift:DescribeRuntimeConfiguration"
           , "gamelift:DescribeFleetLocationAttributes"
           , "gamelift:ListCompute"
           , "gamelift:ListGameServers"

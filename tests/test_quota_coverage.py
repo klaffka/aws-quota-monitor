@@ -492,3 +492,58 @@ def test_the_named_request_rule_leaves_per_parent_counts_alone(name):
     """"Per <parent>" is an inventory; only a named operation is a request."""
     from scripts.quota_coverage import gap_shape
     assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'countable'
+
+
+@pytest.mark.parametrize('unit, name', [
+    ('Gigabytes', 'Build capacity'),
+    ('Kilobytes', 'Bucket policy'),
+    ('Terabytes', 'Total storage'),
+    ('Seconds', 'Registration task termination'),
+    ('Milliseconds', 'Max request execution time (ms)'),
+])
+def test_the_catalog_unit_settles_a_size_or_a_period(unit, name):
+    """AWS states the unit, which says more than a name like "Build capacity"."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name,
+                      'Unit': unit}) == 'size_or_period'
+
+
+@pytest.mark.parametrize('unit, name', [
+    ('Megabits/Second', 'Network bandwidth per execution environment'),
+    ('Gigabits', 'VPC Attachment Bandwidth'),
+])
+def test_bandwidth_is_rate_shaped_whether_or_not_the_unit_says_so(unit, name):
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name,
+                      'Unit': unit}) == 'rate_shaped'
+
+
+@pytest.mark.parametrize('unit', ['Count', 'None', None])
+def test_a_count_unit_leaves_the_name_to_decide(unit):
+    """Most of the catalog states no useful unit, so the wording still rules."""
+    from scripts.quota_coverage import gap_shape
+    quota = {'ServiceCode': 'example', 'QuotaName': 'Reports per instance'}
+    if unit is not None:
+        quota['Unit'] = unit
+    assert gap_shape(quota) == 'countable'
+
+
+@pytest.mark.parametrize('name', [
+    'New Reserved Instances per month',
+    'Number of assessments per application per month',
+    'ACM certificates created in last 365 days',
+])
+def test_an_allowance_over_a_longer_window_is_rate_shaped(name):
+    """A monthly allowance and a rolling year both count events, not things."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'rate_shaped'
+
+
+@pytest.mark.parametrize('name', [
+    'Number of days that job records are retained',
+    'Query time range in days',
+    'Container service logs storage days',
+])
+def test_a_bound_stated_in_days_is_a_period(name):
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'size_or_period'

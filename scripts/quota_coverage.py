@@ -137,7 +137,7 @@ UNMEASURABLE_RULES = (
 SIZE_OR_PERIOD = re.compile(
     r'\b(size|length|bytes|kb|mb|gb|kib|mib|gib|tib|characters?|payload|duration|'
     r'timeout|retention|expiration|age|depth|ttl|width|resolution|bitrate|'
-    r'hours|minutes|seconds|milliseconds)\b',
+    r'hours|minutes|seconds|milliseconds|days)\b',
     re.IGNORECASE)
 # A rate no exclusion rule matched, because the name names neither a window nor
 # an operation. These stay measurable, but a check would have to invent a window.
@@ -145,9 +145,14 @@ SIZE_OR_PERIOD = re.compile(
 # names an hour: "Basic image scans per 24 hours" counts sends over a day, not a
 # duration, and "emails ... per 24-hour period" is the same shape spelled out.
 DAY_WINDOW = re.compile(r'per \d+[- ]?hours?\b|per \d+[- ]?hour period\b'
-                        r'|during a \d+-hour period\b', re.IGNORECASE)
-RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bper (second|minute|hour|day)\b',
-                         re.IGNORECASE)
+                        r'|during a \d+-hour period\b'
+                        # A longer stated window is still a window: a monthly
+                        # allowance and a rolling year count events, not things,
+                        # and "days" would otherwise read them as periods.
+                        r'|\bper (month|week|year)\b'
+                        r'|\bin (the )?last \d+ days\b', re.IGNORECASE)
+RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bbandwidth\b'
+                         r'|\bper (second|minute|hour|day)\b', re.IGNORECASE)
 
 
 # A volume of data inside one job, file or request. "Records per batch inference
@@ -189,6 +194,36 @@ ORGANIZATION_SCOPED = re.compile(
     r'per (AWS )?organization\b|across the organization|organization-wide', re.IGNORECASE)
 
 
+# The catalog states each quota's unit, which settles what it measures better
+# than its name does: GameLift's "Build capacity" and "Script capacity" read as
+# inventories and are gigabytes. This is the same kind of rule as PERIOD_RATE,
+# which already trusts the catalog's stated period over the wording. Only units
+# that describe something other than a count are consulted; `Count` and the
+# empty `None` the catalog usually carries leave the decision to the name.
+# Byte units only. A bare bit unit is ambiguous: EC2 states "VPC Attachment
+# Bandwidth" in Gigabits and means gigabits per second, so bits are left to the
+# name, which says "bandwidth" and is matched as a rate.
+SIZE_UNITS = frozenset({
+    'Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 'Petabytes',
+    'Kibibytes', 'Mebibytes', 'Gibibytes', 'Tebibytes',
+})
+PERIOD_UNITS = frozenset({
+    'Microseconds', 'Milliseconds', 'Seconds', 'Minutes', 'Hours', 'Days',
+})
+
+
+def unit_shape(quota: dict) -> str | None:
+    """Classify by the catalog's unit, or None when it names none that helps."""
+    unit = str(quota.get('Unit') or '')
+    if '/' in unit:
+        # A unit over a period, such as Megabits/Second, is a rate however the
+        # quota is worded.
+        return 'rate_shaped'
+    if unit in SIZE_UNITS or unit in PERIOD_UNITS:
+        return 'size_or_period'
+    return None
+
+
 def gap_shape(quota: dict) -> str:
     """Classify a measurable, uncovered quota by what its name describes.
 
@@ -203,6 +238,9 @@ def gap_shape(quota: dict) -> str:
     name = _name(quota)
     if ORGANIZATION_SCOPED.search(name):
         return 'cross_account'
+    stated = unit_shape(quota)
+    if stated is not None:
+        return stated
     if DAY_WINDOW.search(name) or RATE_SHAPED.search(name):
         return 'rate_shaped'
     if SIZE_OR_PERIOD.search(name) or VOLUME.search(name) or NAMED_REQUEST.search(name):
