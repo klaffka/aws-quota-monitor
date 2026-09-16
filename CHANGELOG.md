@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- SageMaker ml.p3 training, spot training, warm pool and processing instance
+  measurements, for the quotas AWS publishes no usage metric for.
 - IoT security profile behaviour value, job target, fleet index filter, command
   parameter and command execution concurrency measurements.
 - Bedrock Data Automation blueprints per project and modality, agent
