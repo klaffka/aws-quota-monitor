@@ -121,6 +121,9 @@ CHECKS = [
      ingestion_jobs_per_account),
     ('L-31BC8F89', '(Knowledge Bases) Concurrent ingestion jobs per knowledge base',
      ingestion_jobs_per_knowledge_base),
+    # The renamed product reissued this quota; the walk behind it is identical.
+    ('L-D74F6A4C', '(Managed Knowledge Bases) Concurrent ingestion jobs per knowledge base',
+     ingestion_jobs_per_knowledge_base),
     ('L-D38407FA', '(Knowledge Bases) Concurrent ingestion jobs per data source',
      ingestion_jobs_per_data_source),
     ('L-1B9EB555', '(Automated Reasoning) Concurrent policy builds per account',

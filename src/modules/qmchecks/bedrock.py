@@ -5,6 +5,7 @@ from modules.qmchecks.bedrock_configuration import CHECKS as CONFIGURATION_CHECK
 from modules.qmchecks.bedrock_reasoning import CHECKS as REASONING_CHECKS
 from modules.qmchecks.bedrock_evaluation import CHECKS as EVALUATION_CHECKS
 from modules.qmchecks.bedrock_data_automation import CHECKS as DATA_AUTOMATION_CHECKS
+from modules.qmchecks.bedrock_optimization import CHECKS as OPTIMIZATION_CHECKS
 from modules.qmchecks.bedrock_throughput import CHECKS as THROUGHPUT_CHECKS
 
 
@@ -52,6 +53,38 @@ def knowledge_bases_per_agent(ctx):
                        source='bedrock-agent:ListAgents+ListAgentKnowledgeBases')
 
 
+def collaborators_per_agent(ctx):
+    return _max_nested(ctx, lambda c: c.call('bedrock-agent', 'list_agents', 'agentSummaries'),
+                       'agentId', 'list_agent_collaborators', 'agentCollaboratorSummaries',
+                       kwargs={'agentVersion': 'DRAFT'}, resource_type='Agent',
+                       source='bedrock-agent:ListAgents+ListAgentCollaborators')
+
+
+def parameters_per_function(ctx):
+    """The parameter map lives in the action group detail, not in its summary."""
+    values = []
+    for agent in ctx.call('bedrock-agent', 'list_agents', 'agentSummaries'):
+        agent_id = agent.get('agentId')
+        if not agent_id:
+            raise NoData('Agent inventory has an entry without its id')
+        for group in ctx.call('bedrock-agent', 'list_agent_action_groups', 'actionGroupSummaries',
+                              agentId=agent_id, agentVersion='DRAFT'):
+            group_id = group.get('actionGroupId')
+            if not group_id:
+                raise NoData('Action group inventory has an entry without its id')
+            detail = ctx.call('bedrock-agent', 'get_agent_action_group', agentId=agent_id,
+                              agentVersion='DRAFT', actionGroupId=group_id).get('agentActionGroup')
+            if not isinstance(detail, dict) or detail.get('actionGroupId') != group_id:
+                raise NoData('Action group detail does not match its requested identity')
+            for function in (detail.get('functionSchema') or {}).get('functions') or []:
+                name = function.get('name')
+                if not name:
+                    raise NoData('Action group function has no name')
+                values.append((f'{agent_id}/{group_id}/{name}',
+                               len(function.get('parameters') or {}), None))
+    return maximum(values, 'AgentActionGroupFunction', 'bedrock-agent:GetAgentActionGroup')
+
+
 def aliases_per_flow(ctx):
     return _max_nested(ctx, lambda c: c.call('bedrock-agent', 'list_flows', 'flowSummaries'),
                        'id', 'list_flow_aliases', 'flowAliasSummaries', request_field='flowIdentifier',
@@ -75,9 +108,12 @@ def blueprint_count(ctx):
     return dict(usage=len(arns), source='bedrock-data-automation:ListBlueprints', method='ACCOUNT_COUNT')
 
 
-CHECKS = [('L-60DA3E0D', 'Knowledge bases per account',
-           lambda ctx: dict(usage=len(ctx.call('bedrock-agent', 'list_knowledge_bases', 'knowledgeBaseSummaries')),
-                            source='bedrock-agent:ListKnowledgeBases', method='ACCOUNT_COUNT')),
+def knowledge_bases_per_account(ctx):
+    return dict(usage=len(ctx.call('bedrock-agent', 'list_knowledge_bases', 'knowledgeBaseSummaries')),
+                source='bedrock-agent:ListKnowledgeBases', method='ACCOUNT_COUNT')
+
+
+CHECKS = [('L-60DA3E0D', 'Knowledge bases per account', knowledge_bases_per_account),
           ('L-97D79C54', 'Agents per account',
            lambda ctx: dict(usage=len(ctx.call('bedrock-agent', 'list_agents', 'agentSummaries')),
                             source='bedrock-agent:ListAgents', method='ACCOUNT_COUNT')),
@@ -112,10 +148,20 @@ CHECKS = [('L-60DA3E0D', 'Knowledge bases per account',
            lambda ctx: action_groups_per_agent(ctx, enabled=True)),
           ('L-13143995', 'Associated knowledge bases per Agent', knowledge_bases_per_agent),
           ('L-130570F3', 'Flow aliases per flow', aliases_per_flow),
-          ('L-60AFC764', 'Flow versions per flow', versions_per_flow)]
+          ('L-60AFC764', 'Flow versions per flow', versions_per_flow),
+          ('L-EAFCD549', 'Agent Collaborators per Agent', collaborators_per_agent),
+          ('L-4B4330A0', 'Parameters per function', parameters_per_function),
+          # AWS reissued the knowledge-base quotas under a renamed product. The
+          # inventory behind them is the same API, so the codes share a check
+          # rather than a second walk of it.
+          ('L-5C7643AC', '(Managed Knowledge Bases) Knowledge bases per account',
+           knowledge_bases_per_account),
+          ('L-F02D918A', '(Managed Knowledge Bases) Data sources per knowledge base',
+           data_sources_per_knowledge_base)]
 
 
-EXTENDED_CHECKS = BATCH_CHECKS + CONFIGURATION_CHECKS + REASONING_CHECKS + EVALUATION_CHECKS + DATA_AUTOMATION_CHECKS + THROUGHPUT_CHECKS
+EXTENDED_CHECKS = (BATCH_CHECKS + CONFIGURATION_CHECKS + REASONING_CHECKS + EVALUATION_CHECKS
+                   + DATA_AUTOMATION_CHECKS + OPTIMIZATION_CHECKS + THROUGHPUT_CHECKS)
 ALL_CHECKS = CHECKS + EXTENDED_CHECKS
 
 

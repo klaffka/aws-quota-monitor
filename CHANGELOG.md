@@ -7,6 +7,11 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Bedrock Data Automation blueprints per project and modality, agent
+  collaborator, action group parameter and Advanced Prompt Optimization job
+  measurements.
+- A `no SDK client` gap shape, so services AWS no longer ships a client for stop
+  being ranked as the measurement work to do next.
 - IoT job, security profile, stream, audit, endpoint, rule and thing group
   measurements.
 - Comprehend job, flywheel and inference unit measurements, and Lambda capacity
