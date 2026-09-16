@@ -62,6 +62,52 @@ def blueprint_size(ctx):
     return maximum(values, 'BlueprintConfiguration', 'bedrock-data-automation:GetBlueprint')
 
 
+# The project lists its blueprints by ARN alone; only the blueprint detail
+# names the modality, and the catalog bounds each modality separately.
+MODALITIES = {'AUDIO': 'Audios', 'DOCUMENT': 'Documents',
+              'IMAGE': 'Images', 'VIDEO': 'Videos'}
+SOURCE_PROJECTS = (SERVICE + ':ListDataAutomationProjects'
+                   '+GetDataAutomationProject+GetBlueprint')
+
+
+def project_blueprint_types(ctx):
+    """Return {project stage: {modality: blueprint count}} for every project."""
+    counts = {}
+    for summary in ctx.call(SERVICE, 'list_data_automation_projects', 'projects',
+                            resourceOwner='ACCOUNT', projectStageFilter='ALL'):
+        arn = required_id(summary, 'projectArn')
+        stage = summary.get('projectStage')
+        if stage not in {'LIVE', 'DEVELOPMENT'}:
+            raise NoData('Data Automation project inventory has an unknown stage')
+        identity = f'{arn}/{stage}'
+        if identity in counts:
+            continue
+        # A project with no blueprints still holds the quota at zero, so the
+        # tally is created before its contents are read.
+        tally = counts.setdefault(identity, dict.fromkeys(MODALITIES, 0))
+        project = ctx.call(SERVICE, 'get_data_automation_project', projectArn=arn,
+                           projectStage=stage).get('project')
+        if not isinstance(project, dict) or project.get('projectArn') != arn:
+            raise NoData('Data Automation project detail does not match its requested identity')
+        for entry in (project.get('customOutputConfiguration') or {}).get('blueprints') or []:
+            blueprint = required_id(entry, 'blueprintArn')
+            detail = ctx.call(SERVICE, 'get_blueprint', blueprintArn=blueprint).get('blueprint')
+            if not isinstance(detail, dict) or detail.get('blueprintArn') != blueprint:
+                raise NoData('Blueprint detail does not match its requested identity')
+            kind = detail.get('type')
+            if kind not in MODALITIES:
+                raise NoData('Blueprint detail names no recognised modality')
+            tally[kind] += 1
+    return counts
+
+
+def blueprints_per_project(ctx, modality):
+    counts = project_blueprint_types(ctx)
+    return maximum([(identity, tally[modality], None)
+                    for identity, tally in sorted(counts.items())],
+                   'DataAutomationProject', SOURCE_PROJECTS)
+
+
 def libraries(ctx):
     items = ctx.call(SERVICE, 'list_data_automation_libraries', 'libraries')
     return sorted({required_id(item, 'libraryArn') for item in items})
@@ -98,4 +144,12 @@ CHECKS = [
     ('L-D3894D44', 'JSON blueprint size in characters', blueprint_size),
     ('L-B370112A', 'Data automation libraries per account', library_count),
     ('L-EA764586', 'Vocabulary phrases per library', vocabulary_phrases),
+    ('L-6BF35027', '(Data Automation) Maximum Blueprints per Project (Audios)',
+     lambda ctx: blueprints_per_project(ctx, 'AUDIO')),
+    ('L-A938DC68', '(Data Automation) Maximum Blueprints per Project (Documents)',
+     lambda ctx: blueprints_per_project(ctx, 'DOCUMENT')),
+    ('L-15868B7E', '(Data Automation) Maximum Blueprints per Project (Images)',
+     lambda ctx: blueprints_per_project(ctx, 'IMAGE')),
+    ('L-F5FD68DB', '(Data Automation) Maximum Blueprints per Project (Videos)',
+     lambda ctx: blueprints_per_project(ctx, 'VIDEO')),
 ]
