@@ -433,3 +433,39 @@ def test_the_readme_badge_and_shape_table_match_the_catalog():
                         flags=re.MULTILINE)
         assert row, f'the README shape table has no {GAP_LABELS[shape]} row'
         assert int(row.group(1).replace(',', '')) == expected, GAP_LABELS[shape]
+
+
+@pytest.mark.parametrize('name', [
+    'Number of emails that can be sent per 24-hour period (sending quota)',
+    'Number of voice messages that can be sent during a 24-hour period',
+    'API_CREATE-INGESTION: Calls per 24 hour period from Enterprise edition',
+    'Basic image scans per 24 hours',
+])
+def test_a_rate_over_a_stated_day_is_rate_shaped_not_countable(name):
+    """"Number of X per 24 hours" counts sends, not things that exist."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'rate_shaped'
+
+
+@pytest.mark.parametrize('name', [
+    'AWS Lambda deployment run in hours',
+    'Minutes until a deployment fails if a lifecycle event does not start',
+    'Seconds until a deployment lifecycle event fails if not completed',
+    'VPC peering connection request expiry hours',
+    'Scheduled Minutes Limit',
+])
+def test_a_bound_stated_in_time_units_is_a_period_not_a_count(name):
+    """A deployment measured in minutes is a period however the name reads."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'size_or_period'
+
+
+@pytest.mark.parametrize('name', [
+    'Historical actuals 15 or 30 minute interval file count',
+    'Number of import files per import job',
+    'Concurrent P5 Capacity Blocks per account',
+])
+def test_the_period_rules_leave_real_counts_alone(name):
+    """The words appear in names that still describe an inventory."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'countable'
