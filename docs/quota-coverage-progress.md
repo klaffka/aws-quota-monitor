@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,632 | 2,076 |
+| implemented | 2,636 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,013 | 4,457 |
-| uncovered | 7,068 | 5,941 |
+| covered | 5,017 | 4,457 |
+| uncovered | 7,064 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.49%** of the whole union, or
-**70.99%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.53%** of the whole union, or
+**71.04%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,13 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured four per-parent quotas in IoT TwinMaker and AWS Glue. TwinMaker's
+  component type scopes are read from each type's detail, which is affordable
+  because a workspace holds few component types; `Components per entity` stays
+  out for the opposite reason, since a workspace holds tens of thousands of
+  entities. Glue's schema versions are counted per schema, and the metadata
+  pairs per version, which is the only direction `QuerySchemaVersionMetadata`
+  answers.
 - Measured five job-concurrency quotas in Entity Resolution and AWS Backup.
   A QUEUED Entity Resolution job is waiting for the quota rather than holding
   it, so only RUNNING counts; counting queued jobs would report the limit as
@@ -667,12 +674,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,049 quotas are measurable and still uncovered. Sorting them by what their
+2,045 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 849 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 845 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 734 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 305 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
