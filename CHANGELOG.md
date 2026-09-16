@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- IoT security profile behaviour value, job target, fleet index filter, command
+  parameter and command execution concurrency measurements.
 - Bedrock Data Automation blueprints per project and modality, agent
   collaborator, action group parameter and Advanced Prompt Optimization job
   measurements.
