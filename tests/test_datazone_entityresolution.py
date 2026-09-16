@@ -5,9 +5,13 @@ from modules.qmchecks.datazone import maximum_per_domain
 
 
 def test_entity_resolution_resource_counts():
+    # The plain inventories; the job-concurrency checks walk each workflow and
+    # are covered by tests/test_entityresolution_and_backup_jobs.py.
     ctx = Mock()
     ctx.call.side_effect = [[{'workflowId': 'w'}], [{'workflowId': 'm'}], [{'id': 'ns'}], [{'schemaMappingId': 's'}]]
-    assert [check[2](ctx)['usage'] for check in ENTITY] == [1, 1, 1, 1]
+    counted = ['L-60DAF647', 'L-C5A3094C', 'L-FBA1B7BB', 'L-00E43259']
+    by_code = {code: fn for code, _name, fn in ENTITY}
+    assert [by_code[code](ctx)['usage'] for code in counted] == [1, 1, 1, 1]
 
 
 def test_datazone_counts_are_maximum_per_domain():
