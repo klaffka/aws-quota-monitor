@@ -10,6 +10,8 @@ All notable changes to this project are recorded here. Versions follow
 - Service Catalog delegated administrator measurement, and an
   `organization-wide` gap shape so quotas counted across every member account
   stop being ranked as the measurement work to do next.
+- SageMaker ml.p3 training, spot training, warm pool and processing instance
+  measurements, for the quotas AWS publishes no usage metric for.
 - IoT security profile behaviour value, job target, fleet index filter, command
   parameter and command execution concurrency measurements.
 - Bedrock Data Automation blueprints per project and modality, agent
