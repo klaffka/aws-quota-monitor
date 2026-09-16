@@ -1,5 +1,5 @@
 """Amazon GameLift regional persistent resource inventories."""
-from modules.qmcore.aws import CheckContext, maximum, session_from_env
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 
 def fleets(ctx, compute_type=None):
@@ -51,6 +51,39 @@ def destinations_per_queue(ctx):
                    'GameLiftGameSessionQueue', 'gamelift:DescribeGameSessionQueues')
 
 
+def creation_limit(ctx, member):
+    """Read one field of each fleet's resource creation limit policy.
+
+    A fleet that configures no policy is unlimited by it, so it holds none of
+    the quota rather than dropping out of the maximum.
+    """
+    return maximum([(fleet['FleetId'],
+                     (fleet.get('ResourceCreationLimitPolicy') or {}).get(member) or 0, None)
+                    for fleet in fleets(ctx)],
+                   'GameLiftFleet', 'gamelift:DescribeFleetAttributes')
+
+
+def server_processes_per_instance(ctx):
+    """The quota bounds processes on one instance, not entries in the config.
+
+    Only a managed EC2 fleet runs server processes GameLift configures; an
+    Anywhere fleet brings its own compute and has no runtime configuration.
+    """
+    values = []
+    for fleet in fleets(ctx, 'EC2'):
+        identity = fleet['FleetId']
+        configuration = ctx.call('gamelift', 'describe_runtime_configuration',
+                                 FleetId=identity).get('RuntimeConfiguration') or {}
+        usage = 0
+        for process in configuration.get('ServerProcesses') or ():
+            running = process.get('ConcurrentExecutions')
+            if not isinstance(running, int):
+                raise NoData('GameLift server process states no concurrent executions')
+            usage += running
+        values.append((identity, usage, None))
+    return maximum(values, 'GameLiftFleet', 'gamelift:DescribeRuntimeConfiguration')
+
+
 CHECKS = [
     ('L-FDDD1260', 'Managed EC2 fleets per region', lambda c: fleet_count(c, 'EC2')),
     ('L-593688D9', 'Anywhere fleets per region', lambda c: fleet_count(c, 'ANYWHERE')),
@@ -82,6 +115,12 @@ CHECKS = [
     ('L-8AE49BBD', 'Matchmaking rule sets',
      lambda c: dict(usage=len(c.call('gamelift', 'describe_matchmaking_rule_sets', 'RuleSets')),
                     source='gamelift:DescribeMatchmakingRuleSets', method='ACCOUNT_COUNT')),
+    ('L-3A43EF3C', 'Maximum NewGameSessionsPerCreator per fleet configuration',
+     lambda ctx: creation_limit(ctx, 'NewGameSessionsPerCreator')),
+    ('L-9F9DE0B2', 'Maximum PolicyPeriodInMinutes per fleet configuration',
+     lambda ctx: creation_limit(ctx, 'PolicyPeriodInMinutes')),
+    ('L-C30AA854', 'Server processes per instance (Server SDK v3 and up)',
+     server_processes_per_instance),
 ]
 
 

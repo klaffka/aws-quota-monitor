@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- GameLift fleet creation-limit policy and server process measurements.
 - Bedrock flow execution concurrency, and the batch quotas the second catalog
   export reissued under a new code for an already-mapped model.
 - IoT TwinMaker component type property and inheritance measurements, and Glue
@@ -18,6 +19,9 @@ All notable changes to this project are recorded here. Versions follow
   measurements.
 
 ### Changed
+
+- The catalog's stated unit now decides whether a quota is a size, a period or
+  a rate, instead of its name alone.
 
 - Quotas stating a clock in hours, minutes or seconds, or an allowance per
   twenty-four hours, are no longer ranked as countable inventory work.
