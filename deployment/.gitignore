@@ -2,7 +2,6 @@ python_layer/
 lambda_layer.zip
 lambda/function.zip
 .terraform/
-.terraform.lock.hcl
 terraform.tfstate*
 *.tfvars
 !terraform.tfvars.example

@@ -1,326 +1,195 @@
-import boto3
-import time
-import json
-from datetime import datetime, timezone
-import logging
-
-logger = logging.getLogger(__name__)
+"""Lambda configuration quotas. Sizes use bytes with explicit unit conversion."""
+from collections import Counter
+from botocore.exceptions import ClientError
+from modules.qmcore.aws import CheckContext, maximum, Unsupported, session_from_env
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────
-
-def _get_limit(sq_client, quota_code):
-    """Get the applied quota limit from Service Quotas API."""
-    resp = sq_client.get_service_quota(ServiceCode='lambda', QuotaCode=quota_code)
-    return resp['Quota']['Value']
+def functions(ctx):
+    return ctx.call('lambda', 'list_functions', 'Functions', FunctionVersion='ALL')
 
 
-def _fetch_all_limits(sq_client, service_code='lambda'):
-    """Batch-fetch all quota limits for a service via ListServiceQuotas.
+def storage(ctx):
+    settings = ctx.call('lambda', 'get_account_settings')
+    return dict(usage=settings['AccountUsage']['TotalCodeSize'],
+                limit=settings['AccountLimit']['TotalCodeSize'], unit='Bytes',
+                source='lambda:GetAccountSettings', method='ACCOUNT_TOTAL')
 
-    Returns a dict mapping QuotaCode → applied Value.
-    This replaces many individual GetServiceQuota calls with a single
-    paginated list call, avoiding TooManyRequestsException.
+
+def sized(ctx, code, fn, source):
+    result = maximum([(f['FunctionArn'], fn(f), None) for f in functions(ctx)], 'FunctionVersion', source)
+    quota = ctx.quotas.get(('lambda', code)) or ctx.call('service-quotas', 'get_service_quota',
+                   ServiceCode='lambda', QuotaCode=code)['Quota']
+    scale = {'Bytes': 1, 'Kilobytes': 1024, 'Megabytes': 1024**2, 'Gigabytes': 1024**3}.get(quota.get('Unit'))
+    if scale is None:
+        raise Unsupported('Lambda size quota unit is not explicit; refusing magnitude heuristic')
+    result.update(limit=quota['Value'] * scale, unit='Bytes')
+    return result
+
+
+def environment_size(function):
+    env = function.get('Environment', {})
+    if env.get('Error'):
+        raise RuntimeError(f"Environment inventory unavailable: {env['Error']}")
+    return sum(len(k.encode('utf-8')) + len(v.encode('utf-8'))
+               for k, v in env.get('Variables', {}).items())
+
+
+def policy_size(ctx, function):
+    try:
+        policy = ctx.call('lambda', 'get_policy', FunctionName=function['FunctionArn'])['Policy']
+        return len(policy.encode('utf-8'))
+    except ClientError as exc:
+        if exc.response['Error']['Code'] == 'ResourceNotFoundException':
+            # Distinguish no policy from a function/qualifier deleted mid-inventory.
+            ctx.call('lambda', 'get_function_configuration', FunctionName=function['FunctionArn'])
+            return 0
+        raise
+
+
+
+def policies(ctx):
+    resources = list(functions(ctx))
+    # Aliases can have independent resource-based policies too.
+    latest = {f['FunctionName']: f for f in resources if f.get('Version') == '$LATEST'}
+    for name in latest:
+        for alias in ctx.call('lambda', 'list_aliases', 'Aliases', FunctionName=name):
+            resources.append({'FunctionArn': alias['AliasArn']})
+    result = maximum([(f['FunctionArn'], policy_size(ctx, f), None) for f in resources],
+                     'FunctionVersionOrAlias', 'lambda:GetPolicy')
+    quota = ctx.quotas.get(('lambda', 'L-07A00131')) or ctx.call('service-quotas', 'get_service_quota',
+                   ServiceCode='lambda', QuotaCode='L-07A00131')['Quota']
+    scale = {'Bytes': 1, 'Kilobytes': 1024}.get(quota.get('Unit'))
+    if scale is None:
+        raise Unsupported('Lambda policy size quota unit is not explicit')
+    result.update(limit=quota['Value'] * scale, unit='Bytes')
+    return result
+
+
+def kafka_default_mode(ctx):
+    """Count Kafka mappings in on-demand (default) poller mode.
+
+    Lambda exposes ``ProvisionedPollerConfig`` only for provisioned mode. An
+    absent or empty config is the documented on-demand mode. The quota covers
+    both Amazon MSK and self-managed Apache Kafka mappings, represented by
+    their respective event-source configuration fields.
     """
-    limits = {}
-    try:
-        paginator = sq_client.get_paginator('list_service_quotas')
-        for page in paginator.paginate(ServiceCode=service_code):
-            for q in page.get('Quotas', []):
-                limits[q['QuotaCode']] = q['Value']
-    except Exception as e:
-        logger.warning(f"Failed to batch-fetch limits for {service_code}: {e}")
-    return limits
+    mappings = ctx.call('lambda', 'list_event_source_mappings', 'EventSourceMappings')
+    count = sum(
+        (mapping.get('AmazonManagedKafkaEventSourceConfig') is not None or
+         mapping.get('SelfManagedKafkaEventSourceConfig') is not None) and
+        not mapping.get('ProvisionedPollerConfig')
+        for mapping in mappings
+    )
+    return dict(usage=count, source='lambda:ListEventSourceMappings', method='REGION_TOTAL')
 
 
-def _build_entry(account_id, region, collected_at, *,
-                 quota_code, quota_name, limit_value, usage_value,
-                 unit='Count', collector_type='REGION_TOTAL',
-                 data_source='', calculation_method='REGION_TOTAL',
-                 max_resource_type=None, max_resource_id=None,
-                 max_resource_meta=None):
-    """Build a standardised quota entry dict."""
-    utilization_pct = round(usage_value / limit_value * 100, 2) if limit_value > 0 else 0
-    return {
-        'PK': f"QUOTA#{account_id}#lambda#{quota_code}",
-        'SK': f"TS#{collected_at}",
-        'accountId': account_id,
-        'region': region,
-        'serviceCode': 'lambda',
-        'quotaCode': quota_code,
-        'quotaName': quota_name,
-        'scopeType': 'ACCOUNT_REGION',
-        'limitValue': limit_value,
-        'usageValue': usage_value,
-        'utilizationPct': utilization_pct,
-        'unit': unit,
-        'collectorType': collector_type,
-        'dataSource': data_source,
-        'calculationMethod': calculation_method,
-        'maxResourceType': max_resource_type,
-        'maxResourceId': max_resource_id,
-        'maxResourceMeta': max_resource_meta,
-        'collectedAt': collected_at,
-        'ttl': int(time.time()) + 64 * 24 * 3600  # 64 days TTL
-    }
+def direct_upload_package_size(ctx):
+    """Keep the direct-upload quota explicitly unsupported.
 
+    Lambda exposes the compressed ``CodeSize`` and ``PackageType`` for a
+    function, but it does not retain the provenance of a ZIP upload.  A ZIP
+    uploaded with ``CreateFunction(Zip=...)`` and the same ZIP supplied via
+    ``S3Bucket`` both appear as ``PackageType=Zip`` (and ``GetFunction`` only
+    reports the repository as Lambda-managed storage).  Counting every ZIP
+    would therefore include S3 uploads, while counting only packages below
+    50 MB would still include both kinds.  Neither result is a valid
+    measurement of the *direct upload* quota.
 
-# ── Main entry point ──────────────────────────────────────────────────────
-
-def get_current_quotastatus_lambda(session=None):
-    """Collect quota usage for AWS Lambda (service code: lambda).
-
-    Returns a list of quota entry dicts ready for DynamoDB storage.
-    Only quotas whose usage can be measured via API are included.
-    Rate-based, per-invocation, and runtime quotas are skipped.
+    The quota is a request-time limit, not an account usage counter.  Keep it
+    visible in coverage until Lambda exposes upload provenance or a usage
+    metric for this quota.
     """
-    lambda_quotas = []
-    if session is None:
-        session = boto3.Session()
+    raise Unsupported(
+        'Lambda API exposes ZIP size and package type, but not direct-vs-S3 '
+        'upload provenance; direct-upload usage cannot be measured safely'
+    )
 
-    collected_at = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-    account_id = session.client('sts').get_caller_identity().get('Account')
-    region = session.region_name
-    lam = session.client('lambda')
-    sq = session.client('service-quotas')
 
-    # ── Batch-fetch all Lambda quota limits (single paginated call) ──
-    limits = _fetch_all_limits(sq, 'lambda')
-    def get_limit(quota_code):
-        """Look up limit from pre-fetched map, fall back to individual API call."""
-        if quota_code in limits:
-            return limits[quota_code]
-        return _get_limit(sq, quota_code)
+def unsupported(reason):
+    raise Unsupported(reason)
 
-    # ── Pre-fetch all functions (paginated) ───────────────────────────
-    logger.info("Lambda collector: fetching function inventory")
-    functions = []
-    paginator = lam.get_paginator('list_functions')
-    for page in paginator.paginate():
-        functions.extend(page.get('Functions', []))
 
-    logger.info(f"Lambda collector: {len(functions)} functions discovered")
+LAMBDA = 'lambda'
+MICROVMS = 'lambda-microvms'
+CORE = 'lambda-core'
 
-    # Shorthand
-    def entry(**kw):
-        return _build_entry(account_id, region, collected_at, **kw)
 
-    # ══════════════════════════════════════════════════════════════════
-    #  ACCOUNT-LEVEL CHECKS
-    # ══════════════════════════════════════════════════════════════════
+def _identity(item, field, subject):
+    value = item.get(field)
+    if not isinstance(value, str) or not value:
+        raise Unsupported(f'Lambda {subject} is missing its identity')
+    return value
 
-    # L-2ACBD22F  Function and layer storage (default 75 GB)
-    try:
-        acct = lam.get_account_settings()
-        total_code_size_limit = acct['AccountLimit']['TotalCodeSize']
-        total_code_size_used = acct['AccountUsage']['TotalCodeSize']
-        # Override with Service Quotas value if available (may be increased)
-        try:
-            sq_limit = get_limit('L-2ACBD22F')
-            # Service Quotas returns in GB, API returns bytes
-            if sq_limit < 1_000_000:
-                total_code_size_limit = int(sq_limit * 1_073_741_824)  # GB → bytes
-            else:
-                total_code_size_limit = int(sq_limit)
-        except Exception:
-            pass  # keep GetAccountSettings value
-        # Convert to GB for readability
-        usage_gb = round(total_code_size_used / 1_073_741_824, 2)
-        limit_gb = round(total_code_size_limit / 1_073_741_824, 2)
-        lambda_quotas.append(entry(
-            quota_code='L-2ACBD22F',
-            quota_name='Function and layer storage',
-            limit_value=limit_gb, usage_value=usage_gb,
-            unit='Gigabytes',
-            collector_type='ACCOUNT_TOTAL', calculation_method='ACCOUNT_TOTAL',
-            data_source='lambda:GetAccountSettings'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-2ACBD22F failed: {e}")
 
-    # ══════════════════════════════════════════════════════════════════
-    #  PER-FUNCTION CHECKS  (report function with highest usage)
-    # ══════════════════════════════════════════════════════════════════
+def capacity_providers(ctx):
+    """Providers are listed by ARN, which the version listing also accepts."""
+    return [_identity(provider, 'CapacityProviderArn', 'capacity provider')
+            for provider in ctx.call(LAMBDA, 'list_capacity_providers',
+                                     'CapacityProviders')]
 
-    # L-75F48B05  Deployment package size – direct upload (default 50 MB)
-    try:
-        limit = get_limit('L-75F48B05')
-        func_sizes = {}
-        for fn in functions:
-            func_sizes[fn['FunctionName']] = fn.get('CodeSize', 0)
-        if func_sizes:
-            max_fn = max(func_sizes, key=func_sizes.get)
-            max_size = func_sizes[max_fn]
-        else:
-            max_fn, max_size = None, 0
-        # Convert to MB for readability
-        usage_mb = round(max_size / 1_048_576, 2)
-        limit_mb = round(limit / 1_048_576, 2) if limit > 1_000 else limit
-        lambda_quotas.append(entry(
-            quota_code='L-75F48B05',
-            quota_name='Deployment package size (direct upload)',
-            limit_value=limit_mb, usage_value=usage_mb,
-            unit='Megabytes',
-            collector_type='PER_RESOURCE_MAX', calculation_method='PER_RESOURCE_MAX',
-            max_resource_type='Function', max_resource_id=max_fn,
-            data_source='lambda:ListFunctions'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-75F48B05 failed: {e}")
 
-    # L-01237738  Function layers (default 5 per function)
-    try:
-        limit = get_limit('L-01237738')
-        func_layers = {}
-        for fn in functions:
-            func_layers[fn['FunctionName']] = len(fn.get('Layers', []))
-        if func_layers:
-            max_fn = max(func_layers, key=func_layers.get)
-            max_layers = func_layers[max_fn]
-        else:
-            max_fn, max_layers = None, 0
-        lambda_quotas.append(entry(
-            quota_code='L-01237738',
-            quota_name='Function layers',
-            limit_value=limit, usage_value=max_layers,
-            collector_type='PER_RESOURCE_MAX', calculation_method='PER_RESOURCE_MAX',
-            max_resource_type='Function', max_resource_id=max_fn,
-            data_source='lambda:ListFunctions'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-01237738 failed: {e}")
+def versions_per_capacity_provider(ctx):
+    values = [(arn, len(ctx.call(LAMBDA, 'list_function_versions_by_capacity_provider',
+                                 'FunctionVersions', CapacityProviderName=arn)), None)
+              for arn in capacity_providers(ctx)]
+    return maximum(values, 'LambdaCapacityProvider',
+                   'lambda:ListFunctionVersionsByCapacityProvider')
 
-    # L-6581F036  Environment variable size (default 4 KB per function)
-    try:
-        limit = get_limit('L-6581F036')
-        func_env_sizes = {}
-        for fn in functions:
-            env_vars = fn.get('Environment', {}).get('Variables', {})
-            # Total size = sum of key lengths + value lengths
-            env_size = sum(len(k) + len(v) for k, v in env_vars.items())
-            func_env_sizes[fn['FunctionName']] = env_size
-        if func_env_sizes:
-            max_fn = max(func_env_sizes, key=func_env_sizes.get)
-            max_env_size = func_env_sizes[max_fn]
-        else:
-            max_fn, max_env_size = None, 0
-        # Convert to KB
-        usage_kb = round(max_env_size / 1024, 2)
-        limit_kb = round(limit / 1024, 2) if limit > 1000 else limit
-        lambda_quotas.append(entry(
-            quota_code='L-6581F036',
-            quota_name='Environment variable size',
-            limit_value=limit_kb, usage_value=usage_kb,
-            unit='Kilobytes',
-            collector_type='PER_RESOURCE_MAX', calculation_method='PER_RESOURCE_MAX',
-            max_resource_type='Function', max_resource_id=max_fn,
-            data_source='lambda:ListFunctions'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-6581F036 failed: {e}")
 
-    # L-07A00131  Function resource-based policy (default 20 KB)
-    try:
-        limit = get_limit('L-07A00131')
-        func_policy_sizes = {}
-        for fn in functions:
-            try:
-                policy_resp = lam.get_policy(FunctionName=fn['FunctionName'])
-                policy_str = policy_resp.get('Policy', '{}')
-                func_policy_sizes[fn['FunctionName']] = len(policy_str.encode('utf-8'))
-            except lam.exceptions.ResourceNotFoundException:
-                # No policy attached → 0 bytes
-                func_policy_sizes[fn['FunctionName']] = 0
-            except Exception:
-                pass
-        if func_policy_sizes:
-            max_fn = max(func_policy_sizes, key=func_policy_sizes.get)
-            max_policy_size = func_policy_sizes[max_fn]
-        else:
-            max_fn, max_policy_size = None, 0
-        # Convert to KB
-        usage_kb = round(max_policy_size / 1024, 2)
-        limit_kb = round(limit / 1024, 2) if limit > 1000 else limit
-        lambda_quotas.append(entry(
-            quota_code='L-07A00131',
-            quota_name='Function resource-based policy',
-            limit_value=limit_kb, usage_value=usage_kb,
-            unit='Kilobytes',
-            collector_type='PER_RESOURCE_MAX', calculation_method='PER_RESOURCE_MAX',
-            max_resource_type='Function', max_resource_id=max_fn,
-            data_source='lambda:GetPolicy'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-07A00131 failed: {e}")
+def microvm_images(ctx):
+    return [_identity(image, 'imageArn', 'MicroVM image')
+            for image in ctx.call(MICROVMS, 'list_microvm_images', 'items')]
 
-    # L-C952DDE4  Kafka Event Source Mappings in default mode on Lambda Managed Instances
-    try:
-        limit = get_limit('L-C952DDE4')
-        esms = []
-        esm_paginator = lam.get_paginator('list_event_source_mappings')
-        for page in esm_paginator.paginate():
-            esms.extend(page.get('EventSourceMappings', []))
-        kafka_esms = [e for e in esms
-                      if 'kafka' in e.get('EventSourceArn', '').lower()
-                      or e.get('SelfManagedEventSource')]
-        lambda_quotas.append(entry(
-            quota_code='L-C952DDE4',
-            quota_name='Kafka Event Source Mappings in default mode on Lambda Managed Instances',
-            limit_value=limit, usage_value=len(kafka_esms),
-            collector_type='ACCOUNT_TOTAL', calculation_method='ACCOUNT_TOTAL',
-            data_source='lambda:ListEventSourceMappings'))
-    except Exception as e:
-        logger.warning(f"Lambda check L-C952DDE4 failed: {e}")
 
-    # ══════════════════════════════════════════════════════════════════
-    #  SKIPPED QUOTAS  (not implemented in collector for now, needs more investigation)
-    # ══════════════════════════════════════════════════════════════════
-    #
-    # Covered by Reporting via official CloudWatch UsageMetric:
-    #   L-B99A9384  Concurrent executions (AWS/Lambda, ConcurrentExecutions)
-    #     → Reporting fetches this via get_metric_data; returns 0 if no data.
-    #
-    # Rate limits (TPS) – can't be measured as resource counts:
-    #   L-A723F9CC  Async invocation request throughput (Lambda Managed Instances)
-    #   L-A1AFA3CF  Concurrency scaling rate
-    #   L-7E8754C7  DynamoDB ESM throughput (Lambda Managed Instances)
-    #   L-2713A7D4  Kafka ESM throughput (Lambda Managed Instances)
-    #   L-2EBBB6B4  Kinesis ESM throughput (Lambda Managed Instances)
-    #   L-0A4FC1E6  SQS ESM throughput (Lambda Managed Instances)
-    #   L-B2AA0F47  Rate of control plane API requests
-    #   L-37540937  Rate of GetFunction API requests
-    #   L-4273958C  Rate of GetPolicy API requests
-    #   L-DF87A8A6  Rate of CheckpointDurableExecution API requests
-    #   L-9B52FC60  Rate of GetDurableExecution API requests
-    #   L-BA29C22B  Rate of GetDurableExecutionHistory API requests
-    #   L-50EA21A9  Rate of GetDurableExecutionState API requests
-    #   L-6A3611ED  Rate of ListDurableExecutionsByFunction API requests
-    #   L-88CBC2FA  Rate of SendDurableExecutionCallbackFailure API requests
-    #   L-133D658A  Rate of SendDurableExecutionCallbackHeartbeat API requests
-    #   L-B82A30EA  Rate of SendDurableExecutionCallbackSuccess API requests
-    #   L-4C4550DE  Rate of StopDurableExecution API requests
-    #
-    # Configuration limits (not capacity – using max timeout is intentional):
-    #   L-9FEEFFC0  Function timeout (900 seconds)
-    #
-    # Per-invocation static limits:
-    #   L-7C0F49F9  Asynchronous payload (256 KB)
-    #   L-5C4B2C97  Synchronous payload (6 MB)
-    #
-    # Runtime / OS limits:
-    #   L-438DAE3B  File descriptors (1024)
-    #   L-77C8EE9D  Processes and threads (1024)
-    #
-    # Console-only:
-    #   L-8E39F3F1  Deployment package size – console editor (3 MB)
-    #   L-AD930C90  Test events – console editor (10)
-    #
-    # Unzipped size not available via API:
-    #   L-E49FF7B8  Deployment package size – unzipped (250 MB)
-    #
-    # Durable executions (newer feature, mostly per-execution limits):
-    #   L-560437FE  Durable execution storage written in megabytes
-    #   L-A0D6E196  Function invocation rate to initiate durable executions
-    #   L-42D0A120  Max durable operations per durable execution
-    #   L-ABBF0CF3  Maximum running durable executions
-    #
-    # Misc:
-    #   L-F864D568  Capacity providers
+def versions_per_microvm_image(ctx):
+    values = [(arn, len(ctx.call(MICROVMS, 'list_microvm_image_versions', 'items',
+                                 imageIdentifier=arn)), None)
+              for arn in microvm_images(ctx)]
+    return maximum(values, 'LambdaMicrovmImage',
+                   'lambda-microvms:ListMicrovmImageVersions')
 
-    logger.info(f"Lambda collector: completed with {len(lambda_quotas)} quota entries")
-    return lambda_quotas
+
+def network_interfaces_per_vpc(ctx):
+    """Lambda's VPC attachments are the EC2 interfaces of type ``lambda``."""
+    counts = Counter()
+    for interface in ctx.call('ec2', 'describe_network_interfaces',
+                              'NetworkInterfaces',
+                              Filters=[{'Name': 'interface-type',
+                                        'Values': ['lambda']}]):
+        vpc = interface.get('VpcId')
+        if not isinstance(vpc, str) or not vpc:
+            raise Unsupported('Lambda network interface names no VPC')
+        counts[vpc] += 1
+    return maximum(((vpc, count, None) for vpc, count in counts.items()),
+                   'Vpc', 'ec2:DescribeNetworkInterfaces')
+
+
+CHECKS = [
+    ('L-2ACBD22F', 'Function and layer storage', storage),
+    ('L-75F48B05', 'Deployment package size (direct upload)', direct_upload_package_size),
+    ('L-01237738', 'Function layers', lambda c: maximum(
+        [(f['FunctionArn'], len(f.get('Layers', [])), None) for f in functions(c)], 'FunctionVersion', 'lambda:ListFunctions')),
+    ('L-6581F036', 'Environment variable size', lambda c: sized(c, 'L-6581F036', environment_size, 'lambda:ListFunctions')),
+    ('L-07A00131', 'Function resource-based policy', policies),
+    ('L-C952DDE4', 'Kafka Event Source Mappings in default mode on Lambda Managed Instances', kafka_default_mode),
+    ('L-F864D568', 'Capacity providers',
+     lambda c: dict(usage=len(capacity_providers(c)),
+                    source='lambda:ListCapacityProviders', method='ACCOUNT_COUNT')),
+    ('L-96779E29', 'Function versions per capacity provider',
+     versions_per_capacity_provider),
+    ('L-5E779850', 'Network connectors',
+     lambda c: dict(usage=len(c.call(CORE, 'list_network_connectors',
+                                     'NetworkConnectors')),
+                    source='lambda-core:ListNetworkConnectors',
+                    method='ACCOUNT_COUNT')),
+    ('L-942E56BE', 'Number of MicroVM images',
+     lambda c: dict(usage=len(microvm_images(c)),
+                    source='lambda-microvms:ListMicrovmImages',
+                    method='ACCOUNT_COUNT')),
+    ('L-F8BECE9C', 'Versions per MicroVM Image', versions_per_microvm_image),
+    ('L-9FEE3D26', 'Elastic network interfaces per VPC', network_interfaces_per_vpc),
+]
+
+
+def get_current_quotastatus_lambda(session=None, *, ctx=None, skip=()):
+    return (ctx or CheckContext(session or session_from_env())).run('lambda', CHECKS, skip)

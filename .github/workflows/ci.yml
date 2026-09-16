@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_EC2_METADATA_DISABLED: 'true'
+  AWS_DEFAULT_REGION: eu-central-1
+  PYTHON_VERSION: '3.14'
+  TERRAFORM_VERSION: '1.15.9'
+
+jobs:
+  python:
+    name: Python quality and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate GitHub Actions workflows
+        run: >-
+          docker run --rm
+          -v "${PWD}:/repo"
+          --workdir /repo
+          rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+          -color
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install development dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+      - name: Check dependency consistency
+        run: python -m pip check
+      - name: Validate release metadata
+        run: python scripts/release.py check
+      - name: Lint correctness rules
+        run: ruff check src tests scripts
+      - name: Compile Python sources
+        run: python -m compileall -q src tests scripts
+      - name: Run unit tests
+        run: python -m pytest -q --junitxml=test-results/pytest.xml
+      - name: Check quota coverage baseline
+        run: >-
+          python scripts/quota_coverage.py
+          tests/fixtures/quota-catalog-union.json
+          --baseline tests/fixtures/coverage-baseline.json
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pytest-results
+          path: test-results/pytest.xml
+          if-no-files-found: warn
+          retention-days: 14
+
+  package:
+    name: Lambda package
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Build reproducible dependency layer
+        run: bash deployment/build_layer.sh
+      - name: Verify isolated package imports
+        run: python scripts/verify_package.py
+      - name: Upload dependency layer
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lambda-layer
+          path: deployment/lambda_layer.zip
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+  terraform:
+    name: Terraform format and validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+      - name: Initialize Terraform
+        run: terraform -chdir=deployment init -backend=false -lockfile=readonly
+      - name: Check Terraform formatting
+        run: terraform -chdir=deployment fmt -check -recursive
+      - name: Validate Terraform
+        run: terraform -chdir=deployment validate

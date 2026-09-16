@@ -1,226 +1,150 @@
-#!/usr/bin/env python3
-"""
-Test script for reporting Lambda function
-Invokes the function, retrieves logs, and downloads the generated CSV from S3
-"""
-
-import boto3
+import csv
+import importlib
 import json
-import sys
-import os
-import time
-from datetime import datetime, timedelta
-import tempfile
+from datetime import datetime, timedelta, timezone
+from io import StringIO
+from unittest.mock import Mock
+import pytest
+from modules.qmcore.aws import CheckContext
+from modules.qmcore.model import measurement
+from modules.qmcore.reporting import report_period, load_history, build_report, generate_csv_report
 
-# Get AWS profile from environment or use default
-PROFILE = os.environ.get('AWS_PROFILE', 'BA')
-REGION = os.environ.get('AWS_REGION', 'eu-central-1')
-FUNCTION_NAME = 'qm-reporting'
-REPORT_BUCKET = os.environ.get('QM_REPORT_BUCKET')
-INVOKE_ASYNC = os.environ.get('QM_REPORT_ASYNC', '1') == '1'
-POLL_TIMEOUT_SEC = int(os.environ.get('QM_REPORT_POLL_TIMEOUT', '1200'))
+NOW = datetime(2026, 3, 1, tzinfo=timezone.utc)
+CODE = 'L-8EA77D34'
 
 
-def invoke_lambda(session):
-    """Invoke the reporting Lambda function"""
-    # Increase timeouts for long-running Lambda
-    import botocore.config
-    config = botocore.config.Config(
-        connect_timeout=5,
-        read_timeout=1000,  # allow up to ~15 minutes for sync runs
-        retries={'max_attempts': 1}
-    )
-    lambda_client = session.client('lambda', region_name=REGION, config=config)
-    
-    invocation_type = 'Event' if INVOKE_ASYNC else 'RequestResponse'
-    print(f"Invoking {FUNCTION_NAME} ({'async' if INVOKE_ASYNC else 'sync'})...")
-    
-    event_payload = {
-        "days_back": 30
-    }
-    
-    try:
-        response = lambda_client.invoke(
-            FunctionName=FUNCTION_NAME,
-            InvocationType=invocation_type,
-            Payload=json.dumps(event_payload)
-        )
-        
-        print(f"\n{'='*60}")
-        print(f"Lambda Response Status: {response['StatusCode']}")
-        print(f"{'='*60}")
-
-        if INVOKE_ASYNC:
-            # Async invocation: poll S3 for the latest report
-            if not REPORT_BUCKET:
-                print("QM_REPORT_BUCKET not set; cannot poll S3 for report.")
-                return False
-            s3_location = wait_for_latest_report(session, REPORT_BUCKET, POLL_TIMEOUT_SEC)
-            if s3_location:
-                download_csv_from_s3(session, s3_location)
-                return True
-            return False
-
-        # Sync invocation: Parse the response payload
-        payload = json.loads(response['Payload'].read())
-        print(json.dumps(payload, indent=2))
-
-        # Get logs
-        get_logs(session)
-
-        # Download CSV if successful
-        if response['StatusCode'] == 200 and 's3_location' in payload.get('body', ''):
-            try:
-                body = json.loads(payload.get('body', '{}'))
-                s3_location = body.get('s3_location')
-                if s3_location:
-                    download_csv_from_s3(session, s3_location)
-            except Exception:
-                pass
-
-        return response['StatusCode'] == 200
-        
-    except Exception as e:
-        print(f"Error invoking Lambda: {e}")
-        return False
+def test_months_february_leap_year_and_year_rollover():
+    for now, expected_start, days in [(NOW, '2026-02-01', 28),
+        (datetime(2024,3,1,tzinfo=timezone.utc), '2024-02-01', 29),
+        (datetime(2026,1,1,tzinfo=timezone.utc), '2025-12-01', 31)]:
+        start, end = report_period({'period': 'previous_month'}, now)
+        assert start.strftime('%Y-%m-%d') == expected_start
+        assert (end-start).days == days
+    assert report_period({'source': 'aws.events', 'time': '2024-03-01T00:00:00Z'}, NOW)[0].year == 2024
 
 
-def get_logs(session):
-    """Retrieve CloudWatch logs for the Lambda function"""
-    logs_client = session.client('logs', region_name=REGION)
-    
-    log_group = f'/aws/lambda/{FUNCTION_NAME}'
-    
-    try:
-        # Get log streams (most recent first)
-        streams_response = logs_client.describe_log_streams(
-            logGroupName=log_group,
-            orderBy='LastEventTime',
-            descending=True,
-            limit=5
-        )
-        
-        if not streams_response['logStreams']:
-            print(f"\nNo log streams found for {log_group}")
-            return
-        
-        print(f"\n{'='*60}")
-        print("CloudWatch Logs:")
-        print(f"{'='*60}")
-        
-        # Get events from the most recent stream
-        for stream in streams_response['logStreams']:
-            stream_name = stream['logStreamName']
-            print(f"\nLog Stream: {stream_name}")
-            print(f"Last Event Time: {datetime.fromtimestamp(stream['lastEventTimestamp']/1000)}")
-            print("-" * 60)
-            
-            events_response = logs_client.get_log_events(
-                logGroupName=log_group,
-                logStreamName=stream_name,
-                limit=100
-            )
-            
-            for event in events_response['events']:
-                timestamp = datetime.fromtimestamp(event['timestamp'] / 1000)
-                print(f"[{timestamp}] {event['message']}", end='')
-            
-            # Only show most recent stream
-            break
-            
-    except logs_client.exceptions.ResourceNotFoundException:
-        print(f"\nLog group not found: {log_group}")
-    except Exception as e:
-        print(f"Error retrieving logs: {e}")
+@pytest.mark.parametrize('value', [0, -1, 456, True, 1.5, 'abc'])
+def test_bad_days(value):
+    with pytest.raises(ValueError):
+        report_period({'days_back': value}, NOW)
 
 
-def download_csv_from_s3(session, s3_location):
-    """Download and display CSV from S3"""
-    try:
-        # Parse s3://bucket/key format
-        if not s3_location.startswith('s3://'):
-            print(f"\nInvalid S3 location: {s3_location}")
-            return
-        
-        parts = s3_location.replace('s3://', '').split('/', 1)
-        bucket = parts[0]
-        key = parts[1] if len(parts) > 1 else ''
-        
-        s3_client = session.client('s3', region_name=REGION)
-        
-        print(f"\n{'='*60}")
-        print("Downloading CSV from S3:")
-        print(f"{'='*60}")
-        print(f"S3 Location: {s3_location}")
-        print("-" * 60)
-        
-        # Download to temporary file
-        response = s3_client.get_object(Bucket=bucket, Key=key)
-        csv_content = response['Body'].read().decode('utf-8')
-        
-        # Display CSV content
-        print(csv_content)
-        
-        # Also save to local file
-        local_filename = f"quota-report-{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        with open(local_filename, 'w') as f:
-            f.write(csv_content)
-        
-        print(f"\n✓ CSV saved locally to: {local_filename}")
-        
-    except Exception as e:
-        print(f"\nError downloading CSV from S3: {e}")
+def test_manual_days_and_scheduler_validation(monkeypatch):
+    monkeypatch.setenv('QM_REPORT_DAYS', '7')
+    start, end = report_period({}, NOW)
+    assert end == NOW and end-start == timedelta(days=7)
+    assert report_period({'days_back': 3}, NOW)[0] == NOW-timedelta(days=3)
+    with pytest.raises(ValueError):
+        report_period({'source': 'eventbridge-scheduler', 'days_back': 30}, NOW)
 
 
-def wait_for_latest_report(session, bucket, timeout_sec=1200, prefix='reports/'):
-    """Poll S3 for the newest report object and return its s3:// location."""
-    s3_client = session.client('s3', region_name=REGION)
-    start = time.time()
-    latest_key = None
-
-    print(f"\nWaiting up to {timeout_sec}s for report in s3://{bucket}/{prefix}...")
-    while time.time() - start < timeout_sec:
-        response = s3_client.list_objects_v2(Bucket=bucket, Prefix=prefix)
-        contents = response.get('Contents', [])
-        if contents:
-            latest = max(contents, key=lambda o: o['LastModified'])
-            if latest_key != latest['Key']:
-                latest_key = latest['Key']
-                s3_location = f"s3://{bucket}/{latest_key}"
-                print(f"Found latest report: {s3_location}")
-                return s3_location
-        time.sleep(10)
-
-    print("Timed out waiting for report in S3.")
-    return None
-
-
-def main():
-    """Main entry point"""
-    try:
-        session = boto3.Session(profile_name=PROFILE, region_name=REGION)
-        
-        print(f"AWS Profile: {PROFILE}")
-        print(f"Region: {REGION}")
-        print(f"Function: {FUNCTION_NAME}")
-        print()
-        
-        # Verify credentials
-        sts = session.client('sts')
-        identity = sts.get_caller_identity()
-        print(f"Account: {identity['Account']}")
-        print(f"User: {identity['Arn']}")
-        print()
-        
-        # Invoke Lambda
-        success = invoke_lambda(session)
-        
-        sys.exit(0 if success else 1)
-        
-    except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+def test_history_scoping_exclusive_end_legacy_and_csv(aws_db):
+    session, db = aws_db
+    start = NOW-timedelta(minutes=30)
+    def add(usage, at, account='a', region='eu-central-1', version=2, limit=10):
+        e = measurement(account, region, 'ec2', CODE, 'VPN endpoints', limit, usage, now=at)
+        e['calculationVersion'] = version
+        db.put_quota_entry(e)
+    add(8, start)
+    add(2, start+timedelta(minutes=10), limit=20)
+    add(99, start+timedelta(minutes=5), version=1)
+    add(100, NOW)
+    add(100, start, account='other')
+    add(100, start, region='us-east-1')
+    history = load_history(db, 'a', 'eu-central-1', start, NOW)
+    assert len(history) == 3
+    ctx = CheckContext(session, account='a', now=NOW)
+    rows, errors = build_report(ctx, db, [dict(ServiceCode='ec2', QuotaCode=CODE, QuotaName='VPN endpoints', Value=20, Unit='Count')], start, NOW)
+    assert not errors
+    row, = rows
+    assert row['maxUsage'] == 8 and row['limitAtPeak'] == 10 and row['currentLimit'] == 20
+    assert row['excludedSamples'] == 1 and row['qualityStatus'] == 'NO_DATA'
+    exported, = list(csv.DictReader(StringIO(generate_csv_report(rows))))
+    assert exported['Account'] == 'a' and exported['Region'] == 'eu-central-1'
+    assert float(exported['Max Usage in Period']) == 8
+    assert 'Current Month' not in generate_csv_report(rows)
+    assert 'Measurement Type' in exported and exported['Measurement Type'] == 'RESOURCE_COUNT'
+    assert exported['Period End Exclusive (UTC)'] == '2026-03-01T00:00:00Z'
 
 
-if __name__ == '__main__':
-    main()
+def test_history_scan_pagination_and_error(aws_db):
+    db = Mock()
+    db.table.scan.side_effect = [{'Items': [], 'LastEvaluatedKey': {'PK': 'p', 'SK': 's'}}, {'Items': [{'x': 1}]}]
+    assert load_history(db, 'a', 'r', NOW-timedelta(days=1), NOW) == [{'x': 1}]
+    assert db.table.scan.call_args.kwargs['ExclusiveStartKey'] == {'PK': 'p', 'SK': 's'}
+    db.table.scan.side_effect = [{'Items': [], 'LastEvaluatedKey': {'PK': 'p', 'SK': 's'}}, RuntimeError('denied')]
+    with pytest.raises(RuntimeError):
+        load_history(db, 'a', 'r', NOW-timedelta(days=1), NOW)
+
+
+def test_partial_report_saved_then_lambda_raises(aws_db, monkeypatch):
+    main = importlib.import_module('functions.reporting.main')
+    session, db = aws_db
+    session.client('s3').create_bucket(Bucket='report-test-bucket', CreateBucketConfiguration={'LocationConstraint': 'eu-central-1'})
+    monkeypatch.setenv('QM_REPORT_BUCKET', 'report-test-bucket')
+    monkeypatch.setattr(main, 'session_from_env', lambda: session)
+    monkeypatch.setattr(main, 'get_catalog', lambda *a, **kw: ([], ['AccessDenied for service']))
+    with pytest.raises(RuntimeError, match='Partial report saved'):
+        main.lambda_handler({'days_back': 1}, None)
+    objects = session.client('s3').list_objects_v2(Bucket='report-test-bucket')['Contents']
+    assert len(objects) == 2
+    sidecar = next(o for o in objects if o['Key'].endswith('.json'))
+    data = json.loads(session.client('s3').get_object(Bucket='report-test-bucket', Key=sidecar['Key'])['Body'].read())
+    assert data['status'] == 'PARTIAL' and data['errors']
+
+
+def test_upload_failure_is_function_error(aws_db, monkeypatch):
+    main = importlib.import_module('functions.reporting.main')
+    monkeypatch.setattr(main, 'session_from_env', lambda: aws_db[0])
+    monkeypatch.setenv('QM_REPORT_BUCKET', 'nonexistent-bucket')
+    monkeypatch.setattr(main, 'get_catalog', lambda *a, **kw: ([], []))
+    with pytest.raises(Exception, match='NoSuchBucket'):
+        main.lambda_handler({'days_back': 1}, None)
+
+
+def test_official_report_peak_limit_is_historical_not_current(aws_db, monkeypatch):
+    from modules.qmcore.model import iso
+    import modules.qmcore.reporting as reporting
+    from test_metrics import quota
+    session, db = aws_db
+    ctx = CheckContext(session, account='a', now=NOW)
+    at = NOW-timedelta(minutes=10)
+    q = quota('q')
+    stored = measurement('a', 'eu-central-1', 'ec2', 'q', 'quota', 80, 70,
+                         now=at, source='official_metric')
+    stored['peakAt'] = iso(at)
+    db.put_quota_entry(stored)
+    queried = dict(stored, limitValue=100, usageValue=70, peakAt=iso(at), sampleCount=4, aggregationSeconds=300)
+    monkeypatch.setattr(reporting, 'fetch_metrics', lambda *a, **kw: [queried])
+    rows, errors = build_report(ctx, db, [q], NOW-timedelta(days=1), NOW)
+    assert not errors and rows[0]['currentLimit'] == 100 and rows[0]['limitAtPeak'] == 80
+    queried['peakAt'] = iso(at-timedelta(minutes=5))
+    rows, errors = build_report(ctx, db, [q], NOW-timedelta(days=1), NOW)
+    assert rows[0]['limitAtPeak'] is None
+
+
+def test_history_failure_does_not_discard_good_official_metric(aws_db, monkeypatch):
+    import modules.qmcore.reporting as reporting
+    from test_metrics import quota
+    ctx = CheckContext(aws_db[0], account='a', now=NOW)
+    db = Mock()
+    db.table.scan.side_effect = RuntimeError('AccessDenied')
+    queried = measurement('a', 'eu-central-1', 'ec2', 'q', 'quota', 100, 90, now=NOW, source='official_metric')
+    monkeypatch.setattr(reporting, 'fetch_metrics', lambda *a, **kw: [queried])
+    rows, errors = build_report(ctx, db, [quota('q')], NOW-timedelta(days=1), NOW)
+    assert errors and rows[0]['maxUsage'] == 90 and rows[0]['qualityStatus'] == 'OK'
+
+
+def test_report_queries_documented_metric_missing_from_catalog_metadata(aws_db, monkeypatch):
+    import modules.qmcore.reporting as reporting
+    ctx = CheckContext(aws_db[0], account='a', now=NOW)
+    quota = {'ServiceCode': 'states', 'QuotaCode': 'L-15D902EC',
+             'QuotaName': 'Open Map Runs', 'Unit': 'None', 'Value': 1000,
+             'QuotaAppliedAtLevel': 'ACCOUNT'}
+    selected = []
+    def fetch(_ctx, quotas, *_args, **_kwargs):
+        selected.extend(quotas)
+        return []
+    monkeypatch.setattr(reporting, 'fetch_metrics', fetch)
+    build_report(ctx, aws_db[1], [quota], NOW - timedelta(days=1), NOW)
+    assert [(q['ServiceCode'], q['QuotaCode']) for q in selected] == [('states', 'L-15D902EC')]
