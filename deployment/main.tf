@@ -535,6 +535,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "aco-automation:ListAutomationEvents"
           , "aidevops:ListAgentSpaces"
           , "organizations:ListRoots"
+          , "organizations:ListDelegatedAdministrators"
           , "organizations:ListOrganizationalUnitsForParent"
           , "organizations:ListAccountsForParent"
           , "migrationhub-strategy:ListImportFileTask"

@@ -18,7 +18,7 @@ def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
                      'uncovered': 1, 'uncoveredCodes': ['uncovered'], 'implementedPct': 50.0,
                      'unmeasurable': 0, 'measurable': 2, 'measurablePct': 50.0,
                      'countable': 1, 'size_or_period': 0, 'rate_shaped': 0,
-                     'no_sdk_client': 0}]
+                     'no_sdk_client': 0, 'cross_account': 0}]
 
 
 def test_catalog_loader_accepts_quotas_wrapper_and_table(tmp_path):
@@ -396,3 +396,19 @@ def test_every_service_listed_as_dropped_really_has_no_client():
     available = set(botocore.session.get_session().get_available_services())
     restored = sorted(SDK_REMOVED & available)
     assert not restored, f'botocore ships these again, so remove them: {restored}'
+
+
+def test_a_quota_counted_across_the_organization_is_a_shape_of_its_own():
+    """One account's credentials cannot see what the other accounts hold."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'ec2',
+                      'QuotaName': 'Concurrent P5 Capacity Blocks per organization'}) == 'cross_account'
+    assert gap_shape({'ServiceCode': 'ec2',
+                      'QuotaName': 'Concurrent P5 Capacity Blocks per account'}) == 'countable'
+
+
+def test_a_service_the_sdk_dropped_outranks_the_organization_scope():
+    """Naming the scope says nothing when no client can ask in the first place."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'robomaker',
+                      'QuotaName': 'Robots per organization'}) == 'no_sdk_client'
