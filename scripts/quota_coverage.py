@@ -145,12 +145,32 @@ VOLUME = re.compile(r'\b(records?|tokens?|rows?|columns?|data points?|characters
                     re.IGNORECASE)
 
 
+# Service Quotas still lists these services, but botocore ships no client for
+# them under any name, so no inventory can be read however the quota is worded:
+# AWS retired the service (IoT Analytics, IoT Events, QLDB, RoboMaker, Lookout
+# for Metrics, Lookout for Vision, CloudWatch Evidently, SimSpace Weaver) or has
+# never published an API for it (CloudShell, Kiro, Q Developer transformation,
+# Amazon Connect Decisions). ``test_every_service_listed_as_dropped_really_has_no
+# _client`` fails if botocore ships one again, so the list cannot go stale in the
+# flattering direction.
+SDK_REMOVED = frozenset({
+    'cloudshell', 'evidently', 'iotanalytics', 'iotevents', 'kiro',
+    'lookoutmetrics', 'lookoutvision', 'qldb', 'qt-platform', 'robomaker',
+    'scn', 'simspaceweaver',
+})
+
+
 def gap_shape(quota: dict) -> str:
     """Classify a measurable, uncovered quota by what its name describes.
 
     The shape says what the remaining work is: a countable quota needs an
     inventory, the others need a source that does not exist yet.
+
+    A service the SDK no longer reaches is asked first, because its names still
+    read as counts and would otherwise promise work no API can do.
     """
+    if quota.get('ServiceCode') in SDK_REMOVED:
+        return 'no_sdk_client'
     name = _name(quota)
     if RATE_SHAPED.search(name):
         return 'rate_shaped'
@@ -182,7 +202,7 @@ def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | Non
     services = defaultdict(lambda: {'total': 0, 'implemented': 0, 'compatibleMetric': 0,
                                     'covered': 0, 'uncovered': 0, 'unmeasurable': 0,
                                     'countable': 0, 'size_or_period': 0, 'rate_shaped': 0,
-                                    'uncoveredCodes': []})
+                                    'no_sdk_client': 0, 'uncoveredCodes': []})
     for (service, code), quota in sorted(unique.items()):
         row = services[service]
         row['total'] += 1
@@ -281,9 +301,11 @@ GAP_SHAPES = (
                        'period, so there is a value to read only while a request is in flight'),
     ('rate_shaped', 'a rate no exclusion rule matches, because the name states '
                     'neither a window nor an operation'),
+    ('no_sdk_client', 'botocore ships no client for the service any more, so no '
+                      'inventory can be read until AWS restores one'),
 )
 GAP_LABELS = {'countable': 'countable', 'size_or_period': 'size or period',
-              'rate_shaped': 'rate-shaped'}
+              'rate_shaped': 'rate-shaped', 'no_sdk_client': 'no SDK client'}
 
 
 def render_gaps(rows: list[dict], limit: int = 12) -> str:

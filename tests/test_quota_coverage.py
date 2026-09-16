@@ -17,7 +17,8 @@ def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
                      'compatibleMetric': 0, 'covered': 1, 'coveredPct': 50.0,
                      'uncovered': 1, 'uncoveredCodes': ['uncovered'], 'implementedPct': 50.0,
                      'unmeasurable': 0, 'measurable': 2, 'measurablePct': 50.0,
-                     'countable': 1, 'size_or_period': 0, 'rate_shaped': 0}]
+                     'countable': 1, 'size_or_period': 0, 'rate_shaped': 0,
+                     'no_sdk_client': 0}]
 
 
 def test_catalog_loader_accepts_quotas_wrapper_and_table(tmp_path):
@@ -375,3 +376,23 @@ def test_the_readme_reports_the_same_coverage_as_the_catalog():
     assert int(measurable.replace(',', '')) == current['measurable']
     assert whole == f"{current['covered'] / current['total'] * 100:.2f}"
     assert measurable_pct == f"{current['covered'] / current['measurable'] * 100:.2f}"
+
+
+def test_a_service_the_sdk_dropped_is_a_shape_of_its_own():
+    """A countable name promises work that no API can do once AWS drops the client."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'lookoutmetrics',
+                      'QuotaName': 'Detectors'}) == 'no_sdk_client'
+    assert gap_shape({'ServiceCode': 'lookoutmetrics',
+                      'QuotaName': 'Files per interval (1d)'}) == 'no_sdk_client'
+    assert gap_shape({'ServiceCode': 'iot', 'QuotaName': 'Detectors'}) == 'countable'
+
+
+def test_every_service_listed_as_dropped_really_has_no_client():
+    """The list flatters the gap table, so botocore decides what belongs on it."""
+    import botocore.session
+
+    from scripts.quota_coverage import SDK_REMOVED
+    available = set(botocore.session.get_session().get_available_services())
+    restored = sorted(SDK_REMOVED & available)
+    assert not restored, f'botocore ships these again, so remove them: {restored}'
