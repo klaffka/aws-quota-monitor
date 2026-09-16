@@ -114,6 +114,7 @@ _CHECK_MODULES = (
     ('modules.qmchecks.personalize', 'personalize'),
     ('modules.qmchecks.sagemaker_resources', 'sagemaker'),
     ('modules.qmchecks.mediaconvert', 'mediaconvert'),
+    ('modules.qmchecks.mediapackage', 'mediapackage'),
     ('modules.qmchecks.ivs', 'ivs'),
     ('modules.qmchecks.workspaces_web', 'workspaces-web'),
     ('modules.qmchecks.specialized', None),

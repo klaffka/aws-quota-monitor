@@ -128,6 +128,7 @@ from modules.qmchecks.memorydb import get_current_quotastatus_memorydb
 from modules.qmchecks.personalize import get_current_quotastatus_personalize
 from modules.qmchecks.sagemaker_resources import get_current_quotastatus_sagemaker_resources
 from modules.qmchecks.mediaconvert import get_current_quotastatus_mediaconvert
+from modules.qmchecks.mediapackage import get_current_quotastatus_mediapackage
 from modules.qmchecks.ivs import get_current_quotastatus_ivs
 from modules.qmchecks.specialized import get_current_quotastatus_specialized
 from modules.qmchecks.workspaces_web import get_current_quotastatus_workspaces_web
@@ -380,6 +381,7 @@ def lambda_handler(event, context):
     entries.extend(get_current_quotastatus_personalize(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_sagemaker_resources(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_mediaconvert(ctx=ctx, skip=official))
+    entries.extend(get_current_quotastatus_mediapackage(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_ivs(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_specialized(ctx=ctx, skip=official))
     entries.extend(get_current_quotastatus_workspaces_web(ctx=ctx, skip=official))
