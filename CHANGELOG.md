@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- DataBrew job, open project, ruleset and recipe version measurements, and
+  Well-Architected lens, workload and review template share measurements.
 - DocumentDB parameter group, event subscription, manual snapshot, read
   replica, subnet and security group measurements.
 - MediaPackage packaging group, configuration, asset and harvest job
