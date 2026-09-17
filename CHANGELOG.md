@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- DocumentDB parameter group, event subscription, manual snapshot, read
+  replica, subnet and security group measurements.
 - MediaPackage packaging group, configuration, asset and harvest job
   measurements.
 - Auto Scaling per-group policy, scheduled action, notification, lifecycle hook
