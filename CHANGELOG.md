@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- MediaPackage packaging group, configuration, asset and harvest job
+  measurements.
 - Auto Scaling per-group policy, scheduled action, notification, lifecycle hook
   and attachment measurements, and Cognito per-user-pool app, group, identity
   provider, resource server and scope measurements.

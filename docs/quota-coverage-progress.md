@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,655 | 2,076 |
+| implemented | 2,659 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,036 | 4,457 |
-| uncovered | 7,045 | 5,941 |
+| covered | 5,040 | 4,457 |
+| uncovered | 7,041 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.69%** of the whole union, or
-**71.31%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.72%** of the whole union, or
+**71.37%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,16 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured four MediaPackage quotas, which needed a module of their own. The
+  VOD packaging resources live behind the `mediapackage-vod` client while the
+  harvest jobs live behind `mediapackage`, and the quotas are all filed under
+  the one `mediapackage` service code. Packaging configurations and assets are
+  listed for the account and name their packaging group, so both maxima are
+  grouped rather than fetched per group, and an entry naming no group is
+  reported rather than dropped. Harvest jobs filter by status server side, so
+  the concurrency is one call.
+  The ingest stream and track quotas stay in the audit: they bound what a
+  running channel receives, which no inventory reports after the fact.
 - Measured twelve per-parent quotas in Auto Scaling and Cognito, the densest
   pair of services left. Auto Scaling needs almost no calls for them: policies,
   scheduled actions and notifications are listed for the whole account and each
@@ -729,12 +739,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,026 quotas are measurable and still uncovered. Sorting them by what their
+2,022 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 757 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 753 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
