@@ -43,6 +43,11 @@ All notable changes to this project are recorded here. Versions follow
 - Quotas stating a clock in hours, minutes or seconds, or an allowance per
   twenty-four hours, are no longer ranked as countable inventory work.
 
+- The open-quota audit documents no longer list quotas the collector already
+  measures. 1,373 of their 7,735 entries had become false leads, because the
+  test behind them only checked that every open quota was documented and never
+  that a documented one was still open; it now checks both.
+
 ### Fixed
 
 - Clean Rooms protected job and protected query counts, which the collector had

@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **3203**
+Total open entries: **2189**
 
 
 ## access-analyzer
@@ -84,53 +84,22 @@ Total open entries: **3203**
 - `L-CA57203B` — View size
 - `L-D500C0BA` — Theme size
 
-## aoss
-
-- `L-1D4405ED` — SAML providers per region
-- `L-2005AF7E` — Encryption policy size per policy
-- `L-380319CD` — SAML provider size per policy
-- `L-3EDA8079` — Encryption policies per region
-- `L-4E98D4EB` — Default search MAX OCU setting
-- `L-50FA809B` — Default indexing MAX OCU setting
-- `L-51EC5B57` — IAM Identity Center security config size
-- `L-7077B8EB` — Retention policy size
-- `L-81F90FD2` — Data access policy size per policy
-- `L-877395DB` — Network policy size per policy
-- `L-92280D4D` — Network policies per region
-- `L-B0736F4C` — Maximum search capacity (OCUs)
-- `L-B813BFF3` — Maximum indexing capacity (OCUs)
-- `L-C3AEE11F` — Data access policies per region
-- `L-D5F2517B` — IAM Identity Center applications
-- `L-F447691F` — Retention policies
-
 ## apigateway
 
-- `L-01C8A9E0` — Resources/Routes per REST/WebSocket API
-- `L-1D180A63` — API keys
 - `L-20859C74` — AWS Lambda authorizer result size
-- `L-24E7E662` — Private custom domain names
 - `L-3A613F94` — Stage Variable Key Length
 - `L-46624B39` — API Payload Size
-- `L-4D98A8A5` — Domain name access associations
 - `L-5244589D` — Method ARN Length
-- `L-608BDCD4` — VPC links(V2)
 - `L-60AC41CD` — WebSocket Idle Connection Timeout
-- `L-65B5C802` — Routes per HTTP API
-- `L-668C9B28` — Subnets per VPC link(V2)
 - `L-68B79FF0` — RoutingRules Per Domain Name
-- `L-824C9E42` — Client certificates
 - `L-8A5B8E43` — Throttle rate
 - `L-8B81B02C` — Maximum resource policy size in bytes
 - `L-8C2F9A1D` — Maximum API caching TTL
 - `L-8E6A5A87` — Maximum Iterations In Mapping Template
-- `L-95BA6EA5` — Stage variables per stage
-- `L-985EB478` — Usage plans per API key
 - `L-9C147DE4` — Edge API URL Length
 - `L-9ED1E49A` — WebSocket new connections rate
-- `L-A4C7274F` — VPC links
 - `L-A6CCE716` — Connection duration for WebSocket API
 - `L-A7033131` — Regional API URL Length
-- `L-A93447B8` — Custom Domain Names
 - `L-A9DBC573` — API Stage throttles in a usage plan
 - `L-B2CF62DC` — Stage Variable Value Length
 - `L-CC2525B6` — Maximum Cached Response Size
@@ -138,9 +107,7 @@ Total open entries: **3203**
 - `L-E11F7D5D` — WebSocket frame size
 - `L-E1465507` — WebSocket new connections burst rate
 - `L-E5AE38E3` — Maximum integration timeout in milliseconds
-- `L-E8693075` — Usage plans
 - `L-E9EEB922` — Maximum Combined Header Size
-- `L-FB4F0270` — Tags Per Stage
 - `L-FD0EB744` — WebSocket message payload size
 
 ## app-integrations
@@ -197,7 +164,6 @@ Total open entries: **3203**
 
 - `L-08C0216C` — Rate of Salesforce flow runs
 - `L-0F498C1E` — Amazon EventBridge event size
-- `L-0F8AA170` — Connector profiles
 - `L-120EC365` — Salesforce event size
 - `L-1C312742` — Rate of Marketo flow runs
 - `L-31313F92` — Rate of Slack flow runs
@@ -209,7 +175,6 @@ Total open entries: **3203**
 - `L-82E46C0E` — Amplitude flow run size
 - `L-83886F7C` — Rate of Amazon S3 flow runs
 - `L-8D48E59D` — Marketo flow run size
-- `L-A847D5B6` — Total flows
 - `L-AB51459B` — Rate of ServiceNow flow runs
 - `L-ABFA35F9` — Rate of Salesforce Pardot flow runs
 - `L-B2798F93` — Concurrent flow runs
@@ -261,138 +226,17 @@ Total open entries: **3203**
 
 ## appstream2
 
-- `L-00034C26` — Graphics G6F 4xlarge streaming instances for fleets
-- `L-0A26B79A` — Memory-optimized 8xlarge streaming instances for image builders
-- `L-0C9C98B9` — Graphics G6F 2xlarge streaming instances for image builders
-- `L-0E4BC645` — Memory-optimized z1d large streaming instances for image builders
-- `L-0E6E1ACA` — Graphics G6 xlarge streaming instances for fleets
-- `L-0EF32B70` — Memory-optimized z1d 6xlarge streaming instances for image builders
-- `L-0FB8FA1A` — Graphics G6 16xlarge streaming instances for fleets
-- `L-10345D62` — Graphics GR6F 4xlarge streaming instances for fleets
-- `L-15883678` — Graphics G4DN 4xlarge streaming instances for image builders
-- `L-1883A661` — Memory-optimized z1d 3xlarge streaming instances for fleets
-- `L-19CE5BF0` — Memory-optimized z1d large streaming instances for fleets
-- `L-1C87C4A5` — Memory-optimized 8xlarge streaming instances for fleets
-- `L-1DDAE257` — Memory-optimized z1d 6xlarge streaming instances for fleets
-- `L-22A636D1` — Graphics G5 4xlarge streaming instances for fleets
-- `L-22B15436` — Compute-optimized 2xlarge streaming instances for fleets
-- `L-234D5738` — Max app block builders with Windows Server 2019 platform and stream.standard.large instance type
-- `L-26CA6BA7` — Graphics GR6 8xlarge streaming instances for image builders
-- `L-27527629` — Max concurrent sessions for Elastic fleets with Amazon Linux 2 platform and stream.standard.large instance type
-- `L-2A70DFAA` — Compute-optimized 4xlarge streaming instances for fleets
-- `L-2F62DC97` — Graphics G5 24xlarge streaming instances for image builders
-- `L-36A62DB5` — Max concurrent sessions for Elastic fleets with Windows Server 2019 platform and stream.standard.small instance type
-- `L-382A0A45` — Graphics G6F xlarge streaming instances for image builders
-- `L-3C27714D` — Graphics G6F large streaming instances for image builders
-- `L-3D9782E8` — Graphics G4DN xlarge streaming instances for fleets
-- `L-3E935099` — Graphics G4DN 8xlarge streaming instances for image builders
-- `L-3FEADC0C` — Active fleets
-- `L-400A7BA5` — Compute-optimized 2xlarge streaming instances for image builders
-- `L-4015AFBC` — Max app block builders with Windows Server 2019 platform and stream.standard.small instance type
-- `L-4942E302` — Graphics G5 12xlarge streaming instances for fleets
-- `L-4BCFCB14` — Graphics G6 24xlarge streaming instances for fleets
-- `L-4ED95C84` — Graphics G5 24xlarge streaming instances for fleets
-- `L-4EFC345A` — Graphics G6 4xlarge streaming instances for image builders
-- `L-503FABB4` — Graphics G4DN 16xlarge streaming instances for fleets
-- `L-53789675` — Memory-optimized 2xlarge streaming instances for image builders
-- `L-537E304B` — Graphics G4DN 2xlarge streaming instances for image builders
-- `L-59CF7EF6` — Standard medium streaming instances for fleets
-- `L-5A310F0A` — Memory-optimized z1d xlarge streaming instances for fleets
-- `L-5A477D03` — Memory-optimized z1d 12xlarge streaming instances for image builders
-- `L-5B2F0776` — Graphics G5 xlarge streaming instances for image builders
-- `L-5D6E72E6` — Graphics G5 8xlarge streaming instances for image builders
-- `L-5E39616B` — Graphics G4DN 12xlarge streaming instances for image builders
-- `L-5F444726` — Memory-optimized z1d 3xlarge streaming instances for image builders
-- `L-5FE41F5B` — Graphics G5 xlarge streaming instances for fleets
-- `L-60244546` — Concurrent image copies per destination Region
-- `L-60424516` — Graphics G6 24xlarge streaming instances for image builders
-- `L-6203AEB6` — Compute-optimized large streaming instances for image builders
-- `L-63D777D1` — Compute-optimized large streaming instances for fleets
-- `L-64A79F98` — Graphics G4DN 12xlarge streaming instances for fleets
-- `L-6A8C9986` — Users in the user pool
-- `L-6DCFE2E7` — Graphics GR6 8xlarge streaming instances for fleets
-- `L-6FAAC3C7` — Graphics G6F 2xlarge streaming instances for fleets
-- `L-73C002B1` — Graphics G6 8xlarge streaming instances for fleets
 - `L-7549EFF1` — Graphics desktop 2xlarge streaming instances for fleets
-- `L-756CAD5B` — Graphics G5 8xlarge streaming instances for fleets
-- `L-76C589E8` — Standard large streaming instances for image builders
-- `L-76EF9A4A` — Max concurrent sessions for Elastic fleets with Amazon Linux 2 platform and stream.standard.xlarge instance type
-- `L-7F504E69` — Graphics G6 2xlarge streaming instances for fleets
-- `L-7F9576D3` — Compute-optimized xlarge streaming instances for fleets
-- `L-7FBFD97B` — Standard 2xlarge streaming instances for image builders
-- `L-7FFD9C23` — Memory-optimized large streaming instances for image builders
-- `L-80724413` — Graphics G6F large streaming instances for fleets
-- `L-80C2425D` — Max concurrent sessions for Elastic fleets with Windows Server 2019 platform and stream.standard.medium instance type
-- `L-880853F1` — Graphics G5 2xlarge streaming instances for fleets
-- `L-88E58796` — Compute-optimized 8xlarge streaming instances for image builders
-- `L-89E22A8C` — Graphics G6 12xlarge streaming instances for image builders
-- `L-8A6F32DC` — Fleets
-- `L-8BCFD092` — Standard xlarge streaming instances for fleets
-- `L-92328C81` — Graphics G4DN 4xlarge streaming instances for fleets
-- `L-93661678` — Memory-optimized z1d 2xlarge streaming instances for fleets
-- `L-94844324` — Standard large streaming instances for fleets
-- `L-94EC4C6F` — Standard small streaming instances for image builders
-- `L-9528F248` — Max concurrent sessions for Elastic fleets with Amazon Linux 2 platform and stream.standard.2xlarge instance type
-- `L-95643E6F` — Graphics G6 16xlarge streaming instances for image builders
-- `L-98A64E5D` — Graphics G4DN 2xlarge streaming instances for fleets
-- `L-99A44980` — Image sharing limit
-- `L-99B57C8C` — Memory-optimized z1d xlarge streaming instances for image builders
 - `L-9B6418E0` — Concurrent image updates
-- `L-9BBA5ECA` — Memory-optimized 4xlarge streaming instances for fleets
-- `L-A23829AD` — Graphics G5 16xlarge streaming instances for image builders
-- `L-A2EEB731` — Graphics G6F 4xlarge streaming instances for image builders
-- `L-A3782476` — Compute-optimized xlarge streaming instances for image builders
-- `L-A8B8B901` — Stacks
-- `L-AAB87D99` — Graphics G5 16xlarge streaming instances for fleets
-- `L-AAFE9A06` — Max concurrent sessions for Elastic fleets with Windows Server 2019 platform and stream.standard.2xlarge instance type
-- `L-ABD9CD0F` — Graphics G5 4xlarge streaming instances for image builders
-- `L-AD23D7D9` — Standard 2xlarge streaming instances for fleets
-- `L-B16A2AA7` — Standard medium streaming instances for image builders
-- `L-B2A2DC75` — Max concurrent sessions for Elastic fleets with Amazon Linux 2 platform and stream.standard.small instance type
-- `L-B2B43FA3` — Graphics G6F xlarge streaming instances for fleets
 - `L-B3B2E1D8` — Graphics desktop 2xlarge streaming instances for image builders
-- `L-B901F589` — Memory-optimized 2xlarge streaming instances for fleets
-- `L-BAEB3705` — Memory-optimized xlarge streaming instances for fleets
-- `L-BCE5E288` — Max concurrent sessions for Elastic fleets with Windows Server 2019 platform and stream.standard.xlarge instance type
-- `L-BE0FC3FB` — Graphics GR6 4xlarge streaming instances for image builders
-- `L-BF099F8F` — Max concurrent sessions for Elastic fleets with Amazon Linux 2 platform and stream.standard.medium instance type
-- `L-BFB3AD85` — Graphics G6 8xlarge streaming instances for image builders
-- `L-C1822B2A` — Memory-optimized z1d 12xlarge streaming instances for fleets
-- `L-C6026CF3` — Memory-optimized z1d 2xlarge streaming instances for image builders
-- `L-C862459E` — Compute-optimized 4xlarge streaming instances for image builders
-- `L-CAB64ED6` — Graphics G4DN 8xlarge streaming instances for fleets
-- `L-CE32B97D` — Graphics G6 12xlarge streaming instances for fleets
-- `L-D2CE544E` — Graphics GR6F 4xlarge streaming instances for image builders
-- `L-D56E1EB1` — Memory-optimized 4xlarge streaming instances for image builders
-- `L-D6D82AD0` — Graphics G5 12xlarge streaming instances for image builders
-- `L-DACE273F` — Graphics GR6 4xlarge streaming instances for fleets
-- `L-DDA4AD40` — Graphics G5 2xlarge streaming instances for image builders
-- `L-DE1021FB` — Memory-optimized xlarge streaming instances for image builders
-- `L-E0AF1F7E` — Graphics G4DN xlarge streaming instances for image builders
-- `L-E0AFD4FF` — Max app block builders with Windows Server 2019 platform and stream.standard.xlarge instance type
-- `L-E1182CCA` — Private images
-- `L-E1698FC4` — Graphics G6 2xlarge streaming instances for image builders
-- `L-E200E807` — Memory-optimized large streaming instances for fleets
-- `L-E98A2430` — Max app block builders with Windows Server 2019 platform and stream.standard.medium instance type
-- `L-F15148F0` — Compute-optimized 8xlarge streaming instances for fleets
-- `L-F302715A` — Standard small streaming instances for fleets
-- `L-F3D0F9E2` — Graphics G4DN 16xlarge streaming instances for image builders
-- `L-F7340B46` — Graphics G6 4xlarge streaming instances for fleets
-- `L-F7AB096E` — Graphics G6 xlarge streaming instances for image builders
-- `L-F8E20476` — Standard xlarge streaming instances for image builders
-- `L-FC27F387` — Max concurrent sessions for Elastic fleets with Windows Server 2019 platform and stream.standard.large instance type
-- `L-FE087B3F` — Max app block builders with Windows Server 2019 platform and stream.standard.2xlarge instance type
 
 ## appsync
 
-- `L-06A0647C` — All APIs - API keys per API
 - `L-10498098` — Event APIs - Rate of connections per API
 - `L-16CCBB05` — Event APIs - Publish payload size
 - `L-1BB7D45F` — All APIs - Resolvers, functions, and handlers response size
 - `L-27770490` — Event APIs - Rate of request tokens
 - `L-352DA8E7` — GraphQL APIs - Schema document size
-- `L-39784425` — Event APIs - Channel namespaces per API
-- `L-3B7F188C` — GraphQL APIs - Source API associations per Merged API
 - `L-4456C49D` — Graphql APIs - Rate of subscription invalidation requests
 - `L-4DE70025` — All APIs - Handler, resolver, and function code size
 - `L-51A37BC6` — All APIs - Number of custom domain names
@@ -403,7 +247,6 @@ Total open entries: **3203**
 - `L-69193794` — GraphQL APIs - Max Batch Size per request
 - `L-7DE80FA2` — Event APIs - Number of segments allowed in a channel
 - `L-7FC6D61A` — GraphQL APIs - Request mapping template size
-- `L-855DA767` — All APIs - Functions per pipeline resolver or handler
 - `L-97EB21C3` — GraphQL APIs - Resolvers executed in a single request
 - `L-A1B022A0` — GraphQL APIs - Rate of inbound messages per API
 - `L-A1CF8F5B` — Event APIs - Number of characters allowed in a channel segment
@@ -411,10 +254,8 @@ Total open entries: **3203**
 - `L-B6E463BF` — Event APIs - Batch size per publish request
 - `L-B94CDCB7` — GraphQL APIs - Response mapping template size
 - `L-C01DB6E6` — GraphQL APIs - Rate of connections per API
-- `L-D19E6EC4` — Event APIs - APIs per region
 - `L-D33F7C2A` — Event APIs - Rate of publish requests per client connection
 - `L-D91E563A` — Event APIs - Rate of inbound events per API
-- `L-E7CCBB11` — All APIs - Authentication providers per API
 - `L-F21064F0` — All APIs - Subscription payload size
 - `L-F643C244` — Event APIs - Rate of outbound messages per API
 - `L-FC5E46D0` — GraphQL APIs - Rate of request tokens
@@ -483,41 +324,19 @@ Total open entries: **3203**
 - `L-FC5F6546` — Active DML queries
 - `L-FE3693EE` — Burst multiplier quota for ListQueryExecutions API
 
-## autoscaling
-
-- `L-05CB8B12` — Target groups per Auto Scaling group
-- `L-1312BBBF` — Lifecycle hooks per Auto Scaling group
-- `L-6C2A2F6E` — Step adjustments per step scaling policy
-- `L-72753F6F` — Scaling policies per Auto Scaling group
-- `L-CEE5E714` — SNS topics per Auto Scaling group
-- `L-F0B00D71` — Scheduled actions per Auto Scaling group
-- `L-F786B2E5` — Classic Load Balancers per Auto Scaling group
-
-## autoscaling-plans
-
-- `L-6538FA5E` — Target tracking configurations per scaling instruction
-- `L-7FAA513E` — Scaling instructions per scaling plan
-- `L-BD401546` — Scaling plans
-
 ## backup
 
-- `L-366B61FD` — Concurrent backup jobs per resource
-- `L-9122A82F` — Versions per backup plan
 - `L-C0A8C14B` — Maximum backup nest level
 - `L-FB1D55EC` — Metadata tags per backup
-- `L-FFD6444F` — Concurrent backup copies per supported service per account
 
 ## batch
 
 - `L-0194C9AB` — Transactions per second for SubmitServiceJob
-- `L-61E3E54E` — Service environment
 - `L-65F8BA2C` — Submitted state jobs limit
 - `L-6B86CF1E` — Job payload size limit
-- `L-80D92D24` — Service environments per job queue
 - `L-A2F30F35` — Service Job serviceRequestPayload size
 - `L-AD075A76` — Job dependencies limit
 - `L-B15D0E72` — Service Job total payload size
-- `L-C997A649` — Share identifiers per job queue limit.
 - `L-E6A2743D` — Job definition size limit
 - `L-E985971C` — Transactions per second for SubmitJob limit
 - `L-F9381E33` — Maximum array size limit
@@ -539,16 +358,12 @@ Total open entries: **3203**
 - `L-0495104E` — (Knowledge Bases) User query size
 - `L-04F1DD0C` — (Prompt management) DeletePrompt requests per second
 - `L-052AA08C` — Batch inference job size (in GB) for OpenAI GPT OSS 120b
-- `L-059C1AAB` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.2 3B Instruct
 - `L-05E453B4` — GetAgentActionGroup requests per second
 - `L-067F7E01` — Batch inference input file size (in GB) for Claude 3 Sonnet
 - `L-0700C8EB` — On-demand model inference requests per minute for Meta Llama 2 13B
 - `L-072E11FC` — Records per batch inference job for Mistral Small
-- `L-07844084` — Sum of in-progress and submitted batch inference jobs using a base model for OpenAI GPT OSS 120b
 - `L-07D73971` — (Automated Reasoning) StartAutomatedReasoningPolicyTestWorkflow requests per second
-- `L-07EE48DE` — (Automated Reasoning) Variables in policy
 - `L-086556D1` — (Guardrails) On-demand ApplyGuardrail contextual grounding policy text units per second
-- `L-08D49FA4` — (Flows) Input nodes per flow
 - `L-091522BC` — (Flows) PrepareFlow requests per second
 - `L-09A792C8` — Records per batch inference job for Qwen3 32B
 - `L-0ABA0A81` — (Prompt management) CreatePromptVersion requests per second
@@ -565,26 +380,20 @@ Total open entries: **3203**
 - `L-0EA49C8E` — (Flows) CreateFlowVersion requests per second
 - `L-0EF69BEA` — Batch inference input file size (in GB) for OpenAI GPT OSS 20b
 - `L-0F052E16` — Batch inference job size (in GB) for Mistral Small
-- `L-0F2A24D7` — (Flows) Prompt nodes per flow
 - `L-0FA1782C` — Model invocation max tokens per day for OpenAI GPT OSS 20B (doubled for cross-region calls)
 - `L-1074C53D` — Model units per provisioned model for Amazon Titan Text Embeddings V2
 - `L-10AE7314` — Throttle rate limit for ListDataAutomationProjects
 - `L-10DE37DB` — GetAgentAlias requests per second
 - `L-11512E58` — On-demand model inference requests per minute for Cohere Rerank 3.5
 - `L-124DCF3D` — (Guardrails) On-demand ApplyGuardrail Denied topic policy text units per second
-- `L-1570CF9E` — Sum of in-progress and submitted batch inference jobs using a base model for Claude 3 Haiku
-- `L-15868B7E` — (Data Automation) Maximum Blueprints per Project (Images)
 - `L-166C69FA` — DeleteAgentAlias requests per second
 - `L-16E25672` — Records per batch inference job for Claude 3 Sonnet
-- `L-17987C44` — (Flows) S3 retrieval nodes per flow
 - `L-17F95AA4` — On-demand model inference tokens per minute for Cohere Command R
 - `L-185CB521` — Minimum number of records per batch inference job for Llama 3.2 3B Instruct
 - `L-1870BD3C` — Model units per provisioned model for Cohere Embed Multilingual
 - `L-19329652` — (Data Automation) Maximum number of Blueprints per Start Inference request (Videos)
 - `L-19E52681` — Batch inference job size (in GB) for Nova Lite V1
 - `L-1A69C08F` — Minimum number of records per batch inference job for Titan Multimodal Embeddings G1
-- `L-1AC1CABC` — Sum of in-progress and submitted batch inference jobs using a base model for Titan Text Embeddings V2
-- `L-1B9EB555` — (Automated Reasoning) Concurrent policy builds per account
 - `L-1C81957C` — Throttle rate limit for GetDataAutomationProject
 - `L-1CF3E033` — Batch inference input file size (in GB) for Llama 3.1 70B Instruct
 - `L-1D3E59A3` — Cross-Region model inference requests per minute for Anthropic Claude 3.5 Sonnet V2
@@ -600,14 +409,11 @@ Total open entries: **3203**
 - `L-209848DD` — (Data Automation) Maximum number of list fields per Blueprint
 - `L-20CFCD61` — On-demand model inference requests per minute for Meta Llama 3.2 1B Instruct
 - `L-21D1371E` — GetAgentKnowledgeBase requests per second
-- `L-21EE8B55` — (Data Automation) CreateBlueprintVersion - Max number of Blueprint versions per Blueprint
-- `L-220B8A25` — Sum of in-progress and submitted batch inference jobs using a base model for Claude 3.5 Haiku
 - `L-224F3DE4` — (Knowledge Bases) Files to add or update per ingestion job
 - `L-229A5DEC` — Global cross-region model inference tokens per day for Anthropic Claude Sonnet 4.5 V1 1M Context Length
 - `L-22F701C5` — Model invocation max tokens per day for Anthropic Claude Sonnet 4 V1 (doubled for cross-region calls)
 - `L-240F3183` — Model units per provisioned model for Stability.ai Stable Diffusion XL 0.8
 - `L-247B684D` — On-demand model inference tokens per minute for Meta Llama 2 70B
-- `L-24CCD302` — (Evaluation) Number of evaluation jobs
 - `L-254CACF4` — On-demand model inference requests per minute for Anthropic Claude 3.5 Sonnet
 - `L-25B50707` — On-demand model inference requests per minute for OpenAI GPT OSS 120B
 - `L-268D592E` — Model units per provisioned model for Meta Llama 2 13B
@@ -624,17 +430,12 @@ Total open entries: **3203**
 - `L-2BB465D6` — (Flows) UpdateFlow requests per second
 - `L-2BC3F4E3` — (Flows) GetFlowAlias requests per second
 - `L-2D7A58CF` — PrepareAgent requests per second
-- `L-2D84F8A3` — (Flows) Conditions per condition node
 - `L-2DC80978` — On-demand model inference requests per minute for Anthropic Claude 3 Haiku
 - `L-2EBEF050` — Model units per provisioned model for Meta Llama 2 70B
 - `L-2F9B4FC2` — On-demand model inference requests per minute for Meta Llama 3.2 3B Instruct
 - `L-2FE3C16F` — (Knowledge Bases) CreateKnowledgeBase requests per second
-- `L-31B8EB64` — (Automated Reasoning) Rules in policy
-- `L-31BC8F89` — (Knowledge Bases) Concurrent ingestion jobs per knowledge base
 - `L-31EB70D1` — Throttle rate limit for CreateBlueprint
 - `L-320F5AFC` — Batch inference job size (in GB) for Claude 3 Opus
-- `L-329D7443` — Sum of in-progress and submitted batch inference jobs using a custom model for Titan Text Embeddings V2
-- `L-32F1CE34` — (Flows) Collector nodes per flow
 - `L-32F732DE` — Model units per provisioned model for Amazon Titan Multimodal Embeddings G1
 - `L-345B029F` — (Automated Reasoning) DeleteAutomatedReasoningPolicyTestCase requests per second
 - `L-36AE5758` — (Knowledge Bases) Maximum number of files for Foundation Models as a parser
@@ -642,8 +443,6 @@ Total open entries: **3203**
 - `L-381AD9EE` — Model invocation max tokens per day for Anthropic Claude Sonnet 4.5 V1 (doubled for cross-region calls)
 - `L-3849F0B7` — On-demand model inference requests per minute for Stability.ai Stable Diffusion XL 0.8
 - `L-3875BCCF` — On-demand model inference tokens per minute for Qwen3 235B a22b 2507 V1
-- `L-39128CD1` — (Flows) Condition nodes per flow
-- `L-391478D2` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.1 8B Instruct
 - `L-39FA8DCA` — Minimum number of records per batch inference job for Nova Lite V1
 - `L-3A7ED9C0` — Batch inference job size (in GB) for Llama 3.3 70B Instruct
 - `L-3B3BFACF` — On-demand model inference requests per minute for Cohere Command
@@ -651,7 +450,6 @@ Total open entries: **3203**
 - `L-3BD2251E` — Records per batch inference job for Titan Multimodal Embeddings G1
 - `L-3C5D1B25` — Records per batch inference job for OpenAI GPT OSS 120b
 - `L-3CAACDCF` — Batch inference input file size for Titan Text Embeddings V2 (in GB)
-- `L-3CCB3548` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.2 11B Instruct
 - `L-3D8CC480` — Cross-region model inference requests per minute for Anthropic Claude 3.7 Sonnet V1
 - `L-3E961CAB` — (Data Automation) InvokeDataAutomationAsync - Audio - Max number of concurrent jobs
 - `L-3F0ECEDC` — Model units per provisioned model for AI21 Labs Jurassic-2 Ultra
@@ -675,7 +473,6 @@ Total open entries: **3203**
 - `L-4A6D2F15` — Model units per provisioned model for Anthropic Claude Instant V1 100K
 - `L-4B244563` — Minimum number of records per batch inference job for OpenAI GPT OSS 120b
 - `L-4B26E44A` — Global cross-region model inference tokens per minute for Anthropic Claude Sonnet 4.5 V1 1M Context Length
-- `L-4B4330A0` — Parameters per function
 - `L-4B9F76B0` — Cross-region model inference tokens per minute for Mistral Pixtral Large 25.02 V1
 - `L-4C35BB2A` — On-demand model inference tokens per minute for Anthropic Claude 3 Sonnet
 - `L-4C3F0FE6` — Cross-region model inference tokens per minute for Cohere Embed V4
@@ -685,25 +482,19 @@ Total open entries: **3203**
 - `L-4DBDD5C9` — (Automated Reasoning) GetAutomatedReasoningPolicy requests per second
 - `L-4E7EE0B5` — Sum of in-progress and submitted batch inference jobs using a base model for Claude 3.5 Sonnet
 - `L-4E833B8F` — On-demand model inference tokens per minute for Cohere Command
-- `L-4F4FC597` — (Guardrails) Regex entities in Sensitive Information Filter
 - `L-50C45667` — (Knowledge Bases) ListKnowledgeBaseDocuments requests per second
-- `L-50CC95A8` — Sum of in-progress and submitted batch inference jobs using a base model for OpenAI GPT OSS 20b
 - `L-50E31465` — (Data Automation) Maximum document file size (MB)
-- `L-517574A2` — (Flows) Knowledge base nodes per flow
 - `L-51B0DEE7` — Records per input file per batch inference job for Llama 3.2 90B Instruct
 - `L-51CDA0E1` — (Automated Reasoning) DeleteAutomatedReasoningPolicy requests per second
 - `L-529EC606` — (Knowledge Bases) UpdateKnowledgeBase requests per second
 - `L-534E6885` — Minimum number of records per batch inference job for Nova Micro V1
 - `L-539B5996` — Minimum number of records per batch inference job for Llama 3.2 1B Instruct
 - `L-548A1A32` — On-demand model inference requests per minute for Qwen3 235B a22b 2507 V1
-- `L-54C7BE29` — (Automated Reasoning) Tests per policy
 - `L-54CA9AAA` — (Knowledge Bases) DeleteKnowledgeBaseDocuments requests per second
-- `L-557C8C47` — (Evaluation) Number of concurrent automatic model evaluation jobs
 - `L-5594A7BA` — Batch inference job size (in GB) for OpenAI GPT OSS 20b
 - `L-559DCC33` — Cross-region model inference requests per minute for Anthropic Claude Sonnet 4 V1
 - `L-55C9AD31` — Throttle rate limit for ListBlueprints
 - `L-5618D36B` — (Guardrails) Contextual grounding query length in text units
-- `L-564C017C` — Sum of in-progress and submitted batch inference jobs using a base model for Nova Micro V1
 - `L-5755FAB6` — (Guardrails) On-demand ApplyGuardrail Denied topic policy text units per second (standard)
 - `L-57DC56A1` — Records per batch inference job for Nova Micro V1
 - `L-5818283A` — Minimum number of records per batch inference job for Qwen3 Coder 480B
@@ -712,26 +503,20 @@ Total open entries: **3203**
 - `L-5A222661` — (Model customization) Sum of training and validation records for a Meta Llama 2 70B v1 Fine-tuning job
 - `L-5AB0EE48` — Records per input file per batch inference job for Claude 3.5 Sonnet
 - `L-5BF45557` — Minimum number of records per batch inference job for Llama 3.2 11B Instruct
-- `L-5C48945B` — Sum of in-progress and submitted batch inference jobs using a base model for Qwen3 235B
 - `L-5CBDB5BC` — Batch inference input file size (in GB) for Claude 3.5 Sonnet v2
 - `L-5D07A961` — Minimum number of records per batch inference job for OpenAI GPT OSS 20b
-- `L-5D367E5C` — Sum of in-progress and submitted batch inference jobs using a base model for Mistral Large 2 (24.07)
 - `L-5DD391B1` — (Automated Reasoning) ListAutomatedReasoningPolicyTestCases requests per second
 - `L-5DF13F64` — Cross-region model inference tokens per minute for Anthropic Claude 3 Sonnet
 - `L-5E04C7E2` — (Knowledge Bases) ListDataSources requests per second
 - `L-5E29F315` — Model units per provisioned model for Cohere Command
 - `L-5EBE3E09` — (Knowledge Bases) CreateDataSource requests per second
-- `L-5F098EFA` — Concurrent model import jobs
 - `L-6120CF2D` — Model invocation max tokens per day for Anthropic Claude Haiku 4.5 (doubled for cross-region calls)
 - `L-616A3F5B` — Cross-region model inference requests per minute for Anthropic Claude 3 Haiku
-- `L-61D10141` — (Evaluation) Number of models in a model evaluation job that uses human workers
 - `L-6284B54D` — Batch inference job size (in GB) for Claude 3.5 Sonnet
 - `L-62A27283` — Throttle rate limit for CreateBlueprintVersion
-- `L-62E2A345` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.1 70B Instruct
 - `L-6326A422` — (Automated Reasoning) CreateAutomatedReasoningPolicy requests per second
 - `L-640FAA80` — (Data Automation) Description length for fields (Characters)
 - `L-642905B5` — Records per input file per batch inference job for Claude 3 Opus
-- `L-652C224A` — Sum of in-progress and submitted batch inference jobs using a custom model for Titan Multimodal Embeddings G1
 - `L-66EE6E0B` — On-demand model inference requests per minute for Qwen3 Coder 30B a3b V1
 - `L-674F42D5` — Cross-region model inference requests per minute for Mistral Pixtral Large 25.02 V1
 - `L-674F621D` — On-demand model inference requests per minute for Meta Llama 2 Chat 13B
@@ -743,14 +528,11 @@ Total open entries: **3203**
 - `L-6B20E60F` — DeleteAgentVersion requests per second
 - `L-6B2DA87E` — APIs per Agent
 - `L-6B3D3DE4` — (Guardrails) On-demand ApplyGuardrail Content filter policy text units per second (standard)
-- `L-6BF35027` — (Data Automation) Maximum Blueprints per Project (Audios)
 - `L-6C3B9A50` — (Knowledge Bases) ListIngestionJobs requests per second
-- `L-6CA39F00` — (Guardrails) Topics per guardrail
 - `L-6DB35E51` — On-demand model inference tokens per minute for Meta Llama 2 Chat 13B
 - `L-6E3CDA2D` — Characters in Agent instructions
 - `L-6E888CC2` — Cross-region model inference tokens per minute for Anthropic Claude 3.7 Sonnet V1
 - `L-6EBFEB27` — Records per batch inference job for Claude 3.5 Sonnet v2
-- `L-6F08AA6D` — (Guardrails) Regex length in characters
 - `L-6F139B4D` — (Guardrails) Contextual grounding response length in text units
 - `L-6F14193C` — On-demand model inference tokens per minute for Meta Llama 3.2 1B Instruct
 - `L-6F2B2616` — Minimum number of records per batch inference job for Titan Text Embeddings V2
@@ -765,7 +547,6 @@ Total open entries: **3203**
 - `L-7334E629` — (Automated Reasoning) CancelAutomatedReasoningPolicyBuildWorkflow requests per second
 - `L-73573F44` — Model units per provisioned model for Anthropic Claude V2 18K
 - `L-737CE37C` — (Flows) CreateFlowAlias requests per second
-- `L-7380B9B2` — (Advanced Prompt Optimization) Active jobs per account
 - `L-73ACE256` — (Flows) ListFlowVersions requests per second
 - `L-73BBA086` — (Model customization) Sum of training and validation records for a Titan Image Generator G1 V1 Fine-tuning job
 - `L-7478F443` — Model units per provisioned model for Anthropic Claude V2.1 18K
@@ -774,63 +555,47 @@ Total open entries: **3203**
 - `L-75D9A33A` — On-demand model inference requests per minute for AI21 Labs Jurassic-2 Mid
 - `L-77854CA1` — (Knowledge Bases) Files to delete per ingestion job
 - `L-77C372BE` — (Flows) GetFlowVersion requests per second
-- `L-77D5E75F` — Endpoints per inference profile
-- `L-7847F21F` — (Flows) S3 storage nodes per flow
 - `L-79301C5B` — Batch inference job size (in GB) for Claude 3 Haiku
-- `L-795A8608` — (Knowledge Bases) Concurrent ingestion jobs per account
 - `L-795ADAB0` — Global cross-region model inference tokens per day for Cohere Embed V4
 - `L-79BA683B` — (Model customization) Sum of training and validation records for a Titan Text G1 - Express v1 Fine-tuning job
-- `L-79EFF176` — Sum of in-progress and submitted batch inference jobs using a base model for Claude Sonnet 4
 - `L-7C42E72A` — Cross-region model inference tokens per minute for Amazon Nova Lite
 - `L-7C4CB0BA` — (Automated Reasoning) Annotations in policy
 - `L-7D24C2A2` — (Prompt management) GetPrompt requests per second
 - `L-7D9F04A9` — (Automated Reasoning) GetAutomatedReasoningPolicyTestCase requests per second
 - `L-7DBB06FD` — On-demand model inference requests per minute for Amazon Titan Image Generator G1
-- `L-7F2C6F33` — Sum of in-progress and submitted batch inference jobs using a base model for Titan Multimodal Embeddings G1
 - `L-7F512C61` — Throttle rate limit for GetBlueprint
 - `L-8111AFAC` — Batch inference input file size (in GB) for Llama 3.2 3B Instruct
 - `L-8129BF10` — Model units per provisioned model for Amazon Titan Text G1 - Express 8K
-- `L-8175E285` — (Flows) Inline code nodes per flow
 - `L-81E26054` — Records per input file per batch inference job for Titan Multimodal Embeddings G1
-- `L-81F241B6` — (Guardrails) Automated Reasoning policies per guardrail
 - `L-829AE0B9` — (Data Automation) Maximum image file size (MB)
-- `L-83504243` — (Automated Reasoning) Versions per policy
-- `L-83D7FD1C` — (Flows) Agent nodes per flow
 - `L-83FDDF24` — DeleteAgentActionGroup requests per second
 - `L-8453046B` — (Knowledge Bases) UpdateDataSource requests per second
-- `L-85DABFD4` — (Guardrails) Words per word policy
 - `L-8651ED26` — Records per input file per batch inference job for Llama 3.1 405B Instruct
 - `L-871FF812` — UpdateAgentAlias requests per second
 - `L-87482B04` — Minimum number of records per batch inference job for Llama 3.1 8B Instruct
 - `L-879F6850` — On-demand model inference requests per minute for Amazon Titan Text Embeddings
-- `L-87CD099E` — Sum of in-progress and submitted batch inference jobs using a base model for Qwen3 32B
 - `L-87E3FFAC` — (Flows) GetFlow requests per second
 - `L-884C068A` — (Automated Reasoning) ListAutomatedReasoningPolicyBuildWorkflows requests per second
 - `L-89197AE6` — Records per batch inference job for Nova Pro V1
 - `L-893F8BF9` — (Guardrails) Contextual grounding source length in text units
 - `L-895C7A6C` — (Data Automation) InvokeDataAutomationAsync - Video - Max number of concurrent jobs
 - `L-897F8151` — Records per input file per batch inference job for Claude 3.5 Sonnet v2
-- `L-89923E2C` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.2 90B Instruct
 - `L-89F8391A` — Cross-region model inference requests per minute for Amazon Nova Lite
 - `L-8A686BB7` — (Automated Reasoning) GetAutomatedReasoningPolicyTestResult requests per second
 - `L-8A6B31EE` — Records per batch inference job for Claude Sonnet 4
-- `L-8AB6E28F` — (Evaluation) Number of models in automated model evaluation job
 - `L-8AF2815B` — (Data Automation) Maximum Number of pages per document
 - `L-8B216E37` — Records per input file per batch inference job for Qwen3 Coder 30B
 - `L-8CB739C8` — Records per input file per batch inference job for Qwen3 Coder 480B
-- `L-8CC57EDA` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.2 1B Instruct
 - `L-8CE99163` — On-demand model inference tokens per minute for Anthropic Claude 3 Haiku
 - `L-8CEDED9C` — On-demand model inference requests per minute for Anthropic Claude Instant
 - `L-8D07E980` — Records per batch inference job for Llama 3.1 70B Instruct
 - `L-8D4EA85C` — Batch inference job size (in GB) for Llama 3.2 11B Instruct
 - `L-8D4ED20B` — (Knowledge Bases) Concurrent IngestKnowledgeBaseDocuments and DeleteKnowledgeBaseDocuments requests per account
-- `L-8DBDC30B` — (Flows) Lex nodes per flow
 - `L-8E129B28` — Batch inference input file size (in GB) for Llama 3.2 11B Instruct
 - `L-8E63548F` — UpdateAgentKnowledgeBase requests per second
 - `L-8EA73537` — Cross-region model inference tokens per minute for Anthropic Claude Sonnet 4.5 V1 1M Context Length
 - `L-8F302008` — Batch inference job size (in GB) for Llama 3.1 8B Instruct
 - `L-9072D6F0` — (Guardrails) On-demand ApplyGuardrail requests per second
-- `L-908FAEE3` — (Automated Reasoning) Concurrent builds per policy
 - `L-9149A536` — Model units per provisioned model for Stability.ai Stable Diffusion XL 1.0
 - `L-91554672` — (Model customization) Sum of training and validation records for a Titan Text G1 - Lite v1 Continued Pre-Training job
 - `L-916C9264` — Records per batch inference job for Nova Lite V1
@@ -842,18 +607,14 @@ Total open entries: **3203**
 - `L-95CACD43` — Records per batch inference job for Llama 3.2 11B Instruct
 - `L-9602E0D9` — (Flows) CreateFlow requests per second
 - `L-963BB4DE` — Throttle rate limit for Bedrock Data Automation: ListTagsForResource
-- `L-973C31D1` — (Evaluation) Number of concurrent model evaluation jobs that use human workers
 - `L-97A8CC77` — Model units per provisioned model for Cohere Embed English
 - `L-982DE2DB` — Records per batch inference job for Llama 3.2 3B Instruct
-- `L-986C4672` — (Advanced Prompt Optimization) Inactive jobs per account
 - `L-987117C6` — ListAgentVersions requests per second
 - `L-987C98F5` — Batch inference job size (in GB) for Claude 3.5 Haiku
 - `L-99105855` — (Data Automation) Minimum Audio Sample Rate (Hz)
 - `L-99471E7A` — (Automated Reasoning) ListAutomatedReasoningPolicies requests per second
 - `L-995BEC0E` — (Knowledge Bases) IngestKnowledgeBaseDocuments total payload size
 - `L-99AE898F` — (Knowledge Bases) DeleteDataSource requests per second
-- `L-99EDA841` — (Guardrails) Example phrases per Topic
-- `L-9A0F509C` — Sum of in-progress and submitted batch inference jobs using a base model for Claude 3 Opus
 - `L-9A11C666` — Global cross-region model inference tokens per minute for Anthropic Claude Haiku 4.5
 - `L-9B17C979` — (Automated Reasoning) ExportAutomatedReasoningPolicyVersion requests per second
 - `L-9B651738` — Records per input file per batch inference job for Nova Pro V1
@@ -874,7 +635,6 @@ Total open entries: **3203**
 - `L-9F13DDE7` — Batch inference input file size (in GB) for Mistral Large 2 (24.07)
 - `L-9F4DB459` — (Guardrails) On-demand ApplyGuardrail Word filter policy text units per second
 - `L-A052927A` — Cross-region model inference requests per minute for Anthropic Claude Sonnet 4.5 V1 1M Context Length
-- `L-A0AAB785` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.1 405B Instruct
 - `L-A115DE95` — Model invocation max tokens per day for Qwen3 32B V1 (doubled for cross-region calls)
 - `L-A12FFE89` — (Automated Reasoning) Source document size (MB)
 - `L-A21CC341` — (Knowledge Bases) ListKnowledgeBases requests per second
@@ -894,10 +654,7 @@ Total open entries: **3203**
 - `L-A7382519` — Batch inference input file size for Qwen3 Coder 30B (in GB)
 - `L-A7EDC29B` — On-demand model inference tokens per minute for Meta Llama 3.2 3B Instruct
 - `L-A83ECA24` — Batch inference job size (in GB) for Mistral Large 2 (24.07)
-- `L-A938DC68` — (Data Automation) Maximum Blueprints per Project (Documents)
 - `L-A985813D` — Records per input file per batch inference job for Claude 3.7 Sonnet
-- `L-A986092E` — Sum of in-progress and submitted batch inference jobs using a base model for Mistral Small
-- `L-A9C9E017` — (Flows) Lambda function nodes per flow
 - `L-AA411D03` — Records per batch inference job for Llama 3.1 405B Instruct
 - `L-AAB0080F` — On-demand model inference requests per minute for Amazon Rerank 1.0
 - `L-AAC5F6D6` — Records per batch inference job for Titan Text Embeddings V2
@@ -919,7 +676,6 @@ Total open entries: **3203**
 - `L-B2ADD004` — Batch inference job size (in GB) for Llama 3.1 70B Instruct
 - `L-B46AC24C` — (Knowledge Bases) GetKnowledgeBase requests per second
 - `L-B48488BD` — Minimum number of records per batch inference job for Claude 3.5 Haiku
-- `L-B536331C` — (Flows) Iterator nodes per flow
 - `L-B5C049AE` — Global cross-region model inference tokens per day for Anthropic Claude Haiku 4.5
 - `L-B63536E3` — On-demand model inference tokens per minute for Cohere Command Light
 - `L-B688EFA5` — Batch inference input file size (in GB) for Claude 3.5 Haiku
@@ -943,7 +699,6 @@ Total open entries: **3203**
 - `L-BD343E2A` — (Data Automation) Maximum number of Blueprints per Start Inference request (Audios)
 - `L-BD9FDA6F` — Cross-region model inference tokens per minute for Meta Llama 3.2 1B Instruct
 - `L-BDD176EF` — (Data Automation) InvokeDataAutomationAsync - Image - Max number of concurrent jobs
-- `L-BE77399C` — Model units no-commitment Provisioned Throughputs across custom models
 - `L-BEAE3E04` — Batch inference input file size for Qwen3 Coder 480B (in GB)
 - `L-BF8FAABD` — Records per input file per batch inference job for Qwen3 32B
 - `L-BFA0FE84` — Minimum number of records per batch inference job for Claude 3.7 Sonnet
@@ -959,7 +714,6 @@ Total open entries: **3203**
 - `L-C4522D0D` — Model units per provisioned model for Anthropic Claude V2 100K
 - `L-C479D0A2` — ListAgentAliases requests per second
 - `L-C482C4CA` — GetAgentVersion requests per second
-- `L-C4A2EDC7` — (Automated Reasoning) Values per type in policy
 - `L-C549AE85` — Model units per provisioned model for Cohere Command R Plus
 - `L-C5913DD6` — (Automated Reasoning) CreateAutomatedReasoningPolicyVersion requests per second
 - `L-C68D8E7F` — DeleteAgent requests per second
@@ -972,7 +726,6 @@ Total open entries: **3203**
 - `L-CBAEEDF6` — Batch inference input file size (in GB) for Llama 3.3 70B Instruct
 - `L-CC58F0A8` — On-demand model inference requests per minute for Stability.ai Stable Diffusion XL 1.0
 - `L-CCA5DF70` — Cross-region model inference requests per minute for Anthropic Claude Haiku 4.5
-- `L-CCB99FFA` — (Flows) Output nodes per flow
 - `L-CD43D76B` — (Data Automation) Minimum audio length (Miliseconds)
 - `L-CDD9DC4A` — (Model customization) Sum of training and validation records for a Titan Text G1 - Express v1 Continued Pre-Training job
 - `L-CF987B82` — (Knowledge Bases) GenerateQuery requests per second
@@ -984,9 +737,6 @@ Total open entries: **3203**
 - `L-D19DD0CE` — (Flows) ListFlows requests per second
 - `L-D30E6B4B` — Records per input file per batch inference job for Llama 3.2 11B Instruct
 - `L-D32CEBC2` — Batch inference input file size (in GB) for Mistral Small
-- `L-D38407FA` — (Knowledge Bases) Concurrent ingestion jobs per data source
-- `L-D3894D44` — (Data Automation) Maximum JSON Blueprint Size (Characters)
-- `L-D471AEAB` — (Guardrails) Versions per guardrail
 - `L-D4C72CE2` — Minimum number of records per batch inference job for Llama 3.2 90B Instruct
 - `L-D50EA4E4` — Batch inference job size (in GB) for Llama 3.1 405B Instruct
 - `L-D56DF585` — Records per input file per batch inference job for Nova Micro V1
@@ -1001,20 +751,16 @@ Total open entries: **3203**
 - `L-DE24F5BC` — (Prompt management) ListPrompts requests per second
 - `L-DE641971` — On-demand model inference tokens per minute for Amazon Titan Text Embeddings V2
 - `L-DF0E34D4` — On-demand model inference requests per minute for Amazon Titan Multimodal Embeddings G1
-- `L-DF49A520` — (Guardrails) Word length in characters
 - `L-DF85B2D2` — Throttle rate limit for UpdateBlueprint
 - `L-DFDD7036` — Records per batch inference job for Qwen3 Coder 30B
 - `L-E038D932` — Records per input file per batch inference job for Llama 3.1 70B Instruct
 - `L-E06E7FD6` — Minimum number of records per batch inference job for Llama 3.3 70B Instruct
 - `L-E107194C` — Model invocation max tokens per day for Anthropic Claude Sonnet 4.5 V1 1M Context Length (doubled for cross-region calls)
 - `L-E14A4A4C` — CreateAgentAlias requests per second
-- `L-E211B5EA` — (Flows) Total nodes per flow
 - `L-E293C7C7` — Records per batch inference job for Llama 3.3 70B Instruct
-- `L-E2ED42E6` — Sum of in-progress and submitted batch inference jobs using a base model for Nova Lite V1
 - `L-E31283B0` — Batch inference job size (in GB) for Claude Sonnet 4
 - `L-E428575E` — (Knowledge Bases) StartIngestionJob requests per second
 - `L-E432BE02` — (Evaluation) Task time for workers
-- `L-E455959C` — Sum of in-progress and submitted batch inference jobs using a base model for Claude 3.7 Sonnet
 - `L-E4D5D109` — Model invocation max tokens per day for Qwen3 235B a22b 2507 V1 (doubled for cross-region calls)
 - `L-E5084BBA` — Global cross-region model inference requests per minute for Anthropic Claude Haiku 4.5
 - `L-E5418429` — Batch inference input file size for DeepSeek v3 (in GB)
@@ -1023,14 +769,12 @@ Total open entries: **3203**
 - `L-E855A326` — Batch inference input file size (in GB) for OpenAI GPT OSS 120b
 - `L-E880C759` — On-demand model inference requests per minute for Qwen3 32B V1
 - `L-E8FA49DB` — Records per batch inference job for Claude 3 Opus
-- `L-E939CCA4` — (Evaluation) Number of custom prompt datasets in a human-based model evaluation job
 - `L-E93C745B` — Records per input file per batch inference job for Claude 3 Sonnet
 - `L-E953E4AB` — Model units per provisioned model for Meta Llama 2 Chat 70B
 - `L-E9AF2411` — DisassociateAgentKnowledgeBase requests per second
 - `L-EA319DB4` — Records per input file per batch inference job for DeepSeek v3
 - `L-EAA9E7C9` — (Data Automation) Maximum number of Blueprints per Start Inference request (Documents)
 - `L-EAD257E4` — (Automated Reasoning) GetAutomatedReasoningPolicyNextScenario requests per second
-- `L-EAFCD549` — Agent Collaborators per Agent
 - `L-EB8C1F30` — Cross-region model inference requests per minute for Cohere Embed V4
 - `L-EBB72C32` — Records per input file per batch inference job for Claude 3 Haiku
 - `L-ED46B8C5` — Cross-region model inference requests per minute for Amazon Nova Pro
@@ -1038,13 +782,11 @@ Total open entries: **3203**
 - `L-EF804815` — Records per input file per batch inference job for OpenAI GPT OSS 20b
 - `L-F0D0E0B9` — (Knowledge Bases) Retrieve requests per second
 - `L-F12318F0` — Minimum number of records per batch inference job for Mistral Large 2 (24.07)
-- `L-F1613626` — (Flows) Flow executions per account
 - `L-F1BB08BB` — Model invocation max tokens per day for Cohere Embed V4 (doubled for cross-region calls)
 - `L-F20FBC17` — (Automated Reasoning) DeleteAutomatedReasoningPolicyBuildWorkflow requests per second
 - `L-F2469446` — Model units per provisioned model for Cohere Command R
 - `L-F2DCFA42` — (Automated Reasoning) UpdateAutomatedReasoningPolicyAnnotations requests per second
 - `L-F2E6F90D` — Records per input file per batch inference job for Llama 3.2 3B Instruct
-- `L-F32E9946` — (Automated Reasoning) Types per policy
 - `L-F361DF0F` — Records per batch inference job for OpenAI GPT OSS 20b
 - `L-F36E54E0` — Batch inference input file size (in GB) for Nova Micro V1
 - `L-F3A3096C` — Batch inference input file size (in GB) for Llama 3.1 8B Instruct
@@ -1056,7 +798,6 @@ Total open entries: **3203**
 - `L-F4DDD3EB` — Cross-region model inference tokens per minute for Anthropic Claude Sonnet 4.5 V1
 - `L-F5353579` — (Automated Reasoning) Source document tokens
 - `L-F5ACA0A6` — (Automated Reasoning) CreateAutomatedReasoningPolicyTestCase requests per second
-- `L-F5FD68DB` — (Data Automation) Maximum Blueprints per Project (Videos)
 - `L-F60B56CC` — Batch inference input file size (in GB) for Nova Lite V1
 - `L-F611997D` — Batch inference input file size (in GB) for Claude Sonnet 4
 - `L-F63AB5A7` — (Knowledge Bases) GetKnowledgeBaseDocuments requests per second
@@ -1073,18 +814,10 @@ Total open entries: **3203**
 - `L-FA06C205` — Records per batch inference job for Llama 3.1 8B Instruct
 - `L-FA9A1EBB` — Minimum number of records per batch inference job for Claude 3 Opus
 - `L-FABEE48F` — Records per batch inference job for Claude 3.7 Sonnet
-- `L-FAF1E3E4` — (Evaluation) Number of metrics per dataset
-- `L-FBBE47CA` — (Prompt management) Versions per prompt
 - `L-FC4A46BE` — Throttle rate limit for GetDataAutomationStatus
 - `L-FC6C0CDB` — (Flows) DeleteFlowVersion requests per second
-- `L-FD0CC292` — (Evaluation) Number of datasets per job
 - `L-FD938632` — On-demand model inference requests per minute for Mistral Mixtral 8x7b Instruct
-- `L-FDA23835` — (Evaluation) Number of custom metrics
-- `L-FE130012` — Sum of in-progress and submitted batch inference jobs using a base model for Nova Pro V1
-- `L-FE24F76E` — Sum of in-progress and submitted batch inference jobs using a base model for Llama 3.3 70B Instruct
-- `L-FE44174A` — Model units no-commitment Provisioned Throughputs across base models
 - `L-FE6BC3E4` — Minimum number of records per batch inference job for Claude 3 Sonnet
-- `L-FEA282F8` — Sum of in-progress and submitted batch inference jobs using a base model for Qwen3 Coder 30B
 - `L-FEE1DCB6` — On-demand model inference tokens per minute for Cohere Command R Plus
 - `L-FF73AE42` — Records per batch inference job for Llama 3.2 1B Instruct
 - `L-FF8B4E28` — Cross-Region model inference tokens per minute for Anthropic Claude 3.5 Sonnet V2
@@ -1092,21 +825,15 @@ Total open entries: **3203**
 
 ## bedrock-agentcore
 
-- `L-01F2EA4D` — Built-in summary strategy types per memory
 - `L-180EDCA2` — Rate of GetEvent requests
 - `L-1D35AE05` — Message size
 - `L-1D9B7520` — Rate of DeleteEvent requests
-- `L-2E13D7FD` — Workload identities
-- `L-431051DC` — Resource OAuth2 credential providers
 - `L-57F6BA66` — Rate of DeleteMemory requests
 - `L-59AF2B24` — Rate of CreateEvent requests
 - `L-5F98329B` — Rate of GetMemoryRecord requests
-- `L-694AAA61` — Built-in semantic strategy types per memory
-- `L-70CA6545` — Built-in user preferences strategy types per memory
 - `L-7EA1F1FC` — Rate of UpdateMemory requests
 - `L-801A491D` — Rate of BatchDeleteMemoryRecords requests
 - `L-80B4FBA5` — Rate of ListMemoryRecords requests
-- `L-81002DCC` — Memories
 - `L-82C17831` — Rate of ListMemories requests
 - `L-890C813A` — Rate of BatchCreateMemoryRecords requests
 - `L-898013A7` — Messages per event
@@ -1117,14 +844,11 @@ Total open entries: **3203**
 - `L-A37DB4C7` — Rate of CreateEvent requests per actor per session not including conversational payloads
 - `L-A73B53F2` — Rate of DeleteMemoryRecord requests
 - `L-AD5A1610` — Rate of ListActors requests
-- `L-B04D9A86` — Resource API key credential providers
 - `L-BC0EE484` — Rate of CreateEvent requests per actor per session including conversational payloads
 - `L-C4725965` — Rate of ListEvents requests
 - `L-E3D6644C` — Tokens per minute for long-term memory extraction
-- `L-EAB901C0` — Memory strategies per memory
 - `L-EB2B5C4A` — Rate of RetrieveMemoryRecords requests
 - `L-EC8EB7A6` — Rate of GetMemory requests
-- `L-F83DDFE4` — Memory strategies per account
 
 ## cases
 
@@ -1152,7 +876,6 @@ Total open entries: **3203**
 - `L-5462CD7A` — PutCaseEventConfiguration rate quota
 - `L-55E43513` — ListCaseRules burst quota
 - `L-5A125C02` — CreateRelatedItem burst quota
-- `L-5B5E62BD` — Case fields per layout
 - `L-5E8805C5` — SearchRelatedItems burst quota
 - `L-6363E76B` — GetCaseAuditEvents rate quota
 - `L-648204D1` — BatchGetCaseRule burst quota
@@ -1167,14 +890,12 @@ Total open entries: **3203**
 - `L-8AA97C3E` — GetTemplate rate quota
 - `L-8B6DA341` — GetCase rate quota
 - `L-8FEA710A` — CreateCase rate quota
-- `L-930905B5` — Attached files per case
 - `L-960AA7D7` — ListLayouts burst quota
 - `L-97677C0C` — ListDomains rate quota
 - `L-9B7552E3` — GetDomain burst quota
 - `L-9BEF063B` — CreateDomain rate quota
 - `L-A246B577` — ListCasesForContact rate quota
 - `L-A298B896` — BatchPutFieldOptions burst quota
-- `L-A7158118` — Attached SLAs per case
 - `L-A96CA735` — UpdateField burst quota
 - `L-AA3996A0` — SearchCases rate quota
 - `L-AE0F3125` — UntagResource burst quota
@@ -1185,17 +906,13 @@ Total open entries: **3203**
 - `L-B5E6891E` — UpdateCaseRule burst quota
 - `L-B7E2C410` — ListFieldOptions rate quota
 - `L-C0E6C678` — TagResource rate quota
-- `L-C1AF8D37` — Related items per case
-- `L-C5B69356` — Fields per domain
 - `L-CC009CC4` — UpdateField rate quota
-- `L-D0ED993F` — Layouts per domain
 - `L-D3F1EBFD` — BatchGetField burst quota
 - `L-D4F270D6` — PutCaseEventConfiguration burst quota
 - `L-D69B27B2` — GetCaseEventConfiguration rate quota
 - `L-D69D3749` — UpdateLayout rate quota
 - `L-D750A577` — ListFields rate quota
 - `L-E017C84B` — DeleteCaseRule burst quota
-- `L-E52A0E46` — Field options per field
 - `L-E5EE4EDA` — GetLayout rate quota
 - `L-E77680D7` — CreateTemplate burst quota
 - `L-F4DAA62B` — CreateField burst quota
@@ -1226,7 +943,6 @@ Total open entries: **3203**
 
 ## chime
 
-- `L-0222B40A` — Amazon Chime SDK Identity - Maximum AppInstances per AWS Account
 - `L-06A9F29A` — Amazon Chime SDK Messaging - DescribeChannel API requests per second
 - `L-06F4BAB8` — Amazon Chime SDK Messaging - ListChannelMembershipsForAppInstanceUser API requests per second
 - `L-0A68E24C` — Amazon Chime SDK Identity - AppInstance API requests per second
@@ -1243,7 +959,6 @@ Total open entries: **3203**
 - `L-37BA0833` — Amazon  Chime SDK meetings - ListAttendees API rate in requests per second
 - `L-37E67822` — Amazon Chime SDK Messaging - ListChannelMessages API requests per second
 - `L-398B2BD6` — Amazon Chime SDK meetings - DeleteAttendee API burst rate in requests per second
-- `L-39BCA56C` — Amazon Chime SDK Identity - Maximum AppInstanceUserEndpoints per AppInstanceUser
 - `L-3BB10AA7` — Amazon Chime SDK meetings - TagResource API rate in requests per second
 - `L-3C5ED081` — Amazon Chime SDK Identity - DescribeAppInstance API requests per second
 - `L-3CC08C2F` — Amazon Chime SDK meetings - UpdateAttendeeCapabilities API rate in requests per second
@@ -1257,7 +972,6 @@ Total open entries: **3203**
 - `L-58F5D62D` — Amazon Chime SDK meetings - GetMeeting API burst rate in requests per second
 - `L-5F1ABF39` — Amazon Chime SDK meetings - CreateMeetingWithAttendees API rate in requests per second
 - `L-63907FE3` — Amazon Chime SDK meetings - All meeting management API burst rate in requests per second
-- `L-668D1758` — Amazon Chime SDK call analytics - Maximum configurations
 - `L-674630CB` — Amazon Chime SDK meetings - UpdateAttendeeCapabilities API burst rate in requests per second
 - `L-6B38EB2F` — Amazon Chime SDK meetings - CreateAttendee API burst rate in requests per second
 - `L-6FAB55D2` — Amazon Chime SDK meetings - GetMeeting API rate in requests per second
@@ -1267,19 +981,13 @@ Total open entries: **3203**
 - `L-793B6D9C` — Amazon Chime SDK meetings - ListMeetings API rate in requests per second
 - `L-7B4DA565` — Amazon Chime SDK meetings - BatchCreateAttendees API rate in requests per second
 - `L-7CE8F2DD` — Amazon Chime SDK Messaging - Maximum ChannelMemberships in CHANNEL_DETAILS events for prefetch
-- `L-7F583998` — Amazon Chime SDK media pipeline - Maximum pipelines
 - `L-8013F35C` — Amazon Chime SDK SIP trunking and voice - Voice Connector Active Call Limit
 - `L-804108DA` — Amazon Chime SDK media pipeline - API rate
-- `L-83E6B280` — Amazon Chime SDK media pipeline - Maximum Amazon Kinesis Video Stream pools
 - `L-8A6E3C7B` — Amazon Chime SDK meetings - CreateMeeting API rate in requests per second
-- `L-8BA4EAA6` — Amazon Chime SDK SIP trunking and voice - SIP media applications per SIP rule
-- `L-8EE806B4` — Amazon Chime SDK SIP trunking and voice - Voice Connectors
 - `L-91426809` — Amazon Chime SDK meetings - CreateMeetingWithAttendees API burst rate in requests per second
 - `L-98193B78` — Amazon Chime SDK meetings - BatchCreateAttendees API burst rate in requests per second
 - `L-9A2511FF` — Amazon Chime SDK Messaging - Maximum ChannelMemberships per Channel
-- `L-9A7ECB60` — Amazon Chime SDK Identity - Maximum AppInstanceUserAdmins per AppInstance
 - `L-9B0D42EC` — Amazon Chime SDK Messaging - Requests per second of create or delete channel memberships, bans, and moderators for a specific channel
-- `L-9DD490AB` — Amazon Chime SDK SIP trunking and voice - SIP media applications
 - `L-9F286451` — Amazon Chime SDK meetings - Concurrent meeting quota
 - `L-A42FC7C2` — Amazon Chime SDK meetings - DeleteMeeting API burst rate in requests per second
 - `L-A92E8EF9` — Amazon Chime SDK Messaging - AppInstanceUser API requests per second
@@ -1293,13 +1001,9 @@ Total open entries: **3203**
 - `L-BB2EEB39` — Amazon Chime SDK Messaging - GetChannelMessage API requests per second
 - `L-C115F428` — Amazon Chime SDK SIP trunking and voice - CreateSipMediaApplicationCall API rate limit
 - `L-C875D9AA` — Amazon Chime SDK meetings - ListAttendees API burst rate in requests per second
-- `L-CA0C986A` — Amazon Chime SDK Messaging - Maximum ChannelProcessors per ChannelFlow
 - `L-CF24303F` — Amazon Chime SDK call analytics - API rate
-- `L-D1550AB5` — Amazon Chime SDK Messaging - Maximum ChannelFlows per AppInstance
-- `L-D54E9933` — Amazon Chime SDK Identity - Maximum AppInstanceUsers per AppInstance
 - `L-D99DAB65` — Amazon Chime SDK Identity - AppInstanceUser API requests per second
 - `L-DA021F73` — Amazon Chime SDK meetings - TagResource API burst rate in requests per second
-- `L-DA073F3A` — Amazon Chime SDK call analytics - Maximum pipelines
 - `L-E79A53C7` — Amazon Chime SDK meetings - ListTagsForResource API rate in requests per second
 - `L-E8D9FB57` — Amazon Chime SDK Messaging - ListChannelsModeratedByAppInstanceUser API requests per second
 - `L-E95601F2` — Amazon Chime SDK Messaging - Maximum CHANNEL_DETAILS events for prefetch
@@ -1333,7 +1037,6 @@ Total open entries: **3203**
 - `L-37644F21` — Rate of DeletePrivacyBudgetTemplate requests
 - `L-39FE5CA0` — Rate of UpdateConfiguredTableAnalysisRule requests
 - `L-3CFEE53C` — Rate of ListCollaborationAnalysisTemplates requests
-- `L-40165B7B` — Concurrent SQL queries per account
 - `L-422E468C` — Rate of UpdateProtectedQuery requests
 - `L-43C36E0F` — Rate of UpdateAnalysisTemplate requests
 - `L-43DCB767` — Rate of UpdateConfiguredAudienceModelAssociation requests
@@ -1363,7 +1066,6 @@ Total open entries: **3203**
 - `L-804ACCF8` — Rate of GetCollaborationIdNamespaceAssociation requests
 - `L-80DB73D7` — Rate of DeleteMembership requests
 - `L-82F4A89C` — Rate of ListCollaborationConfiguredAudienceModelAssociations requests
-- `L-844B7ECC` — Concurrent ongoing job per membership
 - `L-84D87AAE` — Rate of GetIdMappingTable requests
 - `L-88914C24` — Rate of DeleteConfiguredTableAssociation requests
 - `L-8B32F74B` — Rate of GetCollaborationAnalysisTemplate requests
@@ -1376,7 +1078,6 @@ Total open entries: **3203**
 - `L-9FC85564` — Rate of GetConfiguredTable requests
 - `L-AA1FCC92` — Rate of CreateConfiguredTableAnalysisRule requests
 - `L-AA83E042` — Rate of CreateMembership requests
-- `L-B45D79BC` — Concurrent PySpark jobs per account
 - `L-BA5CF250` — Rate of ListProtectedJobs requests
 - `L-BAAD82E2` — Rate of GetCollaborationChangeRequest requests
 - `L-BC5338D1` — Rate of UpdateConfiguredTableAssociation requests
@@ -1404,7 +1105,6 @@ Total open entries: **3203**
 - `L-EA789CE8` — Rate of GetCollaboration requests
 - `L-ED22C809` — Rate of CreateConfiguredAudienceModelAssociation requests
 - `L-ED3352DE` — Analysis rule size
-- `L-F04AAAFE` — Concurrent ongoing queries per membership
 - `L-F0A87380` — Rate of DeleteCollaboration requests
 - `L-F434A8C7` — Rate of UntagResource requests
 - `L-F84196BB` — Rate of UpdateIdNamespaceAssociation requests
@@ -1413,148 +1113,8 @@ Total open entries: **3203**
 
 ## cleanrooms-ml
 
-- `L-007D6EC0` — Pending/In-progress custom model training jobs per account
-- `L-01DA2474` — Maximum number of ml.c6i.24xlarge training instances per account
 - `L-0636843D` — Active audience export jobs per audience generation job
-- `L-07CE9411` — Maximum number of ml.p2.xlarge training instances per account
-- `L-08443CC7` — Maximum number of ml.m7i.12xlarge training instances per account
-- `L-0A14B514` — Maximum number of ml.c7i.24xlarge training instances per account
-- `L-0A844C29` — Maximum number of ml.r7i.12xlarge training instances per account
-- `L-0C5EC207` — Maximum number of ml.m7i.16xlarge training instances per account
-- `L-0E4914D6` — Maximum number of ml.t3.xlarge training instances per account
-- `L-0F77DDDB` — Pending/In-progress custom model inference jobs per membership
-- `L-11056252` — Pending/In-progress audience models per customer
-- `L-111F6C4D` — Maximum number of ml.r5.16xlarge training instances per account
-- `L-146E81B5` — Maximum number of ml.m5.24xlarge training instances per account
-- `L-148A19DD` — Maximum number of ml.g6.48xlarge training instances per account
-- `L-149900A9` — Maximum number of ml.p5en.48xlarge training instances per account
-- `L-14B67379` — Maximum number of ml.m6i.xlarge training instances per account
-- `L-15FD2ED9` — Maximum number of ml.m7i.large training instances per account
-- `L-18E932B4` — Maximum number of ml.r5d.8xlarge training instances per account
-- `L-1A12B5F9` — Maximum number of ml.p5.48xlarge training instances per account
-- `L-1B3D830A` — Maximum number of ml.trn1.2xlarge training instances per account
-- `L-1D13492F` — Maximum number of ml.g6.4xlarge training instances per account
-- `L-1DAEDA0D` — Maximum number of ml.m6i.24xlarge training instances per account
-- `L-20FF18E2` — Maximum number of ml.r5d.16xlarge training instances per account
-- `L-22199ACA` — Maximum number of ml.c6i.32xlarge training instances per account
-- `L-2396565D` — Pending/In-progress audience generation jobs per customer
-- `L-249D9E93` — Maximum number of ml.g5.8xlarge training instances per account
-- `L-249F4B83` — Pending/In-progress custom model inference jobs per account
-- `L-274412D0` — Maximum number of ml.r7i.24xlarge training instances per account
-- `L-279E1272` — Maximum number of ml.r5.4xlarge training instances per account
-- `L-2D508D46` — Maximum number of ml.p4d.24xlarge training instances per account
-- `L-2FEDB138` — Maximum number of ml.g4dn.8xlarge training instances per account
-- `L-33C2B56E` — Maximum number of ml.g6e.4xlarge training instances per account
-- `L-33F0C15F` — Maximum number of ml.c5.xlarge training instances per account
-- `L-373A1CCA` — Maximum number of ml.g6.xlarge training instances per account
-- `L-37B7F626` — Maximum number of ml.t3.medium training instances per account
-- `L-380D92BF` — Maximum number of ml.g6.8xlarge training instances per account
-- `L-38283E6E` — Maximum number of ml.r7i.16xlarge training instances per account
-- `L-3A77CBE4` — Maximum number of ml.r5.large training instances per account
-- `L-3D21F23B` — Maximum number of ml.m4.xlarge training instances per account
-- `L-3E028E33` — Maximum number of ml.r5d.large training instances per account
-- `L-426BB3D0` — Maximum number of ml.trn1.32xlarge training instances per account
-- `L-4280F699` — Maximum number of ml.r5d.4xlarge training instances per account
-- `L-4339E220` — Maximum number of ml.t3.large training instances per account
-- `L-45E1161B` — Maximum number of ml.t3.2xlarge training instances per account
-- `L-467CA2AC` — Maximum number of ml.m6i.large training instances per account
-- `L-4BE3AB92` — Maximum number of ml.r7i.large training instances per account
-- `L-4D55A568` — Maximum number of ml.g5.16xlarge training instances per account
-- `L-4E17CB60` — Maximum number of ml.m6i.4xlarge training instances per account
-- `L-4F59DB49` — Maximum number of ml.m5.4xlarge training instances per account
-- `L-5366EA6D` — Maximum number of ml.c7i.2xlarge training instances per account
-- `L-54355680` — Maximum number of ml.p2.8xlarge training instances per account
-- `L-5603A31E` — Maximum number of ml.c5n.xlarge training instances per account
-- `L-5691EDAC` — Maximum number of ml.c5.9xlarge training instances per account
-- `L-5890597B` — Maximum number of ml.c4.8xlarge training instances per account
-- `L-58E5AD3A` — Maximum number of ml.m6i.32xlarge training instances per account
-- `L-5D3FCFFD` — Maximum number of ml.r7i.xlarge training instances per account
-- `L-5D8CD3BF` — Maximum number of ml.c5n.4xlarge training instances per account
-- `L-5D969589` — Maximum number of ml.c6i.4xlarge training instances per account
-- `L-6137AF75` — Maximum number of ml.r5d.2xlarge training instances per account
-- `L-635828C6` — Maximum number of ml.c5.4xlarge training instances per account
-- `L-653FD1C2` — Maximum number of ml.r5d.24xlarge training instances per account
-- `L-660927DA` — Maximum number of ml.c6i.8xlarge training instances per account
-- `L-69B9CD4B` — Maximum number of ml.m4.4xlarge training instances per account
-- `L-6A9B1E4F` — Maximum number of ml.c7i.8xlarge training instances per account
-- `L-6E5D6C56` — Maximum number of ml.g6.24xlarge training instances per account
-- `L-708258B9` — Maximum number of ml.m6i.8xlarge training instances per account
-- `L-74FD66B0` — Maximum number of ml.m4.10xlarge training instances per account
-- `L-75517A40` — Maximum number of ml.m6i.16xlarge training instances per account
-- `L-763642B0` — Maximum number of ml.m5.xlarge training instances per account
-- `L-764CD351` — Maximum number of ml.g4dn.12xlarge training instances per account
-- `L-777A1462` — Maximum number of ml.r5.8xlarge training instances per account
-- `L-777A2F1F` — Maximum number of ml.c7i.48xlarge training instances per account
-- `L-79749229` — Maximum number of ml.g5.12xlarge training instances per account
-- `L-7C1E1840` — Maximum number of ml.g6e.2xlarge training instances per account
-- `L-7E8DBA3C` — Maximum number of ml.c5.18xlarge training instances per account
-- `L-7F603882` — Maximum number of ml.c7i.16xlarge training instances per account
-- `L-7FA32D16` — Maximum number of ml.g4dn.xlarge training instances per account
-- `L-80278C32` — Maximum number of ml.c6i.16xlarge training instances per account
-- `L-881C67B1` — Maximum number of ml.c6i.2xlarge training instances per account
-- `L-8B661E39` — Maximum number of ml.g4dn.4xlarge training instances per account
-- `L-8E9433A7` — Maximum number of ml.g5.24xlarge training instances per account
-- `L-8F95970E` — Maximum number of ml.m4.16xlarge training instances per account
-- `L-90208195` — Maximum number of ml.c5n.18xlarge training instances per account
-- `L-907EBCEA` — Pending/In-progress audience export jobs per customer
-- `L-9784742B` — Maximum number of ml.m7i.xlarge training instances per account
-- `L-98291B04` — Active configured model algorithm associations per membership
-- `L-98B5830E` — Maximum number of ml.m7i.24xlarge training instances per account
-- `L-993099E4` — Maximum number of ml.c7i.12xlarge training instances per account
-- `L-9B78F5EE` — Maximum number of ml.m6i.2xlarge training instances per account
-- `L-9B824A8F` — Maximum number of ml.g6e.8xlarge training instances per account
-- `L-9D7E244D` — Maximum number of ml.g6.2xlarge training instances per account
-- `L-9DD6C7BE` — Maximum number of ml.c7i.4xlarge training instances per account
-- `L-A0A9FEE4` — Maximum number of ml.m5.12xlarge training instances per account
-- `L-A20609C4` — Maximum number of ml.g6.16xlarge training instances per account
-- `L-A2DDC8B2` — Maximum number of ml.r7i.8xlarge training instances per account
-- `L-A7B6CF7E` — Maximum number of ml.g6e.16xlarge training instances per account
-- `L-A939365E` — Maximum number of ml.r5.24xlarge training instances per account
-- `L-AA9D2CFA` — Maximum number of ml.c4.xlarge training instances per account
-- `L-ACA7025D` — Maximum number of ml.c6i.xlarge training instances per account
-- `L-AF150E4E` — Maximum number of ml.p2.16xlarge training instances per account
-- `L-B024D3FF` — Maximum number of ml.trn1n.32xlarge training instances per account
-- `L-B29432BB` — Maximum number of ml.g6e.12xlarge training instances per account
-- `L-B4EEBC64` — Maximum number of ml.r5.xlarge training instances per account
-- `L-B5ABE77C` — Maximum number of ml.r7i.2xlarge training instances per account
-- `L-B9628498` — Maximum number of ml.g5.xlarge training instances per account
-- `L-BAEB0B2A` — Maximum number of ml.r5.12xlarge training instances per account
-- `L-BB366AD2` — Maximum number of ml.c4.4xlarge training instances per account
-- `L-BE951A3C` — Maximum number of active/pending/in progress trained model versions per trained model
-- `L-BF1DCA2E` — Maximum number of ml.r5d.xlarge training instances per account
-- `L-C0829985` — Maximum number of ml.m7i.2xlarge training instances per account
-- `L-C0EE9B4B` — Maximum number of ml.g6e.xlarge training instances per account
-- `L-C218BB5C` — Maximum number of ml.r5d.12xlarge training instances per account
-- `L-C2A63D81` — Maximum number of ml.r7i.48xlarge training instances per account
-- `L-C4A20C44` — Maximum number of ml.m7i.48xlarge training instances per account
-- `L-C4B1F212` — Maximum number of ml.m5.large training instances per account
-- `L-C555659C` — Maximum number of ml.g4dn.2xlarge training instances per account
-- `L-CB2BDD73` — Maximum number of ml.g6.12xlarge training instances per account
-- `L-CC058606` — Maximum number of ml.c5.2xlarge training instances per account
 - `L-CDB92F4A` — Active configured model algorithms per membership
-- `L-D3B32AF8` — Maximum number of ml.g5.48xlarge training instances per account
-- `L-D722A8DA` — Maximum number of ml.g5.2xlarge training instances per account
-- `L-D75B121F` — Maximum number of ml.m7i.4xlarge training instances per account
-- `L-DBF94E3D` — Maximum number of ml.p4de.24xlarge training instances per account
-- `L-DC4306A1` — Maximum number of ml.g5.4xlarge training instances per account
-- `L-DCD95E7B` — Maximum number of ml.c7i.xlarge training instances per account
-- `L-DD14FE60` — Maximum number of ml.c5n.2xlarge training instances per account
-- `L-DDAC1E7E` — Maximum number of ml.r5.2xlarge training instances per account
-- `L-DFA15AB1` — Maximum number of ml.c5n.9xlarge training instances per account
-- `L-E0323E8A` — Maximum number of ml.m7i.8xlarge training instances per account
-- `L-E35A174D` — Maximum number of ml.g6e.48xlarge training instances per account
-- `L-E71815E1` — Maximum number of ml.c7i.large training instances per account
-- `L-E77C3086` — Maximum number of ml.r7i.4xlarge training instances per account
-- `L-EA69584F` — Maximum number of ml.c6i.12xlarge training instances per account
-- `L-ECF9E88B` — Maximum number of ml.g4dn.16xlarge training instances per account
-- `L-F124231C` — Maximum number of ml.c4.2xlarge training instances per account
-- `L-F2D3388D` — Active custom model input channels per membership
-- `L-F63668C9` — Maximum number of ml.m6i.12xlarge training instances per account
-- `L-F6FC5155` — Pending/In-progress custom model training jobs per membership
-- `L-F80238AF` — Maximum number of ml.g6e.24xlarge training instances per account
-- `L-FBE53F18` — Maximum number of ml.m4.2xlarge training instances per account
-- `L-FE7C451E` — Maximum number of ml.m5.2xlarge training instances per account
-- `L-FF7AD06D` — Maximum number of active training instances per account
 
 ## cloud9
 
@@ -1566,16 +1126,12 @@ Total open entries: **3203**
 ## cloudformation
 
 - `L-05123385` — Nested modules
-- `L-05BC894F` — Template Resources
 - `L-084D8074` — Throttle rate limit for DescribeGeneratedTemplate
-- `L-091DF7D9` — Versions per hook
 - `L-0BF4426F` — Throttle rate limit for DescribeResourceScan
 - `L-0D1C7C93` — Throttle rate limit for ListGeneratedTemplates
-- `L-125EDA8C` — Template Size
 - `L-146A985F` — Throttle rate limit for ExecuteChangeSet
 - `L-1A14E2E4` — Throttle rate limit for StartResourceScan
 - `L-1DFD712D` — Throttle rate limit for DescribeAccountLimits
-- `L-1FFB6C73` — Template Mapping Attributes
 - `L-20C6DAFE` — Throttle rate limit for PublishType
 - `L-20DF2AC3` — Throttle rate limit for ValidateTemplate
 - `L-23572CD8` — Throttle rate limit for ListChangeSets
@@ -1588,8 +1144,6 @@ Total open entries: **3203**
 - `L-314F0FAF` — Throttle rate limit for ListResourceScanRelatedResources
 - `L-330C21EA` — Throttle rate limit for ListStackSetOperations
 - `L-36B104FB` — Throttle rate limit for DescribeOrganizationsAccess
-- `L-38FD7965` — Template Output Name Length
-- `L-3B2D14A7` — Template Parameter Name Length
 - `L-3D1500B6` — Throttle rate limit for CreateChangeSet
 - `L-40DA9BBE` — Throttle rate limit for UpdateStackInstances
 - `L-421EA159` — Throttle rate limit for BatchDescribeTypeConfigurations
@@ -1603,24 +1157,17 @@ Total open entries: **3203**
 - `L-5F6B90AB` — Throttle rate limit for ActivateOrganizationsAccess
 - `L-600058B9` — Stacks imported using S3 object per stack set operation
 - `L-6286B93B` — Throttle rate limit for DescribeStackSetOperation
-- `L-63D096B8` — Template Mappings
 - `L-6A4B2F69` — Stack instance operations per administrator account
 - `L-6AD11AD7` — Throttle rate limit for GetStackPolicy
 - `L-6C32EB43` — Throttle rate limit for DescribeStackDriftDetectionStatus
 - `L-6CD0CA38` — Throttle rate limit for ContinueUpdateRollback
-- `L-722F1E58` — Template Mapping Name and Mapping Attribute Name Length
-- `L-72B9A393` — Template Parameters
 - `L-7460249E` — Throttle rate limit for DescribeType
-- `L-7C7532D4` — Template Description Length
 - `L-7D45582C` — Throttle rate limit for DeleteGeneratedTemplate
-- `L-7E146E2E` — Version limit per module
 - `L-81A7E618` — Throttle rate limit for DetectStackSetDrift
 - `L-8497B9EB` — Throttle rate limit for ListStackSetOperationResults
-- `L-84B50260` — Template Logical Resource ID Length
 - `L-85EB5DEC` — Throttle rate limit for ListStackSetAutoDeploymentTargets
 - `L-86064319` — Throttle rate limit for ListStackInstances
 - `L-87CC5A1D` — Throttle rate limit for ListStacks
-- `L-87D14FB7` — Template Outputs
 - `L-87E26E99` — Throttle rate limit for UpdateStack
 - `L-8AC284BF` — Throttle rate limit for ListStackInstanceResourceDrifts
 - `L-9013C9F2` — Throttle rate limit for ListStackSets
@@ -1630,9 +1177,7 @@ Total open entries: **3203**
 - `L-98DE792C` — Throttle rate limit for StopStackSetOperation
 - `L-9C5C273A` — Throttle rate limit for SetStackPolicy
 - `L-9C92580D` — Throttle rate limit for GetTemplate
-- `L-9DE8E4FB` — Resource limit per account
 - `L-A2C10225` — Throttle rate limit for DescribeStackResourceDrifts
-- `L-AC58B440` — Queued operations per stack set
 - `L-AD7355DC` — Throttle rate limit for CancelUpdateStack
 - `L-AF237941` — Throttle rate limit for DeleteStack
 - `L-AF3916A4` — Throttle rate limit for ListTypeRegistrations
@@ -1648,16 +1193,13 @@ Total open entries: **3203**
 - `L-CF64D430` — Throttle rate limit for UpdateGeneratedTemplate
 - `L-D2B2F0FF` — Stacks imported using inline stack ids per stack set operation
 - `L-D5FE38FA` — Throttle rate limit for DescribeStacks
-- `L-D663BAB9` — Template Dynamic References
 - `L-D76C738E` — Throttle rate limit for ListResourceScanResources
-- `L-DCC58E6D` — Module limit per account
 - `L-DCDA1233` — Throttle rate limit for ListExports
 - `L-E141E579` — Throttle rate limit for UpdateStackSet
 - `L-E388DB0A` — Hook configuration size
 - `L-E466BCCD` — Throttle rate limit for CreateGeneratedTemplate
 - `L-E4780309` — Throttle rate limit for SignalResource
 - `L-E7256C02` — Throttle rate limit for ListTypeVersions
-- `L-EA1018E8` — Version limit per resource
 - `L-EFC95CFF` — Template Parameter Value Length
 - `L-F0B38CF3` — Throttle rate limit for CreateStackSet
 - `L-F3F1561B` — Throttle rate limit for DeregisterType
@@ -1691,7 +1233,6 @@ Total open entries: **3203**
 - `L-0DE8FCE1` — Transactions per second (TPS) for the AddTags API
 - `L-102075A9` — Transactions per second (TPS) for the GetImport API
 - `L-1433C85D` — Event size
-- `L-203ED99D` — Conditions across all advanced event selectors
 - `L-235E2A41` — Transactions per second (TPS) for the PutResourcePolicy API
 - `L-262F8D6F` — Transactions per second (TPS) for the GetEventSelectors API
 - `L-2A4525B6` — Transactions per second (TPS) for the PutEventSelectors API
@@ -1713,7 +1254,6 @@ Total open entries: **3203**
 - `L-66AE0662` — Transactions per second (TPS) for the GetResourcePolicy API
 - `L-6826A2E9` — Transactions per second (TPS) for the LookupEvents API
 - `L-694E6530` — Concurrent dashboard refreshes
-- `L-71DEA5C6` — Data resources across all event selectors in a trail
 - `L-72996F38` — Concurrent queries
 - `L-773FB33E` — Transactions per second (TPS) for the StartLogging API
 - `L-7A3F9D4B` — Transactions per second (TPS) for the GetChannel API
@@ -1729,7 +1269,6 @@ Total open entries: **3203**
 - `L-88C956C4` — Transactions per second (TPS) for the RegisterOrganizationDelegatedAdmin API
 - `L-8F9F4270` — Transactions per second (TPS) for the ListChannels API
 - `L-9260AF5B` — Transactions per second (TPS) for the GetTrail API
-- `L-9387CED7` — Event selectors
 - `L-9552D44E` — Transactions per second (TPS) for the StopLogging API
 - `L-961309DE` — Transactions per second (TPS) for the CreateDashboard API
 - `L-98AA9EBA` — Transactions per second (TPS) for the EnableFederation API
@@ -1773,69 +1312,24 @@ Total open entries: **3203**
 
 ## codebuild
 
-- `L-0397D009` — Concurrently running builds for Linux/2XLarge environment
-- `L-03FBB1ED` — Concurrently running builds for Linux Lambda/1GB environment
-- `L-049948E0` — Concurrently running builds for Linux Lambda/8GB environment
-- `L-04E5CA62` — Concurrently running builds for Linux/XLarge environment
-- `L-0544DB6A` — Concurrently running builds for Windows Server 2022/Medium environment
-- `L-0DED26C7` — Concurrently running builds for Windows Server 2022/2XLarge environment
-- `L-1DFDD5F9` — Concurrently running builds for Linux Lambda/2GB environment
-- `L-1E43FDE0` — Concurrently running builds for ARM/2XLarge environment
-- `L-2DC20C30` — Concurrently running builds for Linux/Medium environment
-- `L-33638FE6` — Subnets under VPC configuration
-- `L-36AF3CA5` — Concurrently running builds for ARM Lambda/10GB environment
 - `L-376C4764` — Minimum period for build timeout in minutes
 - `L-390F410B` — Concurrent requests for information on build projects
-- `L-39DB2B0B` — Concurrently running builds for Linux Lambda/4GB environment
-- `L-4167E76F` — Build timeout in minutes
 - `L-42CB2FCC` — Concurrent request for information about builds
-- `L-4DDC4A99` — Concurrently running builds for Linux/Large environment
-- `L-546A802A` — Concurrently running builds for ARM Lambda/8GB environment
-- `L-596BEAB4` — Concurrently running builds for ARM/Large environment
-- `L-5ED1D25B` — Concurrently running builds for ARM/Small environment
-- `L-72045165` — Concurrently running builds for ARM Lambda/4GB environment
-- `L-8D06F3EA` — Concurrently running builds for ARM/XLarge environment
-- `L-9D07B6EF` — Concurrently running builds for Linux/Small environment
-- `L-BECF4531` — Associated tags per project
-- `L-C3D92D78` — Concurrently running builds for Windows Server 2022/Large environment
-- `L-D906BEE7` — Concurrently running builds for Linux GPU Large environment
-- `L-DE99852F` — Concurrently running builds for ARM Lambda/2GB environment
-- `L-DF544FF3` — Concurrently running builds for ARM/Medium environment
-- `L-E692F494` — Concurrently running builds for Linux Lambda/10GB environment
-- `L-EDB7A61A` — Security groups under VPC configuration
-- `L-F1FE1B52` — Concurrently running builds for Linux GPU Small environment
-- `L-F2D50796` — Concurrently running builds for Windows Server 2022/XLarge environment
-- `L-FD92223D` — Concurrently running builds for ARM Lambda/1GB environment
-
-## codecommit
-
-- `L-81790602` — Allowed repositories
 
 ## codedeploy
 
-- `L-0CB3C26F` — Number of deployment groups that can be associated with an Amazon ECS service
 - `L-31E782CD` — Number of instances that can be passed to the BatchGetOnPremisesInstances API action
-- `L-464411D9` — Number of instances used by concurrent deployments that are in progress per account
-- `L-5AD34096` — Custom deployment configurations per account
 - `L-5FB5F09F` — Traffic that can be shifted in one increment during an AWS Lambda deployment
 - `L-604B54B8` — AWS Lambda deployment run in hours
 - `L-69184564` — Minutes a blue/green deployment can wait after a successful deployment before terminating instances from the original deployment
 - `L-696A9A65` — Size of tag key
-- `L-6BCCFC85` — Instances count per deployment
-- `L-6DACB4EE` — Auto Scaling groups in a deployment group
 - `L-826E27D8` — Tags in a deployment group
 - `L-86A1A2E1` — Minutes between the first and last traffic shift during an AWS Lambda canary or linear deployment
-- `L-877B748B` — Event notification triggers in a deployment group
 - `L-9231961D` — Minutes until a deployment fails if a lifecycle event doesn't start
-- `L-9F835576` — Associated alarms per deployment group
 - `L-A58C473C` — Hours between the completion of a deployment and the termination of the original instances during an EC2/On-Premises blue/green deployment
-- `L-A8B8B32B` — Concurrent deployments per deployment group
-- `L-AB125F0B` — Concurrent deployments per account
-- `L-B0CB7B38` — GitHub connection tokens per account
 - `L-B2AEFF5A` — Size of tag value
 - `L-B8C6A115` — Hours between the deployment of a revision and when traffic shifts to the replacement instances during an EC2/On-Premises blue/green deployment
 - `L-BB837EF6` — Seconds until a deployment lifecycle event fails if not completed
-- `L-C77AFF36` — Number of listeners for a traffic route during an Amazon ECS deployment
 - `L-D4ED2A8C` — Size of deployment group name
 - `L-DC0E5D95` — EC2/On-Premises blue/green deployment run in hours
 - `L-F0A94AA0` — EC2/On-Premises in-place deployment run in hours
@@ -1846,23 +1340,16 @@ Total open entries: **3203**
 
 ## codepipeline
 
-- `L-0097A9B4` — Active executions per pipeline
-- `L-1402209C` — Total actions per pipeline
 - `L-182AE5D8` — Action configuration key length
 - `L-1E23CE75` — Total AWS CodeCommit or GitHub source artifact size
-- `L-2B3011E2` — Total parallel actions per stage
 - `L-31A751EC` — Total period for execution history
 - `L-3ECA8567` — Total input artifact size for AWS CloudFormation deployments
 - `L-447DD651` — AWS CloudFormation action timeout
-- `L-519D5A90` — Total custom actions
-- `L-570F1605` — Total actions per stage
 - `L-5AA45A27` — Action timeout
 - `L-6F95DA01` — Action configuration value length
 - `L-87C878A5` — AWS CodeDeploy ECS (Blue/Green) action timeout
-- `L-8DF1BAAD` — Total sequential actions per stage
 - `L-912817AD` — AWS Lambda action timeout
 - `L-9D72EF0D` — Total Amazon S3 source artifact size
-- `L-A0A99E23` — Total stages per pipeline
 - `L-A95CB60D` — Approval action timeout
 - `L-ABB870A7` — Amazon S3 deployment action timeout
 - `L-C57FFB43` — Minimum actions
@@ -1873,7 +1360,6 @@ Total open entries: **3203**
 - `L-F2AD11A6` — Total source artifact size for Amazon EBS deployments
 - `L-F7192911` — AWS CodeBuild action timeout
 - `L-F8F56C9F` — Total JSON object size for Parameter Overrides
-- `L-FE939BB2` — Total webhooks
 
 ## cognito-identity
 
@@ -1897,23 +1383,18 @@ Total open entries: **3203**
 - `L-04F7DFB8` — Rate of UserPoolClientUpdate requests per user pool
 - `L-12C4D74A` — Rate of UserPoolClientUpdate requests per account
 - `L-181E40D0` — Rate of UserPoolResourceRead requests per user pool
-- `L-1B44D826` — Identity providers per user pool
 - `L-259E3368` — Rate of UserList requests
 - `L-3F0DE77D` — Groups per user
 - `L-55545DC8` — Rate of UserResourceRead requests
 - `L-574C86AE` — Rate of UserResourceUpdate requests
 - `L-5987B8A0` — Rate of UserCreation requests
-- `L-5EAB0605` — Apps per user pool
 - `L-60A0B411` — Rate of UserPoolUpdate requests
 - `L-6621E65D` — Rate of UserUpdate requests
 - `L-681BB884` — User import jobs per user pool
 - `L-74D3DD04` — Rate of ClientAuthentication requests per account
-- `L-770A44F8` — Scopes per resource server
-- `L-7CDAF993` — Resource servers per user pool
 - `L-7D6E8ED3` — Rate of UserAccountRecovery requests
 - `L-A01C9633` — Rate of UserPoolResourceRead requests per account
 - `L-A412573D` — Rate of UserPoolClientRead requests per account
-- `L-A585C375` — Groups per user pool
 - `L-B7575496` — Rate of UserPoolResourceUpdate requests per account
 - `L-BB3E7CCF` — Rate of UserFederation requests
 - `L-BC27731B` — Rate of UserPoolResourceUpdate requests per user pool
@@ -1933,26 +1414,18 @@ Total open entries: **3203**
 ## comprehend
 
 - `L-0B530363` — StopEntitiesDetectionJob throttle limit in transactions per second
-- `L-0C094DCD` — Datasets max concurrent creates
 - `L-0F06FE42` — ListEventsDetectionJobs throttle limit in transactions per second
 - `L-10AEC0BE` — StopSentimentDetectionJob throttle limit in transactions per second
 - `L-13861BA2` — ListSentimentDetectionJobs throttle limit in transactions per second
 - `L-13A0494F` — DescribeTopicsDetectionJob throttle limit in transactions per second
-- `L-1666A7DF` — MaxTestDatasets per flywheel
 - `L-1EEF8E8F` — StopPiiEntitiesDetectionJob throttle limit in transactions per second
 - `L-230B53F3` — StartTargetedSentimentDetectionJob throttle limit in transactions per second
 - `L-243FFDDD` — CreateDocumentClassifier throttle limit in transactions per second
-- `L-2A73DEBC` — Endpoints max inference units per account
-- `L-2B8ECCAB` — DetectEntities max active jobs
-- `L-32ABBB12` — DetectSentiment max active jobs
-- `L-358FBC4F` — DetectTargetedSentiment max active jobs
 - `L-3E342F88` — DescribeKeyPhrasesDetectionJob throttle limit in transactions per second
 - `L-3FD9ACEB` — StartDominantLanguageDetectionJob throttle limit in transactions per second
 - `L-40A899B3` — ListEntitiesDetectionJobs throttle limit in transactions per second
 - `L-428EEE9B` — DescribeEntitiesDetectionJob throttle limit in transactions per second
 - `L-438FD9AD` — ListTopicsDetectionJobs throttle limit in transactions per second
-- `L-471B41D6` — DetectEvents max active jobs
-- `L-4BDB4A9D` — EntityRecognizer max active jobs
 - `L-4D712CC8` — StartKeyPhrasesDetectionJob throttle limit in transactions per second
 - `L-4DD99000` — StopTargetedSentimentDetectionJob throttle limit in transactions per second
 - `L-5454BD4C` — ListPiiEntitiesDetectionJobs throttle limit in transactions per second
@@ -1962,40 +1435,29 @@ Total open entries: **3203**
 - `L-67D99149` — StopDominantLanguageDetectionJob throttle limit in transactions per second
 - `L-68C199F3` — StartEventsDetectionJob throttle limit in transactions per second
 - `L-6ECBDFF6` — UntagResource throttle limit in transactions per second
-- `L-70EC2949` — Endpoints max inference units per endpoint
 - `L-7820536E` — ListDocumentClassifiers throttle limit in transactions per second
-- `L-7AC96081` — DetectDominantLanguage max active jobs
 - `L-7B91C94D` — StartSentimentDetectionJob throttle limit in transactions per second
-- `L-7CC66BB8` — MaxTrainDatasets per flywheel
 - `L-8532F92C` — ListDominantLanguageDetectionJobs throttle limit in transactions per second
 - `L-8DD67684` — StartEntitiesDetectionJob throttle limit in transactions per second
-- `L-8F55B05C` — CreateFlywheel max concurrent
 - `L-91446453` — DescribeDocumentClassificationJob throttle limit in transactions per second
-- `L-94042C4D` — DocumentClassifier max active jobs
 - `L-9A845B3A` — TagResource throttle limit in transactions per second
 - `L-9E526A5F` — DescribeTargetedSentimentDetectionJob throttle limit in transactions per second
 - `L-A1AF2FE3` — DescribeEventsDetectionJob throttle limit in transactions per second
 - `L-A1F7E693` — ListDocumentClassificationJobs throttle limit in transactions per second
 - `L-A207C175` — CreateEntityRecognizer throttle limit in transactions per second
-- `L-AE5B911F` — CreateFlywheel max active flywheels
-- `L-BFFD1421` — DetectKeyPhrases max active jobs
 - `L-C220288F` — ListTargetedSentimentDetectionJobs throttle limit in transactions per second
 - `L-C39735E0` — DescribeDocumentClassifier throttle limit in transactions per second
-- `L-C5F124CF` — StartFlywheelIteration max concurrent flywheel iterations
 - `L-C7E12CA2` — StopKeyPhrasesDetectionJob throttle limit in transactions per second
 - `L-CA1326CD` — StopEventsDetectionJob throttle limit in transactions per second
 - `L-CF92EEE2` — StopTrainingEntityRecognizer throttle limit in transactions per second
 - `L-D4C039C8` — ListTagsForResource throttle limit in transactions per second
 - `L-D6BBB77F` — DeleteDocumentClassifier throttle limit in transactions per second
-- `L-D88E2B98` — DetectPiiEntities max active jobs
 - `L-E0EFA344` — DescribeSentimentDetectionJob throttle limit in transactions per second
 - `L-E1D53C9F` — StopTrainingDocumentClassifier throttle limit in transactions per second
-- `L-E65FE76A` — DocumentClassification max active jobs
 - `L-E7F70588` — DeleteEntityRecognizer throttle limit in transactions per second
 - `L-E9B0ABA2` — ListKeyPhrasesDetectionJobs throttle limit in transactions per second
 - `L-E9F2B1B1` — DescribePiiEntitiesDetectionJob throttle limit in transactions per second
 - `L-F039F1E3` — DescribeEntityRecognizer throttle limit in transactions per second
-- `L-F2BED405` — TopicsDetection max active jobs
 - `L-F91E977B` — StartTopicsDetectionJob throttle limit in transactions per second
 - `L-FBEC67FF` — StartPiiEntitiesDetectionJob throttle limit in transactions per second
 
@@ -2004,12 +1466,10 @@ Total open entries: **3203**
 - `L-000B6A1A` — Rate of UpdateTaskTemplate API requests
 - `L-01980B0F` — Rate of AssociateRoutingProfileQueues API requests
 - `L-020883A7` — Rate of UpdateUserHierarchyGroupName API requests
-- `L-02421311` — File scanner integration associations per instance
 - `L-02F9E992` — Rate of CreateDataTableAttribute API requests
 - `L-0711FF1F` — Rate of ListRules API requests
 - `L-08DF489D` — Rate of DescribeAgentStatus API requests
 - `L-09AAE068` — Rate of ListHoursOfOperations API requests
-- `L-0AA82C05` — Cases domain integration associations per instance
 - `L-0D791E12` — Rate of ListTaskTemplates API requests
 - `L-0E9EA5C5` — Rate of BatchDescribeDataTableValue API requests
 - `L-100FDD6A` — Rate of EvaluateDataTableValues API requests
@@ -2045,7 +1505,6 @@ Total open entries: **3203**
 - `L-2BE4D75F` — External voice transfer connectors per account
 - `L-2CCBA953` — Rate of AssociateUserProficiencies API requests
 - `L-2D464A68` — Rate of CreateHoursOfOperationOverride API requests
-- `L-2D7CA70C` — Amazon Q in Connect knowledge base integration associations per instance
 - `L-2DB48531` — Rate of UpdateAgentStatus API requests
 - `L-2DE43297` — Rate of DescribeQuickConnect API requests
 - `L-2E719449` — Rate of GetMetricDataV2 API requests
@@ -2062,7 +1521,6 @@ Total open entries: **3203**
 - `L-3741AF59` — Rate of UpdateContactFlowName API requests
 - `L-379E909D` — Rate of GetTrafficDistribution API requests
 - `L-37E92540` — Rate of UpdateParticipantRoleConfig API requests
-- `L-3828FBF0` — Predefined Attributes
 - `L-3A13A048` — File size per upload of capacity plan overrides
 - `L-3A7EFE53` — Rate of ListRoutingProfileManualAssignmentQueues API requests
 - `L-3EEA2922` — Rate of StartContactRecording API requests
@@ -2091,11 +1549,9 @@ Total open entries: **3203**
 - `L-4E9BCC96` — Rate of StartOutboundVoiceContact API requests
 - `L-4EA7C312` — Rate of UpdateQueueMaxContacts API requests
 - `L-4FBE591E` — Rate of SearchUserHierarchyGroups API requests
-- `L-50375162` — Proficiencies per agent
 - `L-50B4DE11` — Rate of PutUserStatus API requests
 - `L-50C3EE60` — Rate of UntagContact API requests
 - `L-50D07AB9` — Rate of DescribeUserHierarchyGroup API requests
-- `L-516BC0EB` — Queues per routing profile per instance
 - `L-52794498` — Rate of GetMetricData API requests
 - `L-53E03705` — Rate of DisassociateUserProficiencies API requests
 - `L-56B34560` — Rate of DescribeContactFlowModule API requests
@@ -2144,7 +1600,6 @@ Total open entries: **3203**
 - `L-781E5E85` — Rate of CreateTrafficDistributionGroup API requests
 - `L-78937F3A` — Rate of ListDefaultVocabularies API requests
 - `L-78A553AE` — Rate of DeleteVocabulary API requests
-- `L-790F20B4` — Event integration associations per instance
 - `L-79564E52` — Reports per instance
 - `L-7AA5113F` — Rate of DeleteRule API requests
 - `L-7DBD293C` — Rate of SendIntegrationEvent API requests
@@ -2173,7 +1628,6 @@ Total open entries: **3203**
 - `L-98A4FE2C` — Rate of DeleteDataTableAttribute API requests
 - `L-98C95556` — Rate of ListInstances API requests
 - `L-9959E55D` — Rate of ListPhoneNumbers API requests
-- `L-9A46857E` — Users per instance
 - `L-9AA558F3` — Rate of GetFederationToken API requests
 - `L-9B84048E` — Rate of StartScreenSharing API requests
 - `L-9CF39F22` — Rate of DeleteIntegrationAssociation API requests
@@ -2217,13 +1671,10 @@ Total open entries: **3203**
 - `L-C56E3A3C` — Rate of ListQueues API requests
 - `L-C595FFE9` — Rate of DisassociateApprovedOrigin API requests
 - `L-C5C511CD` — Rate of DisassociateLambdaFunction API requests
-- `L-C7548958` — Amazon Pinpoint application integration associations per instance
 - `L-C8237495` — Rate of UpdateRoutingProfileDefaultOutboundQueue API requests
-- `L-C8F22860` — Amazon Q in Connect quick responses integration associations per instance
 - `L-C970C7E8` — Contact Lens connectors per account
 - `L-CBDEE3E4` — Rate of CreateUser API requests
 - `L-CCC38177` — Rate of ListUsers API requests
-- `L-CCEA7427` — Amazon Lex V2 bot aliases per instance
 - `L-CDC861C1` — Rate of DeleteUseCase API requests
 - `L-CEDB17C8` — Rate of UpdateDataTablePrimaryValues API requests
 - `L-CF8DBCAD` — Capacity plan user data uploads per instance
@@ -2231,10 +1682,8 @@ Total open entries: **3203**
 - `L-D14CF86E` — Rate of DescribeInstance API requests
 - `L-D2ECB451` — Rate of AssociatePhoneNumberContactFlow API requests
 - `L-D4BA6F6E` — Concurrent active chats per instance
-- `L-D55E707F` — Amazon Q in Connect message templates integration associations per instance
 - `L-D6D4A2DA` — Rate of ListAgentStatuses API requests
 - `L-D7F21423` — Rate of DeleteTaskTemplate API requests
-- `L-D945C9A8` — Agent status per instance
 - `L-D9BB0F83` — Rate of ListLambdaFunctions API requests
 - `L-DA469EE8` — Rate of CreateContactFlowModule API requests
 - `L-DA88F710` — Maximum active recording sessions from external voice systems per instance
@@ -2247,7 +1696,6 @@ Total open entries: **3203**
 - `L-E2244126` — Rate of SearchPrompts API requests
 - `L-E230854C` — Rate of UpdateTrafficDistribution API requests
 - `L-E2C35CCE` — Rate of SearchUsers API requests
-- `L-E3D2F503` — AWS Lambda functions per instance
 - `L-E423F15D` — Shift profiles per instance
 - `L-E4666753` — Historical actuals uploads per instance
 - `L-E621D747` — Rate of CreateUserHierarchyGroup API requests
@@ -2265,7 +1713,6 @@ Total open entries: **3203**
 - `L-EE6F0D82` — Rate of DescribeUser API requests
 - `L-EF2F987D` — Rate of CreateDataTable API requests
 - `L-F001E5ED` — Rate of UpdateContactAttributes API requests
-- `L-F4C86B27` — Email addresses per instance
 - `L-F6EB2DE1` — Rate of DescribeHoursOfOperation API requests
 - `L-F758F15D` — Shift rotation patterns per instance
 - `L-F7E8A253` — Rate of DisassociatePhoneNumberContactFlow API requests
@@ -2280,60 +1727,27 @@ Total open entries: **3203**
 - `L-FE3C3BC3` — Rate of BatchDeleteDataTableValue API requests
 - `L-FF4585DE` — Rate of ListTrafficDistributionGroups API requests
 - `L-FF826748` — File size per upload of historical actuals
-- `L-FFE16A0F` — Amazon Q in Connect assistant integration associations per instance
 - `L-FFF609B4` — Rate of ListDataTableAttributes API requests
-
-## connect-campaigns
-
-- `L-7F7B4C39` — Campaigns
 
 ## controltower
 
 - `L-04D09B14` — Concurrent account operations quota
 - `L-6579BCE4` — Concurrent organization units (OUs) operations quota
-- `L-E9464183` — Number of accounts in a single OU quota
 
 ## databrew
 
-- `L-0D2C4DFC` — Jobs per AWS account
-- `L-131D2768` — Rulesets per dataset
-- `L-5748848E` — Open projects per AWS account
-- `L-640ABD4F` — Rules per ruleset
 - `L-935D4120` — Concurrent jobs per AWS account
-- `L-A386FCB8` — Versions per recipe
 - `L-B06AE58E` — Node capacity per AWS account
 
 ## dataexchange
 
-- `L-09B749AD` — Concurrent in progress jobs to export revisions to Amazon S3
-- `L-1FA7039C` — Pending data grants per consumer
-- `L-237CFF3D` — Revisions per Amazon API Gateway API data set
 - `L-2BA57A8A` — Amazon Redshift datashare assets per import job from Redshift
-- `L-307F71B5` — Concurrent in progress jobs to import assets from Amazon S3
 - `L-340ED0B2` — Concurrent in progress jobs to delete data grants
-- `L-375806A0` — Revisions per data set
-- `L-37C425C6` — Concurrent in progress jobs to export assets to Amazon S3
-- `L-426BE746` — Concurrent in progress jobs to import assets from an AWS Lake Formation tag policy
-- `L-4F23AFE3` — Active and pending data grants
-- `L-4F329808` — Amazon API Gateway API assets per revision
-- `L-50515269` — Concurrent in progress jobs to import assets from a signed URL
 - `L-514CB613` — Asset size in GB
-- `L-52FCAA8A` — Concurrent in progress jobs to export assets to a signed URL
-- `L-60973A49` — Amazon S3 data access assets per revision
 - `L-694A226E` — Assets per import job from Amazon S3
-- `L-7053BE85` — Auto export event actions per data set
-- `L-70B0F91E` — Revisions per Amazon S3 data access data set
-- `L-7878C4C3` — Concurrent in progress jobs to create Amazon S3 data access assets from S3 buckets
 - `L-916D9CEE` — Revisions per addRevisions change set
-- `L-92FCD39C` — Assets per revision
-- `L-9961D71E` — Amazon Redshift datashare assets per revision
-- `L-9D7AE86C` — Concurrent in progress jobs to import assets from Amazon Redshift datashares
-- `L-A15CB065` — Revisions per AWS Lake Formation data permission data set
-- `L-A1C96D1F` — Concurrent in progress jobs to import assets from Amazon API Gateway
-- `L-A8722A7A` — Revisions per Amazon Redshift datashare data set
 - `L-B13AFAD0` — Asset per export job from Amazon S3
 - `L-D05CF9CD` — Products per data set
-- `L-D470FF0C` — AWS Lake Formation data permission assets per revision
 - `L-F1756D86` — Concurrent in progress jobs to create data grants
 
 ## datasync
@@ -2347,32 +1761,17 @@ Total open entries: **3203**
 - `L-BA2CE78A` — Data Products
 - `L-DBBF7161` — Business Glossary Terms
 
-## dax
-
-- `L-315AFD08` — Parameter groups
-- `L-87AEEBB5` — Nodes per cluster
-- `L-AB139030` — Total number of nodes
-- `L-E34C284B` — Subnets per subnet group
-- `L-F55BD408` — Subnet groups
-
 ## deadline
 
-- `L-162A55BC` — Queue environments per queue
-- `L-253A82CE` — Limits per farm
 - `L-2CCF07BF` — Spot G Instance GPUs per region
-- `L-2F4AD227` — Associated members per farm
 - `L-3DE82FE6` — Tasks per step
 - `L-3ED8FD3C` — OnDemand vCPUs per region
-- `L-55B7030C` — Queue limit associations per queue
 - `L-5D6BA491` — OnDemand G instance GPUs per region
 - `L-711C7611` — Storage for General Purpose SSD (gp3) volumes, in TiB
 - `L-9F7AA0C8` — Resource configurations per fleet
-- `L-B1CBF582` — Associated members per queue
 - `L-B65B621C` — Wait-and-save vCPUs per region
 - `L-BABD8718` — Steps per job
-- `L-BF011D88` — Queue fleet associations per farm
 - `L-CF66A041` — Tasks per job
-- `L-D7E39278` — Associated members per fleet
 - `L-EFCAFDCA` — License sessions per license endpoint
 - `L-F4A135EC` — Spot vCPUs per region
 - `L-F9F8B66A` — Associated members per job
@@ -2381,8 +1780,6 @@ Total open entries: **3203**
 
 - `L-0B7EBFD7` — Public or private virtual interfaces per dedicated connection
 - `L-3024BDA6` — Routes per BGP session on private or transit virtual interfaces
-- `L-3745876E` — Private or public or transit virtual interfaces per hosted connection
-- `L-59AD3548` — Virtual interfaces per LAG
 - `L-5A971579` — Members per LAG
 - `L-65FD60CB` — Direct Connect gateways per transit gateway
 - `L-71C3BCCF` — Virtual interfaces per Direct Connect gateway
@@ -2406,26 +1803,14 @@ Total open entries: **3203**
 
 - `L-2146F1FD` — Endpoints per instance
 - `L-233F27C4` — Number of data files DMS Fleet Advisor can send per hour
-- `L-4182EDE9` — Subnets per subnet group
 - `L-49123F1B` — Number of monitored objects in DMS Fleet Advisor collector
-- `L-62EFB27A` — Number of Data Migrations per Migration Project
 - `L-6FA8C1C1` — The amount of collected data in DMS Fleet Advisor
 - `L-70AA6054` — Number of database objects DMS Fleet Advisor can process
-- `L-8D962DAE` — Number of DMS Fleet Advisor collector instances
 - `L-BBDCBDC8` — Total storage
-- `L-D97343A2` — Event subscriptions
-- `L-E569F59D` — Serverless replications
-- `L-FBEA20FB` — Number of running Data Migrations
 
 ## docdb
 
-- `L-2A542E16` — Cluster parameter groups
-- `L-36C7F3F8` — Subnets per subnet group
 - `L-3B0E1499` — Tags per resource
-- `L-5BA57179` — Read replicas per cluster
-- `L-B2551F83` — Manual cluster snapshots
-- `L-D02D85EA` — VPC security groups per instance
-- `L-F7FABF71` — Event subscriptions
 
 ## docdb-elastic
 
@@ -2433,18 +1818,6 @@ Total open entries: **3203**
 - `L-5CF76496` — Shards per elastic cluster
 - `L-A5B61A35` — Tags per resource
 - `L-BA054AA8` — Elastic clusters vCPU limit
-
-## drs
-
-- `L-0588D03B` — Max number of launch actions per resource
-- `L-05AFA8C6` — Max source servers in all Jobs
-- `L-1F3FAE4D` — Max number of launch configuration templates per AWS account
-- `L-4B0323BD` — Max number of source networks per AWS account
-- `L-B827C881` — Max source servers in a single Job
-- `L-C1D14A2B` — Max Total replicating source servers Per AWS Account
-- `L-D88FAC3A` — Concurrent jobs in progress
-- `L-DD6D028C` — Max concurrent Jobs per source server
-- `L-E28BE5E0` — Max Total source servers Per AWS Account
 
 ## ds
 
@@ -2474,255 +1847,87 @@ Total open entries: **3203**
 ## ebs
 
 - `L-028ACFB9` — GetSnapshotBlock requests per snapshot
-- `L-07399329` — In-progress snapshot restores from archive per account
-- `L-09BD8365` — Storage for Provisioned IOPS SSD (io2) volumes, in TiB
 - `L-1774F84A` — PutSnapshotBlock requests per snapshot
-- `L-17AF77E8` — Storage for Cold HDD (sc1) volumes, in TiB
 - `L-18E976AB` — ListSnapshotBlocks requests per account
 - `L-1D4D9345` — CompleteSnapshot requests per account
-- `L-309BACF6` — Snapshots per Region
 - `L-35B31D98` — IOPS modifications for Provisioned IOPS SSD (io2) volumes
 - `L-39BD5252` — Max concurrent copy volume operations per account
-- `L-3A0E616D` — In-progress snapshot archives per account
 - `L-59C8FC87` — Storage modifications for General Purpose SSD (gp3) volumes, in TiB
 - `L-5F80CA91` — Storage modifications for Provisioned IOPS SSD (io1) volumes, in TiB
-- `L-631ECBD3` — Fast snapshot restore
 - `L-651D1834` — Storage modifications for Cold HDD (sc1) volumes, in TiB
-- `L-750405C3` — Concurrent snapshots per Magnetic (standard) volume
-- `L-7A658B76` — Storage for General Purpose SSD (gp3) volumes, in TiB
-- `L-82ACEF56` — Storage for Throughput Optimized HDD (st1) volumes, in TiB
-- `L-835364B2` — Concurrent snapshots per General Purpose SSD (gp2) volume
 - `L-8656991D` — Concurrent snapshot copies per destination Region
 - `L-87C9DEA6` — Storage modifications for Throughput Optimized HDD (st1) volumes, in TiB
-- `L-8D977E7E` — IOPS for Provisioned IOPS SSD (io2) volumes
-- `L-915A3DBB` — Concurrent snapshots per Cold HDD (sc1) volume
 - `L-94D7AB7D` — StartSnapshot pending snapshots per account
 - `L-98A0B26D` — IOPS modifications for Provisioned IOPS SSD (io1) volumes
 - `L-9A0E0F82` — Storage modifications for Provisioned IOPS SSD (io2) volumes, in TiB
-- `L-9CF3C2EB` — Storage for Magnetic (standard) volumes, in TiB
-- `L-9F6E7C4E` — Concurrent snapshots per Throughput Optimized HDD (st1) volume
 - `L-A37D9CF3` — Provisioned Rate for Volume Initialization across concurrent volume creation requests per Region
 - `L-AFAE1BE8` — PutSnapshotBlock requests per account
 - `L-AFEBDF7A` — StartSnapshot requests per account
-- `L-B3A130E6` — IOPS for Provisioned IOPS SSD (io1) volumes
 - `L-B9F7C487` — Storage modifications for Magnetic (standard) volumes, in TiB
 - `L-C125AE42` — GetSnapshotBlock requests per account
-- `L-D0291BE3` — Concurrent snapshots per Provisioned IOPS SSD (io2) volume
-- `L-D18FCD1D` — Storage for General Purpose SSD (gp2) volumes, in TiB
-- `L-D8F37C68` — Concurrent snapshots per General Purpose SSD (gp3) volume
 - `L-DB2FBAA1` — ListChangedBlocks requests per account
-- `L-DB70D580` — Concurrent snapshots per Provisioned IOPS SSD (io1) volume
 - `L-E137849C` — Time-based snapshot copy throughput per destination Region
-- `L-E20676C1` — Archived snapshots per volume
 - `L-F06E64A8` — Storage modifications for General Purpose SSD (gp2) volumes, in TiB
-- `L-FD252861` — Storage for Provisioned IOPS SSD (io1) volumes, in TiB
 
 ## ec2
 
-- `L-01137DCE` — Running Dedicated r7gd Hosts
-- `L-0300530D` — Running Dedicated i4i Hosts
-- `L-03F01FD8` — Running Dedicated c5a Hosts
-- `L-0FBCED95` — Running Dedicated r8i-flex Hosts
 - `L-1216C47A` — Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances
-- `L-13B8FCE8` — Running Dedicated c7g Hosts
-- `L-13DB310D` — Running Dedicated c7i-flex Hosts
-- `L-1586174D` — Running Dedicated t3 Hosts
-- `L-168EDD9C` — Running Dedicated gr6f Hosts
-- `L-1766526E` — Running Dedicated i8g Hosts
 - `L-1945791B` — Running On-Demand Inf instances
-- `L-19A980DA` — Running Dedicated i8ge Hosts
-- `L-1BBC5241` — Running Dedicated c6id Hosts
-- `L-20F13EBD` — Running Dedicated c5n Hosts
-- `L-24D7D4AD` — Running Dedicated m5n Hosts
 - `L-24E8B4C0` — Concurrent TRN2 Capacity Blocks per organization
-- `L-25176A65` — Running Dedicated p4de Hosts
-- `L-2A9065B7` — Running Dedicated m8gd Hosts
-- `L-2C198A4A` — Running Dedicated g6f Hosts
 - `L-2C3B7624` — Running On-Demand Trn instances
-- `L-2CC6888D` — Running Dedicated x8g Hosts
-- `L-2E30FD7D` — Concurrent TRN1 Capacity Blocks per account
-- `L-30E31217` — Running Dedicated m7i Hosts
-- `L-313524BA` — Running Dedicated r4 Hosts
-- `L-31775423` — Multicast domains per transit gateway
 - `L-34B43A08` — All Standard (A, C, D, H, I, M, R, T, Z) Spot Instance Requests
-- `L-350B2172` — Direct Connect gateways per transit gateway
 - `L-3819A6DF` — All G and VT Spot Instance Requests
-- `L-3C82F907` — Running Dedicated m3 Hosts
-- `L-401D78F7` — Routes per Client VPN target network association
 - `L-417A185B` — Running On-Demand P instances
 - `L-43872EB7` — Route Tables per transit gateway
 - `L-43DA4232` — Running On-Demand High Memory instances
-- `L-4714FFEA` — Running Dedicated g5g Hosts
-- `L-4740F819` — Running Dedicated m7a Hosts
-- `L-4AB14223` — Running Dedicated r5dn Hosts
-- `L-4D15192B` — Running Dedicated r7a Hosts
-- `L-4F2F99E3` — Sources per transit gateway multicast group
-- `L-4F9BB70B` — Concurrent P5en Capacity Blocks per account
-- `L-52EF324A` — Running Dedicated r5n Hosts
-- `L-545AED39` — Running Dedicated c6gd Hosts
-- `L-5480EFD2` — Running Dedicated inf Hosts
-- `L-55E05032` — Running Dedicated r7i Hosts
-- `L-587AA6E3` — Running Dedicated c7i Hosts
-- `L-5937C5FF` — Running Dedicated r8g Hosts
-- `L-5C4CD236` — Running Dedicated f1 Hosts
-- `L-5D439CF7` — Verified Access Endpoints
-- `L-5E3A299D` — Running Dedicated c6gn Hosts
-- `L-5FA3355A` — Running Dedicated c6i Hosts
-- `L-6222C1B6` — Running Dedicated i2 Hosts
 - `L-62499967` — Pending peering attachments per transit gateway
-- `L-64569A79` — Concurrent TRN2 Capacity Blocks per account
-- `L-67B8B4C7` — Running Dedicated r7g Hosts
-- `L-698B67E5` — Running Dedicated c7a Hosts
 - `L-6AF8B990` — Entries in a client certificate revocation list for Client VPN endpoints
 - `L-6B0D517C` — All Trn Spot Instance Requests
-- `L-6B192186` — Transit gateways per Direct Connect Gateway
-- `L-6C2C40CC` — Running Dedicated c6in Hosts
-- `L-6CB3332C` — Running Dedicated c8g Hosts
-- `L-6DA43717` — Attachments per VPC
 - `L-6E869C2A` — Running On-Demand DL instances
-- `L-7069ADEB` — Running Dedicated g6e Hosts
 - `L-7212CCBC` — All P4, P3 and P2 Spot Instance Requests
 - `L-7295265B` — Running On-Demand X instances
-- `L-74F41837` — Running Dedicated m5ad Hosts
 - `L-74FC7D96` — Running On-Demand F instances
-- `L-75B9BECB` — Running Dedicated u7in-16tb Hosts
-- `L-77EE2B11` — Running Dedicated i3en Hosts
-- `L-78384279` — Running Dedicated dl2q Hosts
 - `L-7EA86503` — Concurrent P5en Capacity Blocks per organization
-- `L-7F5506AB` — Running Dedicated u-3tb1 Hosts
-- `L-7FD343E7` — Running Dedicated m8g Hosts
-- `L-80F2B67F` — Running Dedicated m6a Hosts
 - `L-8131B2C6` — Concurrent P5 Capacity Blocks per organization
-- `L-81657574` — Running Dedicated c5 Hosts
-- `L-84FB37AA` — Running Dedicated m6gd Hosts
 - `L-85EED4F7` — All DL Spot Instance Requests
-- `L-86A789C3` — Running Dedicated p4d Hosts
-- `L-8814B54F` — Running Dedicated r5d Hosts
 - `L-88CF9481` — All F Spot Instance Requests
-- `L-89870E8E` — Running Dedicated u-6tb1 Hosts
-- `L-89D39B5A` — Running Dedicated r8gd Hosts
-- `L-8B23CEF3` — Concurrent P6-B200 Capacity Blocks per account
-- `L-8B27377A` — Running Dedicated d2 Hosts
-- `L-8B7BF662` — Running Dedicated m5 Hosts
-- `L-8CCBD91B` — Running Dedicated m5d Hosts
-- `L-8D142A2E` — Running Dedicated c3 Hosts
-- `L-8E60B0B1` — Running Dedicated i3 Hosts
-- `L-8FBBDF0C` — Amazon FPGA images (AFIs)
-- `L-8FE30D52` — Running Dedicated r5a Hosts
-- `L-9126620E` — Running Dedicated m7g Hosts
 - `L-92B73F21` — Dynamic routes advertised from CGW to VPN connection
-- `L-93155D6F` — Running Dedicated im4gn Hosts
-- `L-949445B0` — Running Dedicated a1 Hosts
-- `L-9721EDD9` — Running Dedicated m6idn Hosts
 - `L-9AC70153` — Concurrent P4de Capacity Blocks per organization
-- `L-9E2503C2` — Running Dedicated u7i-8tb Hosts
-- `L-9F8FA74B` — Multicast domain associations per VPC
-- `L-A0A19F79` — Running Dedicated p3 Hosts
 - `L-A1B5A36F` — Peering attachments per transit gateway
-- `L-A2D59C67` — Running Dedicated r5b Hosts
-- `L-A595803A` — Running Dedicated i7ie Hosts
-- `L-A6E7FE5E` — Running Dedicated g5 Hosts
-- `L-A749B537` — Running Dedicated c6g Hosts
-- `L-A8448DC5` — Running Dedicated mac1 Hosts
-- `L-A84ABF80` — Running Dedicated x2idn Hosts
 - `L-AD1D1866` — Concurrent P5e Capacity Blocks per organization
-- `L-B10F70D6` — Running Dedicated m5a Hosts
 - `L-B36AAB51` — Concurrent P6-B200 Capacity Blocks per organization
 - `L-B5D1601B` — All Inf Spot Instance Requests
 - `L-B67430DE` — Concurrent P4d Capacity Blocks per organization
-- `L-B6D6065D` — Running Dedicated r6g Hosts
-- `L-B7208018` — Running Dedicated r3 Hosts
 - `L-B7E6B313` — Concurrent P6e-GB200 Capacity Blocks per organization
-- `L-B88B9D6B` — Running Dedicated g6 Hosts
-- `L-B89271A9` — Running Dedicated r6id Hosts
-- `L-B90B5B66` — Running Dedicated mac2-m2 Hosts
-- `L-BB2FAD1F` — Running Dedicated c8gd Hosts
-- `L-BC1589C5` — Running Dedicated r6a Hosts
-- `L-BC9FCC71` — Running Dedicated r7iz Hosts
 - `L-BCC1FB47` — Routes per transit gateway
-- `L-BD9BD803` — Running Dedicated m5zn Hosts
-- `L-C45F30BC` — Concurrent P5e Capacity Blocks per account
 - `L-C4947F9A` — Concurrent TRN1 Capacity Blocks per organization
-- `L-C4B238BF` — Concurrent client connections per Client VPN endpoint
 - `L-C4BD4855` — All P5 Spot Instance Requests
-- `L-C4D9412E` — Running Dedicated u7i-6tb Hosts
-- `L-C4EABC2C` — Running Dedicated r6idn Hosts
-- `L-C673935A` — Multicast Network Interfaces per transit gateway
-- `L-C768F2D6` — Members per transit gateway multicast group
-- `L-C93F66A2` — Running Dedicated c5d Hosts
-- `L-CAE24619` — Running Dedicated g4dn Hosts
-- `L-CB4F5825` — Running Dedicated is4gen Hosts
-- `L-D037CF10` — Running Dedicated m6in Hosts
-- `L-D0AA08B1` — Running Dedicated x2iedn Hosts
 - `L-D0B7243C` — New Reserved Instances per month
-- `L-D2699F97` — Running Dedicated c8gn Hosts
-- `L-D269BEFD` — Running Dedicated m6i Hosts
-- `L-D50A37FA` — Running Dedicated m6g Hosts
-- `L-D75D2E84` — Running Dedicated c6a Hosts
 - `L-D92B9F5B` — VPC Attachment Bandwidth
-- `L-DA07429F` — Running Dedicated m5dn Hosts
-- `L-DA6814F2` — Concurrent P5 Capacity Blocks per account
 - `L-DB0BBC4E` — Routes advertised from VPN connection to CGW
 - `L-DB2E81BA` — Running On-Demand G and VT instances
-- `L-DBCD5944` — Running Dedicated t2 Hosts
-- `L-DE3D9563` — Running Dedicated x1 Hosts
-- `L-DEF8E115` — Running Dedicated x1e Hosts
 - `L-E0233F82` — Attachments per transit gateway
 - `L-E3A00192` — All X Spot Instance Requests
-- `L-E4BF28E0` — Running Dedicated c4 Hosts
-- `L-E5BCF7B5` — Running Dedicated inf2 Hosts
-- `L-E68C3AFF` — Running Dedicated gr6 Hosts
-- `L-EA4FD6CF` — Running Dedicated r5 Hosts
-- `L-EA99608B` — Running Dedicated r6in Hosts
-- `L-EC7178B6` — Running Dedicated r5ad Hosts
 - `L-ED8A7771` — Concurrent operations per Client VPN endpoint
-- `L-ED9650A1` — Running Dedicated i7i Hosts
-- `L-EEC0A186` — Running Dedicated r8i Hosts
-- `L-EF284EFB` — Running Dedicated r6gd Hosts
-- `L-EF30B25E` — Running Dedicated m4 Hosts
-- `L-EF58B059` — Running Dedicated c7gd Hosts
-- `L-F035E935` — Running Dedicated z1d Hosts
-- `L-F13A970A` — Running Dedicated r6i Hosts
-- `L-F4621520` — Running Dedicated u7i-12tb Hosts
 - `L-F7808C92` — Running On-Demand HPC instances
-- `L-F8516154` — Running Dedicated m7gd Hosts
-- `L-FCF0179E` — Concurrent P6e-GB200 Capacity Blocks per account
-- `L-FD8E9B9A` — Running Dedicated g4ad Hosts
-- `L-FDB0A352` — Running Dedicated m6id Hosts
 
 ## ec2-ipam
 
-- `L-037D1B6C` — Resource discovery associations per IPAM
-- `L-047C0565` — IPAM pool depth
-- `L-0BC051D6` — CIDRs per IPAM pool
 - `L-50203861` — Max IPv6 Contig Blocks
 - `L-67900804` — Max IPv6 Contig Block Size
-- `L-7319AFC3` — Pools per IPAM scope
-- `L-853116AC` — Prefix List Resolvers per IPAM
 - `L-9661390E` — Max IPv4 Contig Block Size
-- `L-CD416D24` — Organizational unit exclusions per resource discovery
 - `L-E9C7F47C` — Max IPv4 Contig Blocks
-- `L-F0D8E837` — Resource discoveries per Region
-- `L-F493CFD2` — Scopes per IPAM
-- `L-F8B4A9E6` — IPAMs per Region
-
-## ec2fastlaunch
-
-- `L-DC79B53E` — Parallel instance launches
 
 ## ecr
 
 - `L-0A556EFC` — Basic image scans per 24 hours
 - `L-1165B4AE` — Minimum layer part size
 - `L-16E70933` — Rate of BatchGetImage requests
-- `L-241DEEBA` — Filters per rule in a replication configuration
-- `L-24725E9A` — Unique destinations across all rules in a replication configuration
 - `L-343F3D94` — Maximum layer part size
 - `L-44194860` — Rate of CompleteLayerUpload requests
 - `L-55A41110` — Rate of GetAuthorizationToken requests
 - `L-8BE1781E` — Rules per lifecycle policy
 - `L-95B28F8D` — Rate of InitiateLayerUpload requests
-- `L-9B60BFFB` — Rules per replication configuration
 - `L-9C9D5A08` — Tags per image
 - `L-A1670B10` — Rate of UploadLayerPart requests
 - `L-A60A366D` — Rate of GetDownloadUrlForLayer requests
@@ -2766,13 +1971,10 @@ Total open entries: **3203**
 - `L-8C118AA8` — Tasks launched per run-task
 - `L-8F66404D` — Sustained rate of tag modify actions (or bucket refill rate)
 - `L-924E3D47` — Burst rate of task definition read actions (or bucket maximum capacity)
-- `L-92E49DE3` — Tasks per service
 - `L-9383BF97` — Burst rate of task definition deletion actions (or bucket maximum capacity)
 - `L-9440138C` — Sustained rate of tag read actions (or bucket refill rate)
 - `L-9B84EC66` — Tags per resource
-- `L-A04A77EF` — Target groups per service
 - `L-A04BC52C` — Burst rate of task protection actions (or bucket maximum capacity)
-- `L-A24B7D58` — Capacity providers per cluster
 - `L-A2AA9478` — Burst rate of service deployment read actions (or bucket maximum capacity)
 - `L-A2DBEAC1` — Sustained rate of service deployment read actions (or bucket refill rate)
 - `L-A8AC1C0F` — Sustained rate of task protection actions (or bucket refill rate)
@@ -2790,19 +1992,6 @@ Total open entries: **3203**
 - `L-D5AA0F33` — Sustained rate of cluster modify actions (or bucket refill rate)
 - `L-D95BCB5D` — Burst rate of setting modify actions (or bucket maximum capacity)
 - `L-DD98B2F8` — Container instances per start-task
-- `L-E4A1E1D7` — Classic Load Balancers per service
-
-## eks
-
-- `L-11427A54` — Control plane security groups per cluster
-- `L-23414FF3` — Label pairs per Fargate profile selector
-- `L-5C12D558` — Remote node networks per cluster
-- `L-6AFFD1D8` — Remote pod networks per cluster
-- `L-93A74D60` — Public endpoint access CIDR ranges per cluster
-- `L-BD136A63` — Nodes per managed node group
-- `L-C56B9FC3` — Access entries per cluster
-- `L-D78D8AF8` — Selectors per Fargate profile
-- `L-EA277FDC` — EKS Anywhere Enterprise Subscriptions
 
 ## elasticache
 
@@ -2820,13 +2009,11 @@ Total open entries: **3203**
 
 ## elasticfilesystem
 
-- `L-03A6A61D` — VPCs per file system
 - `L-06519EB8` — Throughput per NFS client
 - `L-1E30FF38` — Minimum wait time between Provisioned Throughput decreases
 - `L-207AE8E0` — File system name length
 - `L-29770CF9` — Tags
 - `L-336A920F` — Rate of file system operations
-- `L-3D348029` — Security groups per mount target
 - `L-48B15094` — Open files per NFS client
 - `L-509A1582` — EFS file locks
 - `L-6D380DD0` — Mount targets per Availability Zone
@@ -2892,7 +2079,6 @@ Total open entries: **3203**
 - `L-72BCD5B1` — Replenishment rate of DescribeStep calls
 - `L-73E44B2E` — Replenishment rate of ModifyCluster calls
 - `L-76CEF085` — Replenishment rate of ListInstances calls
-- `L-77B909B1` — The maximum number of active instances per instance group
 - `L-7D1BF903` — The maximum number of ListSteps API requests that you can make per second.
 - `L-7E42A979` — The maximum number of AddJobFlowSteps API requests that you can make per second.
 - `L-8027FD2D` — Replenishment rate of SetTerminationProtection calls
@@ -2992,12 +2178,9 @@ Total open entries: **3203**
 
 ## entityresolution
 
-- `L-06117805` — Concurrent provider service matching jobs
-- `L-0A2F654F` — Concurrent ID mapping jobs
 - `L-1E6F8596` — Rate of GetMatchId API requests
 - `L-6CABAEA7` — Records per machine learning-based matching workflow
 - `L-6FC653B7` — Records per rule-based ID mapping workflow
-- `L-6FC8FD6D` — Concurrent matching jobs
 - `L-973E8499` — Records per provider ID mapping workflow
 - `L-B2BB98E6` — Rate of GenerateMatchId API requests
 - `L-C5007B10` — Records per rule-based matching workflow
@@ -3036,9 +2219,6 @@ Total open entries: **3203**
 - `L-E6200B63` — Features per project
 - `L-ECD3E408` — Rate of BatchEvaluateFeature requests
 
-## evs
-
-
 ## fargate
 
 - `L-3032A538` — Fargate On-Demand vCPU resource count
@@ -3052,35 +2232,8 @@ Total open entries: **3203**
 
 - `L-05F8CB95` — Managed kdb concurrent changeset ingestions
 - `L-0FC2034E` — Managed kdb volume write mounts
-- `L-186ACF90` — kx.sg.2xlarge scaling group nodes
-- `L-1F5558B4` — kx.sg.large scaling group nodes
-- `L-256AB33A` — kx.sg.xlarge scaling group nodes
-- `L-2B5C0922` — Managed kdb volume storage
-- `L-3B1B408E` — kx.s.2xlarge nodes
-- `L-403A8F92` — Managed kdb clusters
-- `L-4F92BAA2` — Managed kdb dataviews
-- `L-6271C28F` — kx.s.4xlarge nodes
-- `L-79C359E7` — kx.s.8xlarge nodes
-- `L-7CF802FB` — Managed kdb multi-AZ clusters
-- `L-7E609E02` — Managed kdb single-AZ clusters
-- `L-8116797B` — kx.sg.8xlarge scaling group nodes
-- `L-816D4CEA` — kx.s.large nodes
 - `L-8798EB61` — Concurrent dataview version processing
-- `L-8995E194` — kx.s.16xlarge nodes
-- `L-8C2FDE0C` — kx.sg1.24xlarge scaling group nodes
-- `L-8D2987C0` — kx.s.xlarge nodes
-- `L-8F9600BF` — Managed kdb scaling groups
-- `L-9DDBB72F` — Managed kdb volumes
-- `L-9EDD8654` — Managed kdb savedown storage
-- `L-9EFEF0D8` — kx.sg.4xlarge scaling group nodes
-- `L-A18C5C9A` — Managed kdb cluster users
-- `L-B75F5AE2` — kx.sg.16xlarge scaling group nodes
-- `L-BA1748AE` — kx.s.32xlarge nodes
-- `L-C8CECF7C` — Managed kdb database cluster cache size
 - `L-CD999E75` — Managed kdb volume read mounts
-- `L-EB49E8B0` — Managed kdb databases
-- `L-EE85DFB8` — kx.sg1.16xlarge scaling group nodes
-- `L-F9DDF688` — kx.sg.32xlarge scaling group nodes
 
 ## firehose
 
@@ -3101,181 +2254,54 @@ Total open entries: **3203**
 
 ## fis
 
-- `L-06C992A0` — Target functions for aws:lambda:invocation-add-delay action.
-- `L-08B3DB00` — Target Pods for aws:eks:pod-delete
-- `L-0A7016E5` — Target Tasks for aws:ecs:task-kill-process
-- `L-0BFE6B67` — Actions per experiment template
-- `L-100E963F` — Target Subnets for aws:network:route-table-disrupt-cross-region-connectivity
-- `L-1F59732D` — Target Subnets for aws:network:disrupt-connectivity
-- `L-2CF2B517` — Target TransitGateways for aws:network:transit-gateway-disrupt-cross-region-connectivity
 - `L-2FF3254A` — Experiment templates
-- `L-31F77559` — Target multi-Region clusters for aws:memorydb:multi-region-cluster-pause-replication action.
-- `L-397A8E65` — Target Pods for aws:eks:pod-io-stress
-- `L-3F98B425` — Target Instances for aws:ec2:stop-instances
-- `L-47D4AE5B` — Target account configurations per experiment template
-- `L-48D12416` — Target Tasks for aws:ecs:stop-task
-- `L-4939706C` — Target Tasks for aws:ecs:task-io-stress
-- `L-4B06CB4E` — Target Buckets for aws:s3:bucket-pause-replication
-- `L-4BEF8075` — Target ManagedResources for aws:arc:start-zonal-autoshift action.
-- `L-4E30A9A5` — Target functions for aws:lambda:invocation-http-integration-response action.
-- `L-5035601B` — Target Tasks for aws:ecs:task-network-blackhole-port
-- `L-52F5389C` — Target Tasks for aws:ecs:task-network-packet-loss
-- `L-52F95FBE` — Target Pods for aws:eks:pod-network-blackhole-port
-- `L-5A59540D` — Target Pods for aws:eks:pod-cpu-stress
-- `L-5AC5092A` — Target Pods for aws:eks:pod-network-latency
 - `L-6C1E4427` — Experiment duration in hours
-- `L-6CBFC7D2` — Target DBInstances for aws:rds:reboot-db-instances
-- `L-7D222253` — Target Clusters for aws:rds:failover-db-cluster
-- `L-872EC72B` — Stop conditions per experiment template
-- `L-97338E0D` — Target Auto Scaling groups for aws:ec2:asg-insufficient-instance-capacity-error
-- `L-9BD15E96` — Target ReplicationGroups for aws:elasticache:replicationgroup-interrupt-az-power
-- `L-9C6F1F94` — Target Instances for aws:ec2:reboot-instances
 - `L-9D601129` — Completed experiment data retention in days
-- `L-9FC608C5` — Target tables for aws:dynamodb:global-table-pause-replication action
 - `L-A5537B7C` — Maximum number of Route Tables in aws:network:route-table-disrupt-cross-region-connectivity
 - `L-A7622DAA` — Action duration in hours
 - `L-B0012750` — Target ReplicationGroups for aws:elasticache:interrupt-cluster-az-power - Deprecation Planned
-- `L-B2CDA938` — Target Clusters for aws:ecs:drain-container-instances
-- `L-B34128D0` — Target Tasks for aws:ecs:task-network-latency
-- `L-B8FF73F5` — Target Pods for aws:eks:pod-memory-stress
-- `L-B993CA05` — Target Volumes for aws:ebs:pause-volume-io
-- `L-C32797AE` — Target functions for aws:lambda:invocation-error action.
-- `L-C3959863` — Target Kinesis data streams for aws:kinesis:stream-provisioned-throughput-exception action.
 - `L-C7DC78F0` — Maximum number of Managed Prefix Lists in aws:network:route-table-disrupt-cross-region-connectivity
-- `L-C901BF0F` — Target Tasks for aws:ecs:task-cpu-stress
 - `L-C9A268F2` — Maximum number of routes in aws:network:route-table-disrupt-cross-region-connectivity
-- `L-CCA14F79` — Target Nodegroups for aws:eks:terminate-nodegroup-instances
-- `L-CFF34A14` — Target Pods for aws:eks:pod-network-packet-loss
-- `L-D0A62255` — Target Instances for aws:ssm:send-command
-- `L-E7DA8AFD` — Target Kinesis data streams for aws:kinesis:stream-expired-iterator-exception action.
-- `L-EB051440` — Parallel actions per experiment
-- `L-EE64095D` — Target Instances for aws:ec2:terminate-instances
-- `L-F3F4B54A` — Target SpotInstances for aws:ec2:send-spot-instance-interruptions
 - `L-F5FCA485` — Active experiments
-- `L-FA07612D` — Target Aurora DSQL clusters for aws:dsql:cluster-connection-failure action.
 
 ## fms
 
-- `L-0745D646` — Applications per application list
-- `L-07FCB28B` — Tags to include or exclude resources per policy
-- `L-0E131699` — Custom managed application lists per account
-- `L-1608788B` — Partner rule groups per AWS WAF policy
-- `L-1E778CA5` — Web ACL capacity units (WCU) used in an AWS WAF policy
 - `L-25F99602` — Amazon VPC instances in scope of a common security group policy
-- `L-3BC4947E` — Audit security groups per security group content audit policy
 - `L-3DCEAE01` — Custom managed application lists for rules that allow all traffic
-- `L-3F3557EB` — Resources per resource set
-- `L-450C679C` — Accounts per Firewall Manager admin
 - `L-49265FF2` — Custom managed application lists in any content audit security group policy setting
 - `L-4E3D82C8` — Custom managed protocol lists in any content audit security group policy setting
-- `L-573ADF04` — Resource sets per Firewall Manager admin account
-- `L-5AB0AC42` — Stateful rule group capacity per Network Firewall policy
-- `L-72AC804F` — Primary security groups per common security group policy
-- `L-742188BD` — Protocols per protocol list
-- `L-743D9B7E` — AWS WAF Classic rule groups per AWS WAF Classic policy
-- `L-74591874` — Admins per organization in Firewall Manager
-- `L-7AB3A351` — Inbound/outbound rules per network ACL policy
-- `L-7F63BF51` — Stateless rule group capacity per Network Firewall policy
-- `L-941CF907` — Stateless rule groups per Network Firewall policy
-- `L-98694ACE` — Explicitly included or excluded accounts per policy per Region
-- `L-9E030C62` — Stateful rule groups per Network Firewall policy
 - `L-BCA8AD34` — VPCs that a single Network Firewall policy can automatically remediate
-- `L-C6CF2DBB` — Custom managed protocol lists per account
-- `L-C80E7B9E` — Organizational units in scope per policy per Region
-- `L-CA0A307F` — Rule groups per AWS WAF policy
-- `L-DE1D154D` — Route 53 Resolver DNS Firewall rule groups per DNS Firewall policy
-- `L-F4032167` — IPV4 CIDRs for a Network Firewall policy
 
 ## forecast
 
-- `L-02D995E1` — Maximum parallel running CreateForecastExportJob tasks
-- `L-10DDC31D` — Maximum parallel running CreateForecast tasks
-- `L-1306EC42` — Maximum number of dataset import jobs
-- `L-143E66E3` — Maximum parallel running CreateExplainabilityExport tasks
-- `L-24281831` — Maximum parallel running CreateAutoPredictor tasks
-- `L-3154C698` — Maximum parallel running CreatePredictor tasks
 - `L-3D30706E` — Maximum number of columns in a related time series dataset
-- `L-3DED4AA6` — Maximum parallel running CreateWhatIfAnalysis tasks
 - `L-3F8C5D53` — Maximum number of files in your Amazon S3 bucket
-- `L-407BD890` — Maximum parallel running CreateDatasetImportJob tasks
 - `L-4A218FD9` — Maximum number of time series per predictor
 - `L-4F7B6EC8` — Maximum number of backtest windows
 - `L-50FA8F07` — The maximum number of What-if Forecasts in a CreateWhatIfForecastExport task
-- `L-561FC25E` — Maximum number of forecast export jobs
 - `L-57E6FE87` — Maximum forecast horizon
-- `L-5EC8963B` — Maximum parallel running CreateWhatIfForecast tasks
 - `L-60743B41` — Maximum number of tags you can add to a resource
 - `L-618F5043` — Maximum number of rows in a dataset
 - `L-690B4DB2` — Maximum cumulative size of all files in your Amazon S3 bucket
-- `L-6AD28BD9` — The maximum number of What-if Forecast Exports
 - `L-710D1193` — Maximum parallel running Stop jobs per resource type
-- `L-928BCA42` — Maximum number of Explainability exports
 - `L-9FD32A46` — Maximum number of columns in a target time series dataset
-- `L-A6F48898` — Maximum parallel running CreateExplainability tasks
-- `L-B50F9B6C` — Maximum parallel running CreateWhatIfForecastExport tasks
 - `L-B77118AF` — Maximum parallel running QueryForecast API tasks
 - `L-B8197A69` — Maximum time for which a forecast can be queried on console or QueryForecast API
 - `L-BDD6E332` — Maximum parallel running CreatePredictor tasks using AutoML
-- `L-C4147F5F` — Maximum parallel running CreatePredictorBacktestExportJob tasks
-- `L-D71794C7` — Maximum number of datasets in a dataset group
-- `L-E1AC300F` — Maximum number of predictor backtest export jobs
 - `L-F37CCDC6` — Maximum number of columns in an item metadata dataset
-
-## fsx
-
-- `L-0CD18A5D` — Lustre Persistent Intelligent-Tiering throughput capacity
-- `L-15D9FE87` — Lustre Cache_1 storage capacity
-- `L-4E6C2FB3` — OpenZFS provisioned SSD read cache storage capacity
-- `L-4EDE4065` — OpenZFS throughput capacity
-- `L-57578687` — ONTAP SSD IOPS
-- `L-736F3D6F` — Lustre Persistent HDD storage capacity (per file system)
-- `L-7D5FDD38` — OpenZFS SSD storage capacity (per file system)
-- `L-84EAF187` — Windows HDD storage capacity
-- `L-88479C21` — OpenZFS SSD storage capacity
-- `L-8F1B9C74` — Lustre Persistent_2 storage capacity
-- `L-901C77F5` — Windows total SSD IOPS
-- `L-AD2FC696` — Lustre Scratch storage capacity
-- `L-B7391FCE` — Lustre Persistent Intelligent-Tiering SSD read cache storage capacity
-- `L-C431DBA3` — ONTAP backups
-- `L-C5F860DD` — ONTAP throughput capacity
-- `L-C8640C82` — Lustre Persistent_1 storage capacity
-- `L-CD5E0524` — Lustre backups
-- `L-DD0F7417` — OpenZFS backups
-- `L-E24B4DE4` — OpenZFS disk IOPS
-- `L-E2C89679` — ONTAP SSD storage capacity
-- `L-E43BDB2E` — Windows SSD storage capacity
-- `L-E94C1C19` — Windows backups
-- `L-FD89CA8A` — Windows throughput capacity
 
 ## gamelift
 
-- `L-0536A98D` — Compute per Anywhere fleet
 - `L-11948650` — Build capacity
-- `L-22451070` — Game session queues per region
 - `L-24BE0A39` — Player session timeout
-- `L-293B0017` — Scripts per region
-- `L-3A43EF3C` — Maximum NewGameSessionsPerCreator per fleet configuration
-- `L-51AF299A` — Game servers per game server group
-- `L-55650DB7` — Locations in a fleet per region
-- `L-593688D9` — Anywhere fleets per region
 - `L-67477D57` — Players per matchmaking ticket
-- `L-73F6E300` — Matchmaking configurations per region
-- `L-8AE49BBD` — Matchmaking rule sets per region
-- `L-8D885299` — Game server groups per region
 - `L-8EBC4E87` — Strings per string list matchmaking player attribute
-- `L-90D24F1B` — Builds per region
-- `L-9F9DE0B2` — Maximum PolicyPeriodInMinutes per fleet configuration
 - `L-A8C1B434` — Key-value pairs per string to double map matchmaking player attribute
-- `L-AED4A06A` — Aliases per region
-- `L-BB62CF1D` — Queue destinations per game session queue
 - `L-BFEEB817` — Managed EC2 fleet EBS volume
-- `L-C30AA854` — Server processes per instance (Server SDK v3 and up)
-- `L-C6F4238C` — Custom locations per region
 - `L-CCBBB4DA` — Player attributes per matchmaking player
 - `L-E8D8BD94` — Game session log file size
 - `L-EC03D793` — Player sessions per game session
 - `L-ED58E8F8` — Script capacity
-- `L-FDDD1260` — Managed EC2 fleets per region
 
 ## gameliftstreams
 
@@ -3385,29 +2411,9 @@ Total open entries: **3203**
 
 - `L-08F3B322` — Max task DPUs per account
 - `L-096DBB95` — Max spare compute capacity consumed in data processing units (DPUs) per account.
-- `L-1DD415D5` — Max functions per database
-- `L-2C3F5401` — Max partitions per table
 - `L-2E9FB93F` — Max concurrent observations generation runs per account
-- `L-3890A802` — Number of column statistics tasks running concurrently per account
-- `L-4071B0E3` — Number of crawlers running concurrently per account
-- `L-5E4153CA` — Max concurrent job runs per account
-- `L-76EC689B` — Max DPUs per dev endpoint
-- `L-83A59AA6` — Total concurrent machine learning task runs for transforms per account
-- `L-87F5991C` — Max data quality rulesets per account
 - `L-958728D1` — Maximum number of in-flight completion requests allowed per account
-- `L-A57B5BCE` — Max databases per catalog
-- `L-ACAC12B6` — Max concurrent data quality ruleset recommendation runs per account
-- `L-AD871090` — Number of Schema Versions.
 - `L-B78896B9` — Label file size
-- `L-C3952F6C` — Max concurrent data quality ruleset evaluation runs per account
-- `L-CB69DFA0` — Number of metadata key value pairs per Schema Version.
-- `L-D987EC31` — Max functions per account
-- `L-DBA56E2F` — Max development endpoint per account
-- `L-E15CE20A` — Concurrent machine learning task runs per transform
-- `L-EEC98450` — Max jobs per trigger
-- `L-F1AAB534` — Number of integrations
-- `L-F574AED9` — Max concurrent job runs per job
-- `L-FEBBFA7A` — Max partitions per account
 
 ## grafana
 
@@ -3425,28 +2431,18 @@ Total open entries: **3203**
 
 ## greengrass
 
-- `L-172983AD` — AWS IoT devices per Greengrass group
 - `L-1F85CE8B` — Total component artifact size
 - `L-4424F8F0` — Component recipe size
-- `L-4676BC3D` — Components
-- `L-56EE2BF6` — Resources per Greengrass group
-- `L-59276CBA` — Subscriptions with 'cloud' message source per Greengrass group
 - `L-7A577824` — Rate of API requests
 - `L-7B8C20A0` — Rate of CreateComponentVersion requests
-- `L-966A9851` — Resources per Lambda function (V1)
 - `L-99B77DDC` — Thing deployment document size (without large configuration support)
-- `L-AB912DF1` — Core device thing name length
-- `L-AC2D5DCC` — Subscriptions per Greengrass group
 - `L-B4267AEE` — Deployment document size (with large configuration support)
 - `L-B905B13E` — Rate of CreateDeployment requests (V1)
 - `L-EF192347` — Thing group deployment document size (without large configuration support)
-- `L-F7F6CD87` — Lambda functions per Greengrass group
-- `L-FC3754BD` — Versions per component
 
 ## groundstation
 
 - `L-09DEC198` — Contact Lead Time Maximum
-- `L-5CCF0BC2` — Config limit
 - `L-BD84767C` — Enabled Ephemerides limit
 - `L-CCFDE387` — Maximum Contact Duration
 - `L-D6A1915B` — Dataflow endpoint group limit
