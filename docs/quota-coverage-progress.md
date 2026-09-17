@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,673 | 2,076 |
+| implemented | 2,679 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,054 | 4,457 |
-| uncovered | 7,027 | 5,941 |
+| covered | 5,060 | 4,457 |
+| uncovered | 7,021 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.83%** of the whole union, or
-**71.57%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.88%** of the whole union, or
+**71.65%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,15 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured six IoT FleetWise scopes. A signal catalog's nodes are never listed:
+  `GetSignalCatalog` reports the totals itself, which is the difference between
+  one call per catalog and a walk through every node in it. The three state
+  template quotas are all answered by the same detail call, as are the two
+  campaign quotas, so six quotas cost two listings and three detail calls per
+  parent kind.
+  `Number of state templates for each vehicle` stays in the audit: the
+  templates are attached per vehicle, and a fleet holds as many vehicles as it
+  likes.
 - Measured eight quotas in DataBrew and Well-Architected. `ListRulesets`
   carries both the rule count and the dataset it targets, so `Rules per
   ruleset` and `Rulesets per dataset` come from the same call rather than a
@@ -759,12 +768,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,008 quotas are measurable and still uncovered. Sorting them by what their
+2,002 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 739 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 733 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
