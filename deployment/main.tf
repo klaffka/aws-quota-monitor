@@ -1525,6 +1525,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "elasticbeanstalk:DescribeApplicationVersions"
           , "elasticbeanstalk:ListPlatformVersions"
           , "batch:DescribeJobQueues"
+          , "batch:DescribeServiceEnvironments"
+          , "batch:DescribeSchedulingPolicies"
           , "batch:DescribeComputeEnvironments"
           , "s3:ListAccessPoints"
           , "s3:ListMultiRegionAccessPoints"

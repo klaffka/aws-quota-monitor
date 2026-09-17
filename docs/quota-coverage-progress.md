@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,685 | 2,076 |
+| implemented | 2,690 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,066 | 4,457 |
-| uncovered | 7,015 | 5,941 |
+| covered | 5,071 | 4,457 |
+| uncovered | 7,010 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.93%** of the whole union, or
-**71.74%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.98%** of the whole union, or
+**71.81%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,16 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured five more scoped quotas. Direct Connect already walked every
+  connection for its interfaces; the same walk now also answers the hosted
+  connection and the LAG quotas, where a connection a partner provisioned
+  carries a partner name and a LAG's interfaces are the sum of its connections'.
+  Batch's service environments come from the queue listing, and the share
+  identifiers from the scheduling policy a queue names, asked for in one call
+  for every policy any queue uses; a queue naming no policy has none.
+- Left Greengrass alone. Its five group quotas belong to the V1 model, and the
+  module already records why they stay open: the definition versions are
+  addressed by ARN while the API takes an id and version pair.
 - Measured six quotas that three calls answer. One `DescribeRegistry` settles
   all of ECR's replication limits: the rules, the filters on the busiest rule
   and the destinations across every rule, where a Region named by two rules is
@@ -781,12 +791,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,996 quotas are measurable and still uncovered. Sorting them by what their
+1,991 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 727 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 722 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
