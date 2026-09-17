@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Forecast dataset column, predictor horizon and what-if export measurements.
 - IoT Core HTTP action header, policies-per-target and thing type propagating
   attribute measurements.
 - QuickSight custom action, sheet control and calculated field measurements,

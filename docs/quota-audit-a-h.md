@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2189**
+Total open entries: **2184**
 
 
 ## access-analyzer
@@ -2274,21 +2274,16 @@ Total open entries: **2189**
 
 ## forecast
 
-- `L-3D30706E` — Maximum number of columns in a related time series dataset
 - `L-3F8C5D53` — Maximum number of files in your Amazon S3 bucket
 - `L-4A218FD9` — Maximum number of time series per predictor
 - `L-4F7B6EC8` — Maximum number of backtest windows
-- `L-50FA8F07` — The maximum number of What-if Forecasts in a CreateWhatIfForecastExport task
-- `L-57E6FE87` — Maximum forecast horizon
 - `L-60743B41` — Maximum number of tags you can add to a resource
 - `L-618F5043` — Maximum number of rows in a dataset
 - `L-690B4DB2` — Maximum cumulative size of all files in your Amazon S3 bucket
 - `L-710D1193` — Maximum parallel running Stop jobs per resource type
-- `L-9FD32A46` — Maximum number of columns in a target time series dataset
 - `L-B77118AF` — Maximum parallel running QueryForecast API tasks
 - `L-B8197A69` — Maximum time for which a forecast can be queried on console or QueryForecast API
 - `L-BDD6E332` — Maximum parallel running CreatePredictor tasks using AutoML
-- `L-F37CCDC6` — Maximum number of columns in an item metadata dataset
 
 ## gamelift
 
