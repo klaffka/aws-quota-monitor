@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,690 | 2,076 |
+| implemented | 2,696 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,071 | 4,457 |
-| uncovered | 7,010 | 5,941 |
+| covered | 5,077 | 4,457 |
+| uncovered | 7,004 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.98%** of the whole union, or
-**71.81%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.02%** of the whole union, or
+**71.89%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,28 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured the six Greengrass group quotas the module had left open. A V1 group
+  version names each of its definitions by ARN while the API that reads one
+  takes a definition id and a version id, which is why they were open. The ARN
+  carries both, so it is taken apart under the rule the Bedrock batch check
+  already follows: the shape is matched whole and anything else raises
+  `NoData`, rather than an id being guessed out of a string that does not look
+  the way it should. A group holding no definition of a kind counts as zero
+  rather than dropping out of the maximum, and the cloud-sourced subscriptions
+  are told from the rest by the source AWS writes as `cloud`.
+  The IAM grant guard could not see four of the six operations, and the reason
+  is worth recording. The guard has two halves: one reads the source and only
+  sees a `ctx.call` whose service and operation are literal there, the other
+  runs every check against synthesised responses and records what it really
+  calls. These four are literal nowhere, and the smoke harness never reaches
+  them either: it synthesises the group version's definition ARN as a plain
+  string, `definition_ids` refuses to parse it, and the check stops at
+  `NO_DATA` before the definition is ever read. The grants were added by hand
+  and checked against the call sites by reading them.
+  That gap is not specific to Greengrass. Of the checks the harness drives, 274
+  end in `NO_DATA` against synthesised data and 84 of those name an ARN, so
+  every call site behind one of them is granted on trust rather than by the
+  guard.
 - Measured five more scoped quotas. Direct Connect already walked every
   connection for its interfaces; the same walk now also answers the hosted
   connection and the LAG quotas, where a connection a partner provisioned
@@ -791,12 +813,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,991 quotas are measurable and still uncovered. Sorting them by what their
+1,985 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 722 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 716 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |

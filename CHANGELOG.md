@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Greengrass V1 group device, function, resource and subscription
+  measurements.
 - Direct Connect hosted connection and LAG interface measurements, and Batch
   service environment and share identifier measurements.
 - ECR replication rule, filter and destination measurements, and CloudTrail
