@@ -1285,6 +1285,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "iot:ListProvisioningTemplateVersions"
           , "iot:ListPolicies"
           , "iot:ListPolicyVersions"
+          , "iot:ListTargetsForPolicy"
+          , "iot:ListThingTypes"
           , "iot:ListAuthorizers"
           , "iot:ListTopicRules"
           , "iot:GetTopicRule"
