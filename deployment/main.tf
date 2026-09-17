@@ -1599,6 +1599,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "cleanrooms:ListIdMappingTables"
           , "cleanrooms:ListConfiguredAudienceModelAssociations"
           , "cleanrooms:ListCollaborationPrivacyBudgetTemplates"
+          , "cleanrooms:ListProtectedJobs"
+          , "cleanrooms:ListProtectedQueries"
           , "verifiedpermissions:ListPolicyStores"
           , "verifiedpermissions:ListPolicyTemplates"
           , "transfer:ListUsers"

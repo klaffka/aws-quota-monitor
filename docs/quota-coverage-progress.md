@@ -90,6 +90,33 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Closed the hole in the IAM grant guard that the Greengrass entry below
+  describes, and found a live fault in it. The guard drives every check through
+  the smoke harness and checks the policy against the calls it records, but for
+  the six modules that build their checks only when the collector calls them it
+  threw the recording away: 39 call sites that neither half of the guard had
+  ever seen. Two of them, `cleanrooms:ListProtectedJobs` and
+  `cleanrooms:ListProtectedQueries`, are granted nowhere in `main.tf`, so the
+  Clean Rooms protected job and query counts have been answering `AccessDenied`
+  on every run rather than a usage value. Both are granted now.
+  The source-reading half was extended at the same time. 157 of the 1,100
+  `ctx.call` sites name their operation through the enclosing helper's
+  parameter, and every caller binds that parameter to a literal one node away,
+  so the pair resolves there; the two halves are read from one call node,
+  because pairing every service literal in a module with every operation
+  literal reports grants no check asks for. That adds 451 operations, 11 of
+  them in modules the harness cannot reach either, among them
+  `greengrass:GetFunctionDefinitionVersion` — one of the four grants this
+  document records as having been added by hand.
+  What neither half reaches is now named rather than assumed. 270 checks stop
+  at `NO_DATA` against synthesised data, and they are listed in `UNEXERCISED`
+  in `tests/test_check_smoke.py` with the reason each reports, asserted in both
+  directions. Making the harness generate ARN-shaped strings and healthy enum
+  values instead was measured and rejected: it moves 274 of them to 263 and
+  records no additional call site, because the reasons are semantic. A Bedrock
+  batch job needs a base model the module's own mapping resolves; a Connect
+  quota needs to resolve to the instance it was requested for. No quota
+  coverage changes: the covered count stays at 5,077.
 - Measured the six Greengrass group quotas the module had left open. A V1 group
   version names each of its definitions by ARN while the API that reads one
   takes a definition id and a version id, which is why they were open. The ARN
@@ -111,7 +138,7 @@ records how far the current AWS APIs reach.
   That gap is not specific to Greengrass. Of the checks the harness drives, 274
   end in `NO_DATA` against synthesised data and 84 of those name an ARN, so
   every call site behind one of them is granted on trust rather than by the
-  guard.
+  guard. The bullet above this one records what closing that gap found.
 - Measured five more scoped quotas. Direct Connect already walked every
   connection for its interfaces; the same walk now also answers the hosted
   connection and the LAG quotas, where a connection a partner provisioned
