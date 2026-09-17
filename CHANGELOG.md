@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- ECR replication rule, filter and destination measurements, and CloudTrail
+  event selector, data resource and advanced condition measurements.
 - IoT FleetWise signal catalog node, campaign signal and partition, and state
   template property and dimension measurements.
 - DataBrew job, open project, ruleset and recipe version measurements, and

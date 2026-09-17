@@ -2,6 +2,12 @@
 
 Service Quotas calls the service `elasticfilesystem`, which is also its IAM
 prefix, but the SDK client is named `efs`.
+
+`Mount targets per Availability Zone` and `Mount targets per VPC` stay in the
+audit. Neither names whose mount targets it counts, and no export states a
+value that would settle it: the same listing supports an account total and a
+per-file-system maximum, and picking one would be a denominator chosen by
+guess.
 """
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 

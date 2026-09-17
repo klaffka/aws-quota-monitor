@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,679 | 2,076 |
+| implemented | 2,685 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,060 | 4,457 |
-| uncovered | 7,021 | 5,941 |
+| covered | 5,066 | 4,457 |
+| uncovered | 7,015 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.88%** of the whole union, or
-**71.65%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **41.93%** of the whole union, or
+**71.74%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,19 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Measured six quotas that three calls answer. One `DescribeRegistry` settles
+  all of ECR's replication limits: the rules, the filters on the busiest rule
+  and the destinations across every rule, where a Region named by two rules is
+  still one destination. One `GetEventSelectors` per CloudTrail trail settles
+  all three of its selector quotas, and the data resources and advanced
+  conditions are summed across a trail's selectors rather than taken from the
+  largest one, because that is what the quotas bound.
+- Recorded why EFS's `Mount targets per Availability Zone` and `Mount targets
+  per VPC` stay in the audit. Neither names whose mount targets it counts, and
+  no export states a value that would settle it: the same listing supports an
+  account total and a per-file-system maximum, and picking one would be a
+  denominator chosen by guess. This is the same reason MediaTailor's source
+  quotas stay open.
 - Measured six IoT FleetWise scopes. A signal catalog's nodes are never listed:
   `GetSignalCatalog` reports the totals itself, which is the difference between
   one call per catalog and a walk through every node in it. The three state
@@ -768,12 +781,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,002 quotas are measurable and still uncovered. Sorting them by what their
+1,996 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 733 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 727 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
