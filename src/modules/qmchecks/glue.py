@@ -309,6 +309,36 @@ def table_versions_per_table(ctx):
     return maximum(values, 'GlueTable', 'glue:GetDatabases+GetTables+GetTableVersions')
 
 
+def _schema_versions(ctx):
+    """Yield (schema ARN, version id) for every version of every schema."""
+    for schema in ctx.call('glue', 'list_schemas', 'Schemas'):
+        arn = required(schema, 'SchemaArn', 'schema')
+        for version in ctx.call('glue', 'list_schema_versions', 'Schemas',
+                                SchemaId={'SchemaArn': arn}):
+            if version.get('SchemaArn') != arn:
+                raise NoData('Glue schema version belongs to a different schema')
+            yield arn, required(version, 'SchemaVersionId', 'schema version')
+
+
+def versions_per_schema(ctx):
+    counts = {}
+    for arn, _identity in _schema_versions(ctx):
+        counts[arn] = counts.get(arn, 0) + 1
+    return maximum([(arn, count, None) for arn, count in sorted(counts.items())],
+                   'GlueSchema', 'glue:ListSchemas+ListSchemaVersions')
+
+
+def metadata_per_schema_version(ctx):
+    """Metadata is keyed by version, so each version is queried on its own."""
+    values = []
+    for _arn, identity in _schema_versions(ctx):
+        answer = ctx.call('glue', 'query_schema_version_metadata', SchemaVersionId=identity)
+        if answer.get('SchemaVersionId') != identity:
+            raise NoData('Glue schema version metadata has a different identity')
+        values.append((identity, len(answer.get('MetadataInfoMap') or {}), None))
+    return maximum(values, 'GlueSchemaVersion', 'glue:QuerySchemaVersionMetadata')
+
+
 CHECKS = [
     ('L-11FA2C1A', 'Number of crawlers', lambda ctx: count(ctx, 'get_crawlers', 'Crawlers')),
     ('L-F953935E', 'Max databases per account', lambda ctx: count(ctx, 'get_databases', 'DatabaseList')),
@@ -354,6 +384,9 @@ CHECKS = [
      active_materialized_view_refreshes),
     ('L-3890A802', 'Number of column statistics tasks running concurrently per account',
      active_column_statistics_tasks),
+    ('L-AD871090', 'Number of Schema Versions.', versions_per_schema),
+    ('L-CB69DFA0', 'Number of metadata key value pairs per Schema Version.',
+     metadata_per_schema_version),
 ]
 
 

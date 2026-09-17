@@ -5,10 +5,34 @@ calls, so the per-resource limits read every portfolio and product in full.
 """
 from collections import Counter
 
+from botocore.exceptions import ClientError
+
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 SERVICECATALOG = 'servicecatalog'
 APPREGISTRY = 'servicecatalog-appregistry'
+ORGANIZATIONS = 'organizations'
+# Organizations answers per service principal, and Service Catalog's is the
+# only one this quota counts.
+SERVICE_PRINCIPAL = 'servicecatalog.amazonaws.com'
+# The account is not in an organization, so the quota has no subject here.
+NOT_AN_ORGANIZATION = {'AWSOrganizationsNotInUseException', 'AccessDeniedException'}
+
+
+def delegated_administrators(ctx):
+    """Service Catalog itself cannot list these; Organizations owns them."""
+    try:
+        found = ctx.call(ORGANIZATIONS, 'list_delegated_administrators',
+                         'DelegatedAdministrators', ServicePrincipal=SERVICE_PRINCIPAL)
+    except ClientError as exc:
+        if exc.response['Error']['Code'] in NOT_AN_ORGANIZATION:
+            raise NoData('This account is not the management account of an '
+                         'organization, so it cannot read its delegated '
+                         'administrators') from None
+        raise
+    return dict(usage=len(found),
+                source='organizations:ListDelegatedAdministrators',
+                method='ACCOUNT_COUNT')
 
 
 def portfolios(ctx):
@@ -151,6 +175,8 @@ def _per_application(method, key, source):
 
 
 CHECKS = [
+    ('L-CA761021', 'Delegated administrators per organization',
+     delegated_administrators),
     ('L-C6458716', 'Portfolios per region',
      lambda ctx: dict(usage=len(portfolios(ctx)),
                       source='servicecatalog:ListPortfolios', method='ACCOUNT_COUNT')),

@@ -4,6 +4,7 @@ The MQTT protocol quotas describe one connection or message: unacknowledged
 publishes, topic aliases, subscriptions per connection, shared subscription
 groups and expiry intervals all live in the broker rather than in an inventory.
 """
+from modules.qmchecks.iot import dynamic_thing_groups
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 IOT = 'iot'
@@ -155,6 +156,8 @@ CHECKS = [
     ('L-1AC7411F', 'Maximum depth of a thing group hierarchy',
      thing_group_hierarchy_depth),
     ('L-9D744041', 'Maximum number of direct child groups', direct_child_groups),
+    # Both service codes name this quota over the same thing group inventory.
+    ('L-6EC13FE5', 'Maximum number of dynamic groups', dynamic_thing_groups),
 ]
 
 

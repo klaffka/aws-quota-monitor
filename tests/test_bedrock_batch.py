@@ -130,6 +130,8 @@ def test_failed_later_page_returns_error_without_partial_usage():
 
 def test_batch_quota_registration_is_unique_and_available_to_collector():
     keys = custom_keys()
-    assert len(MODEL_QUOTAS) == 36
-    assert len({code for code, _, _ in MODEL_QUOTAS}) == 36
+    # A model may hold two codes, because the two exports issue it twice; a
+    # code mapped twice would be the bug. The count itself is not an invariant.
+    codes = [code for code, _model, _kind in MODEL_QUOTAS]
+    assert len(set(codes)) == len(codes), 'a batch model quota code is mapped twice'
     assert all(('bedrock', code) in keys for code, _, _ in CHECKS)

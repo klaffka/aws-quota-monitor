@@ -1,7 +1,9 @@
-"""AWS IoT device management, security profile, job and stream quotas.
+"""AWS IoT device management, security profile, job, command and stream quotas.
 
-The wildcard, query term, shadow name and tunnel quotas bound a single query or
-tunnel, and the pre-signed URL and timer quotas name a period.
+The wildcard and query term quotas bound a single query, the tunnel quotas bound
+one tunnel, and the pre-signed URL and timer quotas name a period. The named
+shadow and geo location filters are different: they configure the fleet index
+for the whole account, so GetIndexingConfiguration reports them.
 """
 from collections import Counter
 from datetime import timedelta
@@ -56,6 +58,78 @@ def behaviors_per_security_profile(ctx):
             raise NoData('IoT security profile has an invalid behavior list')
         values.append((name, len(behaviors), None))
     return maximum(values, 'IoTSecurityProfile', 'iot:DescribeSecurityProfile')
+
+
+# A behaviour states its threshold in whichever of these the metric needs; the
+# scalar members bound one value rather than a list of them.
+VALUE_LISTS = ('cidrs', 'ports', 'numbers', 'strings')
+# The states an execution can still leave, so both of them hold the quota.
+COMMAND_RUNNING = ('CREATED', 'IN_PROGRESS')
+
+
+def behaviour_value_elements(ctx):
+    """The quota bounds one behaviour's list, not the profile's behaviours."""
+    values = []
+    for name in security_profiles(ctx):
+        detail = ctx.call(IOT, 'describe_security_profile', securityProfileName=name)
+        for behaviour in detail.get('behaviors') or []:
+            behaviour_name = behaviour.get('name')
+            if not isinstance(behaviour_name, str) or not behaviour_name:
+                raise NoData('IoT security profile behaviour is missing its name')
+            value = (behaviour.get('criteria') or {}).get('value') or {}
+            if not isinstance(value, dict):
+                raise NoData('IoT security profile behaviour has an invalid value')
+            elements = sum(len(value.get(member) or ()) for member in VALUE_LISTS)
+            values.append((f'{name}/{behaviour_name}', elements, None))
+    return maximum(values, 'IoTSecurityProfileBehavior', 'iot:DescribeSecurityProfile')
+
+
+def targets_per_job(ctx):
+    """A job keeps its targets after it finishes, so every job still holds one."""
+    values = []
+    for job in ctx.call(IOT, 'list_jobs', 'jobs'):
+        identity = job.get('jobId')
+        if not isinstance(identity, str) or not identity:
+            raise NoData('IoT job is missing its identity')
+        detail = ctx.call(IOT, 'describe_job', jobId=identity).get('job') or {}
+        if detail.get('jobId') != identity:
+            raise NoData('IoT job detail has a different identity')
+        values.append((identity, len(detail.get('targets') or ()), None))
+    return maximum(values, 'IoTJob', 'iot:ListJobs+DescribeJob')
+
+
+def index_filter(ctx, member):
+    """Count one fleet index filter, which is configured per account."""
+    configuration = ctx.call(IOT, 'get_indexing_configuration').get('thingIndexingConfiguration')
+    if not isinstance(configuration, dict):
+        raise NoData('IoT indexing configuration has no thingIndexingConfiguration')
+    entries = (configuration.get('filter') or {}).get(member) or []
+    if not isinstance(entries, list):
+        raise NoData(f'IoT fleet index filter has an invalid {member} list')
+    return dict(usage=len(entries), source='iot:GetIndexingConfiguration',
+                method='ACCOUNT_COUNT')
+
+
+def parameters_per_command(ctx):
+    values = []
+    for command in ctx.call(IOT, 'list_commands', 'commands'):
+        identity = command.get('commandId')
+        if not isinstance(identity, str) or not identity:
+            raise NoData('IoT command is missing its identity')
+        detail = ctx.call(IOT, 'get_command', commandId=identity)
+        if detail.get('commandId') != identity:
+            raise NoData('IoT command detail has a different identity')
+        values.append((identity, len(detail.get('mandatoryParameters') or ()), None))
+    return maximum(values, 'IoTCommand', 'iot:ListCommands+GetCommand')
+
+
+def running_command_executions(ctx):
+    """IoT filters executions server side, so each unfinished state is asked for."""
+    usage = 0
+    for status in COMMAND_RUNNING:
+        usage += len(ctx.call(IOT, 'list_command_executions', 'commandExecutions',
+                              status=status))
+    return dict(usage=usage, source='iot:ListCommandExecutions', method='ACCOUNT_COUNT')
 
 
 def security_profiles_per_target(ctx):
@@ -180,7 +254,17 @@ CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups', dynamic_thing_group
            security_profiles_per_target),
           ('L-D32D434B', 'Files per stream', files_per_stream),
           ('L-1EF777B4', 'Simultaneous in progress on-demand audits',
-           on_demand_audits_in_progress)]
+           on_demand_audits_in_progress),
+          ('L-971FA845', 'Behavior metric value elements for each security profile',
+           behaviour_value_elements),
+          ('L-9D1E0A0D', 'Job Targets', targets_per_job),
+          ('L-57F7D467', 'Maximum number of names in the named shadow names filter',
+           lambda ctx: index_filter(ctx, 'namedShadowNames')),
+          ('L-7068DC7F', 'Maximum number of targets in the geo locations filter',
+           lambda ctx: index_filter(ctx, 'geoLocations')),
+          ('L-F570A784', 'Parameters per dynamic command', parameters_per_command),
+          ('L-631C84B3', 'Command execution concurrency limit',
+           running_command_executions)]
 
 
 def get_current_quotastatus_iot(session=None, *, ctx=None, skip=()):

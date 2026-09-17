@@ -125,16 +125,34 @@ UNMEASURABLE_RULES = (
 )
 
 
-# A bound on one payload, document or retention period exists only while a
-# request is in flight, so no inventory can report it after the fact.
+# A bound on one payload or document exists only while a request is in flight,
+# and a bound stated in time units is a period rather than a count however the
+# name reads: CodeDeploy's "Minutes until a deployment fails" and "AWS Lambda
+# deployment run in hours" are the deployment's clock, not an inventory.
+#
+# The time units are matched in the plural only, because English uses the
+# singular attributively: Connect's "Historical actuals 15 or 30 minute interval
+# file count" counts files and merely describes their interval, while every
+# quota that really names a period writes "hours", "minutes" or "seconds".
 SIZE_OR_PERIOD = re.compile(
     r'\b(size|length|bytes|kb|mb|gb|kib|mib|gib|tib|characters?|payload|duration|'
-    r'timeout|retention|expiration|age|depth|ttl|width|resolution|bitrate)\b',
+    r'timeout|retention|expiration|age|depth|ttl|width|resolution|bitrate|'
+    r'hours|minutes|seconds|milliseconds|days)\b',
     re.IGNORECASE)
 # A rate no exclusion rule matched, because the name names neither a window nor
 # an operation. These stay measurable, but a check would have to invent a window.
-RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bper (second|minute|hour|day)\b',
-                         re.IGNORECASE)
+# A window stated in whole days is matched explicitly and first, because it also
+# names an hour: "Basic image scans per 24 hours" counts sends over a day, not a
+# duration, and "emails ... per 24-hour period" is the same shape spelled out.
+DAY_WINDOW = re.compile(r'per \d+[- ]?hours?\b|per \d+[- ]?hour period\b'
+                        r'|during a \d+-hour period\b'
+                        # A longer stated window is still a window: a monthly
+                        # allowance and a rolling year count events, not things,
+                        # and "days" would otherwise read them as periods.
+                        r'|\bper (month|week|year)\b'
+                        r'|\bin (the )?last \d+ days\b', re.IGNORECASE)
+RATE_SHAPED = re.compile(r'\brate\b|\bthroughput\b|\bbandwidth\b'
+                         r'|\bper (second|minute|hour|day)\b', re.IGNORECASE)
 
 
 # A volume of data inside one job, file or request. "Records per batch inference
@@ -143,6 +161,11 @@ VOLUME = re.compile(r'\b(records?|tokens?|rows?|columns?|data points?|characters
                     r'|\bsum of training and validation\b|\bamount of\b'
                     r'|\bper (call|request|invocation)\b|\bin a \w+ call\b',
                     re.IGNORECASE)
+# The same bound, written with the operation named in between: "Blueprints per
+# Start Inference request", "Files to ingest per IngestKnowledgeBaseDocuments
+# job". The operation name is capitalised, which is what separates these from
+# "Reports per instance" and every other per-parent inventory.
+NAMED_REQUEST = re.compile(r'\bper [A-Z][\w-]*(?: [\w-]+)* (request|job)\b')
 
 
 # Service Quotas still lists these services, but botocore ships no client for
@@ -160,6 +183,47 @@ SDK_REMOVED = frozenset({
 })
 
 
+# A quota AWS counts over every account in the organization. This collector
+# holds one account's credentials, so what the other members hold is invisible
+# to it however readable the local half is: EC2 capacity blocks are reported
+# per account and per organization side by side, and only the first is
+# answerable here. A quota this matches that some API does answer, such as
+# Service Catalog's delegated administrators, counts as covered before the
+# shapes are consulted and never reaches this rule.
+ORGANIZATION_SCOPED = re.compile(
+    r'per (AWS )?organization\b|across the organization|organization-wide', re.IGNORECASE)
+
+
+# The catalog states each quota's unit, which settles what it measures better
+# than its name does: GameLift's "Build capacity" and "Script capacity" read as
+# inventories and are gigabytes. This is the same kind of rule as PERIOD_RATE,
+# which already trusts the catalog's stated period over the wording. Only units
+# that describe something other than a count are consulted; `Count` and the
+# empty `None` the catalog usually carries leave the decision to the name.
+# Byte units only. A bare bit unit is ambiguous: EC2 states "VPC Attachment
+# Bandwidth" in Gigabits and means gigabits per second, so bits are left to the
+# name, which says "bandwidth" and is matched as a rate.
+SIZE_UNITS = frozenset({
+    'Bytes', 'Kilobytes', 'Megabytes', 'Gigabytes', 'Terabytes', 'Petabytes',
+    'Kibibytes', 'Mebibytes', 'Gibibytes', 'Tebibytes',
+})
+PERIOD_UNITS = frozenset({
+    'Microseconds', 'Milliseconds', 'Seconds', 'Minutes', 'Hours', 'Days',
+})
+
+
+def unit_shape(quota: dict) -> str | None:
+    """Classify by the catalog's unit, or None when it names none that helps."""
+    unit = str(quota.get('Unit') or '')
+    if '/' in unit:
+        # A unit over a period, such as Megabits/Second, is a rate however the
+        # quota is worded.
+        return 'rate_shaped'
+    if unit in SIZE_UNITS or unit in PERIOD_UNITS:
+        return 'size_or_period'
+    return None
+
+
 def gap_shape(quota: dict) -> str:
     """Classify a measurable, uncovered quota by what its name describes.
 
@@ -172,9 +236,14 @@ def gap_shape(quota: dict) -> str:
     if quota.get('ServiceCode') in SDK_REMOVED:
         return 'no_sdk_client'
     name = _name(quota)
-    if RATE_SHAPED.search(name):
+    if ORGANIZATION_SCOPED.search(name):
+        return 'cross_account'
+    stated = unit_shape(quota)
+    if stated is not None:
+        return stated
+    if DAY_WINDOW.search(name) or RATE_SHAPED.search(name):
         return 'rate_shaped'
-    if SIZE_OR_PERIOD.search(name) or VOLUME.search(name):
+    if SIZE_OR_PERIOD.search(name) or VOLUME.search(name) or NAMED_REQUEST.search(name):
         return 'size_or_period'
     return 'countable'
 
@@ -202,7 +271,8 @@ def catalog_coverage(quotas: list[dict], implemented: set[tuple[str, str]] | Non
     services = defaultdict(lambda: {'total': 0, 'implemented': 0, 'compatibleMetric': 0,
                                     'covered': 0, 'uncovered': 0, 'unmeasurable': 0,
                                     'countable': 0, 'size_or_period': 0, 'rate_shaped': 0,
-                                    'no_sdk_client': 0, 'uncoveredCodes': []})
+                                    'no_sdk_client': 0, 'cross_account': 0,
+                                    'uncoveredCodes': []})
     for (service, code), quota in sorted(unique.items()):
         row = services[service]
         row['total'] += 1
@@ -297,15 +367,18 @@ def totals(rows: list[dict]) -> dict:
 
 GAP_SHAPES = (
     ('countable', 'the name describes a count; whether an API exposes that inventory has to be checked quota by quota'),
-    ('size_or_period', 'the bound applies to one payload, document or retention '
-                       'period, so there is a value to read only while a request is in flight'),
+    ('size_or_period', 'the bound applies to one payload or document, or states a '
+                       'period in time units, so there is no inventory to count'),
     ('rate_shaped', 'a rate no exclusion rule matches, because the name states '
                     'neither a window nor an operation'),
     ('no_sdk_client', 'botocore ships no client for the service any more, so no '
                       'inventory can be read until AWS restores one'),
+    ('cross_account', 'the quota is counted over every account in the organization, '
+                      'which one account\'s credentials cannot see'),
 )
 GAP_LABELS = {'countable': 'countable', 'size_or_period': 'size or period',
-              'rate_shaped': 'rate-shaped', 'no_sdk_client': 'no SDK client'}
+              'rate_shaped': 'rate-shaped', 'no_sdk_client': 'no SDK client',
+              'cross_account': 'organization-wide'}
 
 
 def render_gaps(rows: list[dict], limit: int = 12) -> str:
