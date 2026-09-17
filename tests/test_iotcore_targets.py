@@ -1,4 +1,4 @@
-"""IoT Core scopes reached by inverting a walk or by reading a thing type."""
+"""IoT Core scopes reached by inverting a walk, a thing type or the data plane."""
 import boto3
 import pytest
 from botocore.stub import Stubber
@@ -148,6 +148,25 @@ def test_a_thing_type_without_a_name_is_reported():
                           {})
         with pytest.raises(NoData, match='name'):
             check('L-FBACAF74')(ctx)
+
+
+def test_retained_messages_are_counted_on_the_data_plane():
+    """The retained message store answers only through the iot-data client."""
+    ctx = context('L-57BADEF0')
+    with Stubber(ctx.client('iot-data')) as stub:
+        stub.add_response('list_retained_messages', {'retainedTopics': [
+            {'topic': 'a/b'}, {'topic': 'c/d'}]}, {})
+        result = check('L-57BADEF0')(ctx)
+        assert (result['usage'], result['method']) == (2, 'ACCOUNT_COUNT')
+        stub.assert_no_pending_responses()
+
+
+def test_an_account_retaining_nothing_counts_as_zero():
+    ctx = context('L-57BADEF0')
+    with Stubber(ctx.client('iot-data')) as stub:
+        stub.add_response('list_retained_messages', {'retainedTopics': []}, {})
+        assert check('L-57BADEF0')(ctx)['usage'] == 0
+        stub.assert_no_pending_responses()
 
 
 def test_the_header_check_reuses_the_walk_the_action_count_already_makes():

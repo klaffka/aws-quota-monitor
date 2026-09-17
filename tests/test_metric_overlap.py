@@ -109,6 +109,8 @@ OVERLAP = frozenset({
     # gameliftstreams (2)
     ('gameliftstreams', 'L-C9680889'),  # Applications
     ('gameliftstreams', 'L-E84C6A80'),  # Stream groups
+    # iotcore (1)
+    ('iotcore', 'L-57BADEF0'),  # Maximum number of retained messages per account
     # kinesis (1)
     ('kinesis', 'L-0918CF54'),  # Shards per Region
     # kms (2)

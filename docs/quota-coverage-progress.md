@@ -21,7 +21,7 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,710 | 2,076 |
+| implemented | 2,711 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
 | covered | 5,091 | 4,457 |
 | uncovered | 6,990 | 5,941 |
@@ -128,13 +128,16 @@ records how far the current AWS APIs reach.
   attached to it, so the walk runs from the policy side: bounded by the policy
   quota, and complete. `Maximum number of propagating attributes` is the MQTT 5
   user-property configuration a thing type carries.
-  `Maximum number of retained messages per account` was investigated and
-  deliberately left alone. The data plane answers it through
-  `ListRetainedMessages`, but AWS publishes an official `AWS/Usage`
-  `ResourceCount` metric for it, and an official metric wins over a resource
-  check: the check would have been registered, counted as implemented, and never
-  run. It was caught because the covered total moved by one less than the
-  implemented total. No test asserts that invariant today.
+  `Maximum number of retained messages per account` was dropped from that batch
+  and has since been put back, because the reason given for dropping it was
+  wrong. The data plane answers it through `ListRetainedMessages`, and AWS also
+  publishes an official `AWS/Usage` `ResourceCount` metric for it. The batch
+  read that as the check being dead, since an official metric wins. It is not:
+  `official` is built from the catalog the account and Region actually return,
+  so such a check is the fallback for a catalog that carries no metric, which is
+  what 154 other checks in this collector already are. The census in
+  `tests/test_metric_overlap.py` records all of them and fails on a new one, so
+  the choice is deliberate rather than invisible.
   The thing-scoped quotas stay open for a cost reason rather than a reach one:
   attributes on a thing, thing groups a thing belongs to and thing types
   associated with a thing each need a describe per thing, which a fleet makes

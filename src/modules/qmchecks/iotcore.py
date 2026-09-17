@@ -4,10 +4,11 @@ The MQTT protocol quotas describe one connection or message: unacknowledged
 publishes, topic aliases, subscriptions per connection, shared subscription
 groups and expiry intervals all live in the broker rather than in an inventory.
 
-`Maximum number of retained messages per account` is not measured here although
-the data plane would answer it: AWS publishes an official usage metric for it
-(`AWS/Usage` `ResourceCount`, resource `ApproximateRetainedMessageCount`), and
-an official metric wins over a resource check, so the check would never run.
+`Maximum number of retained messages per account` is answered on the data plane
+rather than the control plane. AWS also publishes an official usage metric for
+it (`AWS/Usage` `ResourceCount`, resource `ApproximateRetainedMessageCount`),
+which wins wherever a catalog carries it, so this check is the fallback for one
+that does not. `tests/test_metric_overlap.py` records that on purpose.
 
 The thing-scoped quotas -- attributes on a thing with and without a thing type,
 thing groups a thing belongs to, thing types associated with a thing -- would
@@ -23,6 +24,9 @@ from modules.qmchecks.iot import dynamic_thing_groups
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 IOT = 'iot'
+# The retained message store answers on the data plane, which signs as
+# `iotdata` while authorising under the control plane's `iot:` prefix.
+IOT_DATA = 'iot-data'
 
 
 def _count(method, key, source):
@@ -239,6 +243,10 @@ CHECKS = [
      policies_per_target),
     ('L-FBACAF74', 'Maximum number of propagating attributes',
      propagating_attributes),
+    ('L-57BADEF0', 'Maximum number of retained messages per account',
+     lambda c: dict(usage=len(c.call(IOT_DATA, 'list_retained_messages',
+                                     'retainedTopics')),
+                    source='iot:ListRetainedMessages', method='ACCOUNT_COUNT')),
 ]
 
 

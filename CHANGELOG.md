@@ -8,8 +8,10 @@ All notable changes to this project are recorded here. Versions follow
 ### Added
 
 - Forecast dataset column, predictor horizon and what-if export measurements.
-- IoT Core HTTP action header, policies-per-target and thing type propagating
-  attribute measurements.
+- IoT Core HTTP action header, policies-per-target, thing type propagating
+  attribute and retained message measurements.
+- A census of the quotas that hold both a custom check and a compatible official
+  usage metric, so a check the collector would skip cannot be added unnoticed.
 - QuickSight custom action, sheet control and calculated field measurements,
   read out of the analysis and dashboard definitions.
 - Greengrass V1 group device, function, resource and subscription
