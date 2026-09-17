@@ -17,6 +17,34 @@ def images_per_repository(ctx):
     return maximum(values, 'ECRRepository', 'ecr:DescribeRepositories+DescribeImages')
 
 
+def _replication_rules(ctx):
+    """One DescribeRegistry call answers all three replication quotas."""
+    registry = ctx.call('ecr', 'describe_registry')
+    configuration = registry.get('replicationConfiguration') or {}
+    return configuration.get('rules') or []
+
+
+def replication_rules(ctx):
+    return dict(usage=len(_replication_rules(ctx)),
+                source='ecr:DescribeRegistry', method='ACCOUNT_COUNT')
+
+
+def filters_per_replication_rule(ctx):
+    return maximum([(f'rule-{index}', len(rule.get('repositoryFilters') or ()), None)
+                    for index, rule in enumerate(_replication_rules(ctx))],
+                   'ECRReplicationRule', 'ecr:DescribeRegistry')
+
+
+def replication_destinations(ctx):
+    """A region named by two rules is still one destination."""
+    destinations = set()
+    for rule in _replication_rules(ctx):
+        for destination in rule.get('destinations') or ():
+            destinations.add((destination.get('region'), destination.get('registryId')))
+    return dict(usage=len(destinations), source='ecr:DescribeRegistry',
+                method='ACCOUNT_COUNT')
+
+
 CHECKS = [
     ('L-CFEB8E8D', 'Registered repositories',
      lambda ctx: dict(usage=len(repositories(ctx)), source='ecr:DescribeRepositories',
@@ -26,6 +54,11 @@ CHECKS = [
      lambda ctx: dict(usage=len(ctx.call('ecr', 'describe_pull_through_cache_rules',
                                          'pullThroughCacheRules', registryId=ctx.account)),
                       source='ecr:DescribePullThroughCacheRules', method='ACCOUNT_COUNT')),
+    ('L-9B60BFFB', 'Rules per replication configuration', replication_rules),
+    ('L-241DEEBA', 'Filters per rule in a replication configuration',
+     filters_per_replication_rule),
+    ('L-24725E9A', 'Unique destinations across all rules in a replication configuration',
+     replication_destinations),
 ]
 
 

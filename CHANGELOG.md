@@ -7,6 +7,72 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Greengrass V1 group device, function, resource and subscription
+  measurements.
+- Direct Connect hosted connection and LAG interface measurements, and Batch
+  service environment and share identifier measurements.
+- ECR replication rule, filter and destination measurements, and CloudTrail
+  event selector, data resource and advanced condition measurements.
+- IoT FleetWise signal catalog node, campaign signal and partition, and state
+  template property and dimension measurements.
+- DataBrew job, open project, ruleset and recipe version measurements, and
+  Well-Architected lens, workload and review template share measurements.
+- DocumentDB parameter group, event subscription, manual snapshot, read
+  replica, subnet and security group measurements.
+- MediaPackage packaging group, configuration, asset and harvest job
+  measurements.
+- Auto Scaling per-group policy, scheduled action, notification, lifecycle hook
+  and attachment measurements, and Cognito per-user-pool app, group, identity
+  provider, resource server and scope measurements.
+- GameLift fleet creation-limit policy and server process measurements.
+- Bedrock flow execution concurrency, and the batch quotas the second catalog
+  export reissued under a new code for an already-mapped model.
+- IoT TwinMaker component type property and inheritance measurements, and Glue
+  schema version and schema version metadata measurements.
+- Entity Resolution matching, provider-service and ID-mapping job concurrency,
+  and AWS Backup in-flight backup and copy job measurements.
+- MediaConvert queue concurrency, reserved transcode slot and custom preset
+  measurements, and Transfer Family certificate, SSH key and directory access
+  measurements.
+
+### Changed
+
+- The catalog's stated unit now decides whether a quota is a size, a period or
+  a rate, instead of its name alone.
+
+- Quotas stating a clock in hours, minutes or seconds, or an allowance per
+  twenty-four hours, are no longer ranked as countable inventory work.
+
+- The open-quota audit documents no longer list quotas the collector already
+  measures. 1,373 of their 7,735 entries had become false leads, because the
+  test behind them only checked that every open quota was documented and never
+  that a documented one was still open; it now checks both.
+
+### Fixed
+
+- Clean Rooms protected job and protected query counts, which the collector had
+  been calling without an IAM grant and which answered `AccessDenied` on every
+  run. The guard that should have caught this discarded the call sites of the
+  six modules that build their checks when the collector calls them; it now
+  reads them, resolves an operation passed through a helper's parameter, and
+  records the checks it cannot drive past their first call.
+
+### Added
+
+- A project logo, and a README header carrying the coverage figure, with a test
+  that fails when either the badge or the gap-shape table drifts from the catalog.
+- Service Catalog delegated administrator measurement, and an
+  `organization-wide` gap shape so quotas counted across every member account
+  stop being ranked as the measurement work to do next.
+- SageMaker ml.p3 training, spot training, warm pool and processing instance
+  measurements, for the quotas AWS publishes no usage metric for.
+- IoT security profile behaviour value, job target, fleet index filter, command
+  parameter and command execution concurrency measurements.
+- Bedrock Data Automation blueprints per project and modality, agent
+  collaborator, action group parameter and Advanced Prompt Optimization job
+  measurements.
+- A `no SDK client` gap shape, so services AWS no longer ships a client for stop
+  being ranked as the measurement work to do next.
 - IoT job, security profile, stream, audit, endpoint, rule and thing group
   measurements.
 - Comprehend job, flywheel and inference unit measurements, and Lambda capacity

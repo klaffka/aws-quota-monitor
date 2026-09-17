@@ -24,4 +24,6 @@ def test_backup_resource_counts_are_separate_from_rate_quotas():
     ctx = Mock()
     ctx.call.side_effect = [[{'BackupVaultName': 'vault'}], [{'BackupPlanId': 'plan'}],
                             [{'FrameworkName': 'framework'}], [{'ReportPlanName': 'report'}]]
-    assert [check[2](ctx)['usage'] for check in BACKUP_CHECKS[:4]] == [1, 1, 1, 1]
+    counted = ['L-7705D2CB', 'L-BD69F607', 'L-E43E0ED6', 'L-C296F1F5']
+    by_code = {code: fn for code, _name, fn in BACKUP_CHECKS}
+    assert [by_code[code](ctx)['usage'] for code in counted] == [1, 1, 1, 1]

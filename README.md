@@ -1,10 +1,23 @@
-# AWS Quota Monitor
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="" width="96" height="96">
+</p>
 
-[![CI](https://github.com/klaffka/aws-quota-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/klaffka/aws-quota-monitor/actions/workflows/ci.yml)
+<h1 align="center">AWS Quota Monitor</h1>
+
+<p align="center">
+  <a href="https://github.com/klaffka/aws-quota-monitor/actions/workflows/ci.yml"><img src="https://github.com/klaffka/aws-quota-monitor/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/coverage-71.89%25%20of%20measurable%20quotas-3DBF9B" alt="Quota coverage">
+  <img src="https://img.shields.io/badge/python-3.14-24455C" alt="Python 3.14">
+</p>
 
 Collect AWS quota usage every ten minutes, keep versioned measurements in DynamoDB,
 send SNS notifications for sustained breaches, and export monthly CSV reports to S3.
 Each deployment monitors its execution account and configured Region.
+
+The point of this project is that a number it reports can be trusted. A quota is
+measured when an API can answer for it, and is recorded as `NO_DATA` or
+`UNSUPPORTED` with a reason when it cannot. Nothing is estimated, and a missing
+answer never becomes a zero that would read as headroom.
 
 ## Runtime behavior
 
@@ -31,11 +44,11 @@ Each deployment monitors its execution account and configured Region.
 | Area | Implemented usage |
 | --- | --- |
 | Official metrics | All discovered, regional account quotas with exact dimensions, supported units and a compatible statistic/window |
-| Bedrock | Knowledge bases, agents, flows, custom/imported models, guardrails, inference profiles, prompts, Data Automation blueprints, Automated Reasoning policies and parent-scoped KB/agent/flow counts from paginated control-plane inventories |
+| Bedrock | Knowledge bases, agents, flows, custom/imported models, guardrails, inference profiles, prompts, Automated Reasoning policies and parent-scoped KB/agent/flow counts from paginated control-plane inventories; Data Automation blueprints per account and per project split by modality; agent collaborators and action-group function parameters; Advanced Prompt Optimization jobs split into running and retained |
 | AppStream 2.0 | Fleets, stacks, private images, 502 instance-type/image-type quotas, 15 platform-scoped builder/session quotas, image sharing/copies and user-pool users; explicit data gaps for unstable capacity and unresolved builder states |
 | Bedrock AgentCore | Agents, memories, gateways, identities, credential providers, custom tools, browser profiles, policy engines and payment managers; parent-scoped endpoints, versions, targets, policies, connectors and memory strategies; active sessions across custom and system tools |
-| IoT Core | Dynamic thing groups, job templates, scheduled audits, mitigation actions, custom metrics, fleet metrics and streams from paginated inventories |
-| Amazon Connect | 34 quota checks including instance inventories, typed integrations, routing queue/channel combinations and data-table attributes; highest utilization using each instance's applied limit |
+| IoT Core | Dynamic thing groups, job templates, scheduled audits, mitigation actions, custom metrics, fleet metrics and streams from paginated inventories; security profile behaviour value elements, job targets, command parameters, unfinished command executions and both fleet index filters |
+| Amazon Connect | 37 quota checks including instance inventories, typed integrations, routing queue/channel combinations and data-table attributes; highest utilization using each instance's applied limit |
 | Clean Rooms ML | 129 training-instance types plus total instances, training/inference jobs, model versions, active input channels, algorithm associations and audience jobs; all creator memberships and model versions |
 | DLM | Lifecycle policies and target accounts per sharing rule |
 | Glacier | Vaults per account |
@@ -111,7 +124,7 @@ Each deployment monitors its execution account and configured Region.
 | Resource Groups | Resource groups per account |
 | CloudFormation | Active stacks, stack sets, private registry types/versions and deployed template structure per Region |
 | AppConfig | Applications, environments, configuration profiles and deployment strategies per Region |
-| Service Catalog | Portfolios, products and service actions per Region from paginated inventories |
+| Service Catalog | Portfolios, products and service actions per Region from paginated inventories; delegated administrators through Organizations, reported as `NO_DATA` outside an organization |
 | WAFv2 | Regional web ACLs, IP sets, regex pattern sets, rule groups and parent-scoped IP/pattern/ALB association maxima |
 | S3 / SNS / WorkSpaces | Parent-scoped lifecycle/replication rules, SNS filter policies, WorkSpaces IP-group/rule maxima and connection aliases |
 | Cloud Map | Custom attributes per instance using the instance detail inventory |
@@ -123,7 +136,7 @@ Each deployment monitors its execution account and configured Region.
 | Glue | Crawlers, databases, jobs, workflows, connections, triggers, tables, per-database table maxima, table versions, security configurations, ML transforms and schema registries from paginated regional inventories |
 | EMR | Active clusters per Region |
 | DataSync | Tasks per Region from the paginated task inventory |
-| SageMaker | Notebook instances, pipelines, projects, model packages, model package groups, domains, user profiles, workteams, A2I UIs/flow definitions, experiments, trials, images, monitoring schedules, MLflow Tracking Servers and Studio spaces per Region |
+| SageMaker | Notebook instances, pipelines, projects, model packages, model package groups, domains, user profiles, workteams, A2I UIs/flow definitions, experiments, trials, images, monitoring schedules, MLflow Tracking Servers and Studio spaces per Region; ml.p3 training, spot training, warm pool and processing instances, which AWS publishes no usage metric for |
 | CodeBuild | Build projects per Region |
 | CodePipeline | Pipelines per Region |
 | CodeArtifact | Domains per account and repositories per domain |
@@ -252,9 +265,32 @@ states its period as one second. The exclusion applies only to quotas that no
 check and no official metric already covers. A bucket's occupancy and a per-second peak cannot be derived from
 one-minute CloudWatch sums, so no additional check would ever cover them.
 
-The [current coverage audit](docs/quota-coverage-progress.md) records 4,967 of
-12,081 catalog quotas with an implemented measurement method (41.11%), including
-official metrics, which is 70.33% of the 7,062 measurable quotas. It also lists
+Because an exclusion rule costs nothing to widen and instantly flatters the
+figure, `compare_baseline` fails when the excluded count grows, exactly as it
+fails on a coverage regression. Raising it takes the same review as any other
+change to the number.
+
+What remains open is sorted by shape rather than left as one total, because a
+name that reads like a count does not mean an API can answer it:
+
+| Shape | Quotas | What it would take |
+| --- | ---: | --- |
+| countable | 716 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
+| no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
+| organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
+
+The last two mark work that cannot be done from here rather than work not yet
+done. They stay in the denominator: a restored API or a second set of
+credentials would make them countable again, and excluding them would raise the
+reported share without measuring anything. Each is guarded — one test fails if
+botocore ships a dropped service again, another if AWS starts publishing a usage
+metric for a quota measured only because it had none.
+
+The [current coverage audit](docs/quota-coverage-progress.md) records 5,077 of
+12,081 catalog quotas with an implemented measurement method (42.02%), including
+official metrics, which is 71.89% of the 7,062 measurable quotas. It also lists
 the largest remaining gaps; near-total coverage has not yet been achieved.
 
 Clean Rooms ML has methods for 140/148 catalog quotas (94.6%). Training-instance

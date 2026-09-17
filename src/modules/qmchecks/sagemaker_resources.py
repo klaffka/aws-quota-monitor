@@ -1,4 +1,5 @@
 """SageMaker resource-count quotas backed by paginated list APIs."""
+from modules.qmchecks.sagemaker_instances import CHECKS as INSTANCE_CHECKS
 from modules.qmcore.aws import CheckContext, session_from_env
 
 
@@ -61,7 +62,7 @@ ALL_CHECKS = [
          for variant in c.call('sagemaker', 'describe_endpoint_config', 'ProductionVariants',
                                EndpointConfigName=detail.get('EndpointConfigName'))),
                     source='sagemaker:DescribeEndpointConfig', method='ACCOUNT_COUNT')),
-]
+] + INSTANCE_CHECKS
 
 # Preserve the historical four-entry CHECKS export for compatibility with
 # callers that used this module directly. The collector uses the complete

@@ -18,7 +18,7 @@ def test_catalog_coverage_deduplicates_scopes_and_reports_uncovered():
                      'uncovered': 1, 'uncoveredCodes': ['uncovered'], 'implementedPct': 50.0,
                      'unmeasurable': 0, 'measurable': 2, 'measurablePct': 50.0,
                      'countable': 1, 'size_or_period': 0, 'rate_shaped': 0,
-                     'no_sdk_client': 0}]
+                     'no_sdk_client': 0, 'cross_account': 0}]
 
 
 def test_catalog_loader_accepts_quotas_wrapper_and_table(tmp_path):
@@ -396,3 +396,154 @@ def test_every_service_listed_as_dropped_really_has_no_client():
     available = set(botocore.session.get_session().get_available_services())
     restored = sorted(SDK_REMOVED & available)
     assert not restored, f'botocore ships these again, so remove them: {restored}'
+
+
+def test_a_quota_counted_across_the_organization_is_a_shape_of_its_own():
+    """One account's credentials cannot see what the other accounts hold."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'ec2',
+                      'QuotaName': 'Concurrent P5 Capacity Blocks per organization'}) == 'cross_account'
+    assert gap_shape({'ServiceCode': 'ec2',
+                      'QuotaName': 'Concurrent P5 Capacity Blocks per account'}) == 'countable'
+
+
+def test_a_service_the_sdk_dropped_outranks_the_organization_scope():
+    """Naming the scope says nothing when no client can ask in the first place."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'robomaker',
+                      'QuotaName': 'Robots per organization'}) == 'no_sdk_client'
+
+
+def test_the_readme_badge_and_shape_table_match_the_catalog():
+    """The README repeats the figures in three places; all three must agree."""
+    import re
+    from pathlib import Path
+    from scripts.quota_coverage import GAP_LABELS, GAP_SHAPES, merge_catalogs
+    rows = catalog_coverage(merge_catalogs(['tests/fixtures/quota-catalog-union.json']))
+    current = totals(rows)
+    readme = Path('README.md').read_text(encoding='utf-8')
+
+    badge = re.search(r'badge/coverage-([\d.]+)%25%20of%20measurable%20quotas', readme)
+    assert badge, 'the README coverage badge has moved'
+    assert badge.group(1) == f"{current['covered'] / current['measurable'] * 100:.2f}"
+
+    for shape, _note in GAP_SHAPES:
+        expected = sum(row[shape] for row in rows)
+        row = re.search(rf'^\| {re.escape(GAP_LABELS[shape])} \| ([\d,]+) \|', readme,
+                        flags=re.MULTILINE)
+        assert row, f'the README shape table has no {GAP_LABELS[shape]} row'
+        assert int(row.group(1).replace(',', '')) == expected, GAP_LABELS[shape]
+
+
+@pytest.mark.parametrize('name', [
+    'Number of emails that can be sent per 24-hour period (sending quota)',
+    'Number of voice messages that can be sent during a 24-hour period',
+    'API_CREATE-INGESTION: Calls per 24 hour period from Enterprise edition',
+    'Basic image scans per 24 hours',
+])
+def test_a_rate_over_a_stated_day_is_rate_shaped_not_countable(name):
+    """"Number of X per 24 hours" counts sends, not things that exist."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'rate_shaped'
+
+
+@pytest.mark.parametrize('name', [
+    'AWS Lambda deployment run in hours',
+    'Minutes until a deployment fails if a lifecycle event does not start',
+    'Seconds until a deployment lifecycle event fails if not completed',
+    'VPC peering connection request expiry hours',
+    'Scheduled Minutes Limit',
+])
+def test_a_bound_stated_in_time_units_is_a_period_not_a_count(name):
+    """A deployment measured in minutes is a period however the name reads."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'size_or_period'
+
+
+@pytest.mark.parametrize('name', [
+    'Historical actuals 15 or 30 minute interval file count',
+    'Number of import files per import job',
+    'Concurrent P5 Capacity Blocks per account',
+])
+def test_the_period_rules_leave_real_counts_alone(name):
+    """The words appear in names that still describe an inventory."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'countable'
+
+
+@pytest.mark.parametrize('name', [
+    '(Data Automation) Maximum number of Blueprints per Start Inference request (Images)',
+    '(Knowledge Bases) Files to ingest per IngestKnowledgeBaseDocuments job.',
+    'Events per PutAuditEvents request',
+    'CR.1X workers per PySpark job',
+])
+def test_a_bound_on_one_named_request_is_not_an_inventory(name):
+    """AWS names the operation between "per" and "request", which hid these."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'size_or_period'
+
+
+@pytest.mark.parametrize('name', [
+    'Concurrent jobs per on-demand queue',
+    'Files per stream',
+    'Reports per instance',
+])
+def test_the_named_request_rule_leaves_per_parent_counts_alone(name):
+    """"Per <parent>" is an inventory; only a named operation is a request."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'countable'
+
+
+@pytest.mark.parametrize('unit, name', [
+    ('Gigabytes', 'Build capacity'),
+    ('Kilobytes', 'Bucket policy'),
+    ('Terabytes', 'Total storage'),
+    ('Seconds', 'Registration task termination'),
+    ('Milliseconds', 'Max request execution time (ms)'),
+])
+def test_the_catalog_unit_settles_a_size_or_a_period(unit, name):
+    """AWS states the unit, which says more than a name like "Build capacity"."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name,
+                      'Unit': unit}) == 'size_or_period'
+
+
+@pytest.mark.parametrize('unit, name', [
+    ('Megabits/Second', 'Network bandwidth per execution environment'),
+    ('Gigabits', 'VPC Attachment Bandwidth'),
+])
+def test_bandwidth_is_rate_shaped_whether_or_not_the_unit_says_so(unit, name):
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name,
+                      'Unit': unit}) == 'rate_shaped'
+
+
+@pytest.mark.parametrize('unit', ['Count', 'None', None])
+def test_a_count_unit_leaves_the_name_to_decide(unit):
+    """Most of the catalog states no useful unit, so the wording still rules."""
+    from scripts.quota_coverage import gap_shape
+    quota = {'ServiceCode': 'example', 'QuotaName': 'Reports per instance'}
+    if unit is not None:
+        quota['Unit'] = unit
+    assert gap_shape(quota) == 'countable'
+
+
+@pytest.mark.parametrize('name', [
+    'New Reserved Instances per month',
+    'Number of assessments per application per month',
+    'ACM certificates created in last 365 days',
+])
+def test_an_allowance_over_a_longer_window_is_rate_shaped(name):
+    """A monthly allowance and a rolling year both count events, not things."""
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'rate_shaped'
+
+
+@pytest.mark.parametrize('name', [
+    'Number of days that job records are retained',
+    'Query time range in days',
+    'Container service logs storage days',
+])
+def test_a_bound_stated_in_days_is_a_period(name):
+    from scripts.quota_coverage import gap_shape
+    assert gap_shape({'ServiceCode': 'example', 'QuotaName': name}) == 'size_or_period'

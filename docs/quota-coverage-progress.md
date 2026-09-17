@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,586 | 2,076 |
+| implemented | 2,696 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 4,967 | 4,457 |
-| uncovered | 7,114 | 5,941 |
+| covered | 5,077 | 4,457 |
+| uncovered | 7,004 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **41.11%** of the whole union, or
-**70.33%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.02%** of the whole union, or
+**71.89%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -90,6 +90,289 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Closed the hole in the IAM grant guard that the Greengrass entry below
+  describes, and found a live fault in it. The guard drives every check through
+  the smoke harness and checks the policy against the calls it records, but for
+  the six modules that build their checks only when the collector calls them it
+  threw the recording away: 39 call sites that neither half of the guard had
+  ever seen. Two of them, `cleanrooms:ListProtectedJobs` and
+  `cleanrooms:ListProtectedQueries`, are granted nowhere in `main.tf`, so the
+  Clean Rooms protected job and query counts have been answering `AccessDenied`
+  on every run rather than a usage value. Both are granted now.
+  The source-reading half was extended at the same time. 157 of the 1,100
+  `ctx.call` sites name their operation through the enclosing helper's
+  parameter, and every caller binds that parameter to a literal one node away,
+  so the pair resolves there; the two halves are read from one call node,
+  because pairing every service literal in a module with every operation
+  literal reports grants no check asks for. That adds 451 operations, 11 of
+  them in modules the harness cannot reach either, among them
+  `greengrass:GetFunctionDefinitionVersion` — one of the four grants this
+  document records as having been added by hand.
+  What neither half reaches is now named rather than assumed. 270 checks stop
+  at `NO_DATA` against synthesised data, and they are listed in `UNEXERCISED`
+  in `tests/test_check_smoke.py` with the reason each reports, asserted in both
+  directions. Making the harness generate ARN-shaped strings and healthy enum
+  values instead was measured and rejected: it moves 274 of them to 263 and
+  records no additional call site, because the reasons are semantic. A Bedrock
+  batch job needs a base model the module's own mapping resolves; a Connect
+  quota needs to resolve to the instance it was requested for. No quota
+  coverage changes: the covered count stays at 5,077.
+- Measured the six Greengrass group quotas the module had left open. A V1 group
+  version names each of its definitions by ARN while the API that reads one
+  takes a definition id and a version id, which is why they were open. The ARN
+  carries both, so it is taken apart under the rule the Bedrock batch check
+  already follows: the shape is matched whole and anything else raises
+  `NoData`, rather than an id being guessed out of a string that does not look
+  the way it should. A group holding no definition of a kind counts as zero
+  rather than dropping out of the maximum, and the cloud-sourced subscriptions
+  are told from the rest by the source AWS writes as `cloud`.
+  The IAM grant guard could not see four of the six operations, and the reason
+  is worth recording. The guard has two halves: one reads the source and only
+  sees a `ctx.call` whose service and operation are literal there, the other
+  runs every check against synthesised responses and records what it really
+  calls. These four are literal nowhere, and the smoke harness never reaches
+  them either: it synthesises the group version's definition ARN as a plain
+  string, `definition_ids` refuses to parse it, and the check stops at
+  `NO_DATA` before the definition is ever read. The grants were added by hand
+  and checked against the call sites by reading them.
+  That gap is not specific to Greengrass. Of the checks the harness drives, 274
+  end in `NO_DATA` against synthesised data and 84 of those name an ARN, so
+  every call site behind one of them is granted on trust rather than by the
+  guard. The bullet above this one records what closing that gap found.
+- Measured five more scoped quotas. Direct Connect already walked every
+  connection for its interfaces; the same walk now also answers the hosted
+  connection and the LAG quotas, where a connection a partner provisioned
+  carries a partner name and a LAG's interfaces are the sum of its connections'.
+  Batch's service environments come from the queue listing, and the share
+  identifiers from the scheduling policy a queue names, asked for in one call
+  for every policy any queue uses; a queue naming no policy has none.
+- Left Greengrass alone. Its five group quotas belong to the V1 model, and the
+  module already records why they stay open: the definition versions are
+  addressed by ARN while the API takes an id and version pair.
+- Measured six quotas that three calls answer. One `DescribeRegistry` settles
+  all of ECR's replication limits: the rules, the filters on the busiest rule
+  and the destinations across every rule, where a Region named by two rules is
+  still one destination. One `GetEventSelectors` per CloudTrail trail settles
+  all three of its selector quotas, and the data resources and advanced
+  conditions are summed across a trail's selectors rather than taken from the
+  largest one, because that is what the quotas bound.
+- Recorded why EFS's `Mount targets per Availability Zone` and `Mount targets
+  per VPC` stay in the audit. Neither names whose mount targets it counts, and
+  no export states a value that would settle it: the same listing supports an
+  account total and a per-file-system maximum, and picking one would be a
+  denominator chosen by guess. This is the same reason MediaTailor's source
+  quotas stay open.
+- Measured six IoT FleetWise scopes. A signal catalog's nodes are never listed:
+  `GetSignalCatalog` reports the totals itself, which is the difference between
+  one call per catalog and a walk through every node in it. The three state
+  template quotas are all answered by the same detail call, as are the two
+  campaign quotas, so six quotas cost two listings and three detail calls per
+  parent kind.
+  `Number of state templates for each vehicle` stays in the audit: the
+  templates are attached per vehicle, and a fleet holds as many vehicles as it
+  likes.
+- Measured eight quotas in DataBrew and Well-Architected. `ListRulesets`
+  carries both the rule count and the dataset it targets, so `Rules per
+  ruleset` and `Rulesets per dataset` come from the same call rather than a
+  walk through either parent. A project counts as open while DataBrew records
+  who opened it, which is the only signal the listing gives.
+  Well-Architected shares are listable only per parent, and the lens quota asks
+  only about lenses this account owns: an AWS-owned or already-shared lens
+  cannot be shared on, so it holds none of it.
+  DataBrew's `Concurrent jobs` and `Node capacity` stay in the audit, because
+  both bound what is running right now and a job run reports its capacity only
+  while it lasts.
+- Measured six DocumentDB quotas. Read replicas exclude the writer every
+  cluster has, so counting the cluster members would have reported one replica
+  too many for every cluster in the account. Manual snapshots are asked for by
+  snapshot type, because the automated ones hold a different quota. Subnets per
+  subnet group and security groups per instance travel with their parent, so
+  neither needs a detail call.
+  `Tags per resource` stays in the audit: every cluster, instance, snapshot,
+  subnet group and parameter group would have to be read for its tags, and the
+  maximum could sit on any one of them.
+- Measured four MediaPackage quotas, which needed a module of their own. The
+  VOD packaging resources live behind the `mediapackage-vod` client while the
+  harvest jobs live behind `mediapackage`, and the quotas are all filed under
+  the one `mediapackage` service code. Packaging configurations and assets are
+  listed for the account and name their packaging group, so both maxima are
+  grouped rather than fetched per group, and an entry naming no group is
+  reported rather than dropped. Harvest jobs filter by status server side, so
+  the concurrency is one call.
+  The ingest stream and track quotas stay in the audit: they bound what a
+  running channel receives, which no inventory reports after the fact.
+- Measured twelve per-parent quotas in Auto Scaling and Cognito, the densest
+  pair of services left. Auto Scaling needs almost no calls for them: policies,
+  scheduled actions and notifications are listed for the whole account and each
+  entry names its group, so the per-group maxima are grouped rather than
+  fetched, and the classic load balancers and target groups travel with the
+  group itself. Only the lifecycle hooks are listed per group. A topic notified
+  about several events is returned once per event type, so the SNS quota counts
+  distinct topics rather than rows; counting rows would have reported a group
+  with one topic and three events as three.
+  Step adjustments are counted per policy rather than per group, because that
+  is what the quota bounds. Cognito's apps, groups, identity providers and
+  resource servers are per user pool, and the scopes are per resource server.
+  `Groups per user` stays open: it would need a walk through every user in
+  every pool.
+- Let the catalog's own unit decide what a quota measures, which moved 58
+  quotas out of `countable` without measuring anything. GameLift's `Build
+  capacity` and `Script capacity` read as inventories and are stated in
+  gigabytes; twenty other quotas are bytes and fifteen are seconds or
+  milliseconds. This is the same kind of rule as `PERIOD_RATE`, which already
+  trusts the catalog's stated period over the wording, and it is stronger than
+  any wording rule because AWS wrote it down. Only units that describe
+  something other than a count are consulted: `Count` and the empty `None` that
+  most of the catalog carries leave the decision to the name.
+  Bare bit units are left to the name on purpose. EC2 states `VPC Attachment
+  Bandwidth` in gigabits and means gigabits per second, so a bit unit settles
+  nothing; `bandwidth` is matched as a rate instead, and a unit that names a
+  period of its own, such as `Megabits/Second`, is a rate whatever the name.
+  Two wording rules followed the same reasoning: an allowance `per month`,
+  `per week` or `per year` counts events over a window rather than things, as
+  does a rolling `in last 365 days`, and both are matched before `days` is read
+  as a period.
+- Measured three GameLift fleet configuration limits. The resource creation
+  limit policy carries `NewGameSessionsPerCreator` and `PolicyPeriodInMinutes`,
+  and a fleet that configures no policy holds none of the quota rather than
+  dropping out of the maximum. Server processes are counted by their concurrent
+  executions rather than by entries in the configuration, because the quota
+  bounds the processes on one instance; only a managed EC2 fleet has a runtime
+  configuration at all, since an Anywhere fleet brings its own compute.
+- Took the Bedrock quick wins and left the rest explained. Three batch quotas
+  were already mapped under a different code: the two catalog exports issue
+  `Qwen3 235B`, `Qwen3 32B` and `Qwen3 Coder 30B` twice, so adding the twins
+  identified no new model and a test now checks that a reissued code names the
+  same model as the original. `(Flows) Flow executions per account` is measured
+  through `bedrock-agent-runtime`, whose `ListFlowExecutions` marks a running
+  execution; the other four states are terminal.
+  Eleven quotas left `countable` for a rule rather than a measurement. AWS
+  writes the bound on one request with the operation named in between, as in
+  `Blueprints per Start Inference request` and `Files to ingest per
+  IngestKnowledgeBaseDocuments job`, which the plain `per request` rule missed.
+  The operation name is capitalised, which is what separates these from
+  `Reports per instance` and every other per-parent inventory; a test pins both
+  sides.
+  The eight batch models that remain need an identifier no display name gives.
+  Guessing one would attribute usage to the wrong quota silently, which is
+  worse than leaving it open.
+- Measured four per-parent quotas in IoT TwinMaker and AWS Glue. TwinMaker's
+  component type scopes are read from each type's detail, which is affordable
+  because a workspace holds few component types; `Components per entity` stays
+  out for the opposite reason, since a workspace holds tens of thousands of
+  entities. Glue's schema versions are counted per schema, and the metadata
+  pairs per version, which is the only direction `QuerySchemaVersionMetadata`
+  answers.
+- Measured five job-concurrency quotas in Entity Resolution and AWS Backup.
+  A QUEUED Entity Resolution job is waiting for the quota rather than holding
+  it, so only RUNNING counts; counting queued jobs would report the limit as
+  exceeded by design. `Concurrent provider service matching jobs` turned out to
+  be a sub-limit of the matching quota rather than a sibling of the ID-mapping
+  one: `ListMatchingWorkflows` states each workflow's resolution type, so the
+  provider-service jobs are told apart without reading any workflow detail.
+  AWS Backup filters jobs by exactly one state at a time, so each state before
+  a terminal one is asked for separately. A backup job holds its slot from the
+  moment Backup accepts it, which is why CREATED and PENDING count alongside
+  RUNNING. The copy quota is per supported service, which the job names as its
+  resource type, so the copies are grouped by type rather than by resource.
+- Measured eight MediaConvert and Transfer Family quotas. MediaConvert's
+  concurrency limits need no job walk at all: `ListQueues` reports each queue's
+  progressing job count, its pricing plan and its reserved slots, so one call
+  answers the per-account total, the busiest on-demand queue, the default queue
+  and the reserved transcode slots. AWS marks the queue it creates itself as
+  `SYSTEM`, which is what identifies the default one. Custom output presets are
+  the `CUSTOM` half of the preset listing.
+  Transfer's three are per-parent. Certificates come from the profile detail,
+  because the certificate listing does not say which profile holds one. SSH keys
+  come from `ListUsers`, which reports the count directly, and only for
+  service-managed servers, since a directory-backed server has no users Transfer
+  stores keys for. Directory accesses are counted only on directory-backed
+  servers for the same reason: counting both kinds would have doubled the
+  reported usage of each, which the mock test now pins.
+  `Concurrent jobs queries per account` stays open: it bounds calls to
+  `ListJobs` rather than anything the account holds.
+- Narrowed `countable` where the name gave it away. Eighteen quotas described a
+  clock or a daily allowance rather than an inventory: CodeDeploy states nine of
+  its limits in hours, minutes and seconds, and Pinpoint, QuickSight and ECR
+  state allowances per twenty-four hours. Two rules rather than one, because the
+  two shapes differ: a window stated in whole days is matched first and lands in
+  `rate_shaped`, since `Basic image scans per 24 hours` counts sends over a day;
+  what remains and names a time unit lands in `size_or_period`.
+  The time units are matched in the plural only. English uses the singular
+  attributively, and Connect's `Historical actuals 15 or 30 minute interval file
+  count` is exactly that trap: it counts files and merely describes their
+  interval. A rule matching `minute` would have moved it out of the work that is
+  genuinely available, and a blanket exception for names containing `count`
+  would have moved Polly's `SynthesizeSpeech total character count` the other
+  way. A test pins all three cases.
+  Nothing was measured and no denominator moved; `countable` falls from 880 to
+  862 and the two receiving shapes gain exactly those eighteen.
+- Split the quotas AWS counts over a whole organization out of `countable`.
+  EC2 reports capacity blocks twice, per account and per organization, and only
+  the first is answerable from one account's credentials; the ten
+  organization-wide halves were what made EC2 look like the fifth-largest
+  countable holding while its account-scoped twins were already measured. The
+  shape covers thirteen quotas across EC2, License Manager and Service Catalog.
+  Like `no_sdk_client` it is a shape rather than an exclusion: the quotas are
+  measurable, just not by a collector holding one account.
+  The exception proves the rule. `Delegated administrators per organization`
+  names an organization too, but Organizations answers it directly, so it is
+  measured through `ListDelegatedAdministrators` for the Service Catalog
+  service principal and never reaches the shape rule — covered quotas are
+  classified before the shapes are consulted. An account outside an
+  organization reports `NO_DATA` with the reason rather than zero.
+  Two License Manager quotas stay in the shape although part of their answer is
+  local: `Number of accounts per organization for License Manager` and the
+  per-asset-group instance counts would need every member account's inventory,
+  and counting only this account's share would report a confident undercount.
+- Measured the twelve SageMaker ml.p3 instance quotas AWS publishes no usage
+  metric for. Almost every `<type> for <kind> job usage` quota carries one and
+  counts as covered without a check; ml.p3 training, spot training, warm pool
+  and processing are the exception, which is why they read as the service's
+  whole countable gap while 1,819 of its 1,913 quotas were already covered.
+  Managed spot capacity is counted apart from on-demand capacity, because AWS
+  bounds them separately. A heterogeneous cluster states instance groups rather
+  than one type and count, so each group is matched on its own, and flexible
+  training resolves what it actually got into `SelectedInstanceType`, which
+  wins over the type the job asked for. The warm pool is asked for one
+  retaining state at a time; a terminated pool holds nothing.
+  `test_every_instance_quota_names_a_type_the_catalog_has_no_metric_for` fails
+  if AWS starts publishing a metric for any of the twelve, so the checks cannot
+  outlive their reason.
+- Deepened AWS IoT by 7 catalog quotas. Security profile behaviours are counted
+  by the elements in each behaviour's threshold list rather than by the
+  behaviours themselves, and a machine-learning behaviour, which carries no
+  list, counts as zero. Job targets come from the job detail, because the
+  listing omits them. The named shadow and geo location filters turned out not
+  to bound a single query after all: they configure the fleet index for the
+  whole account and `GetIndexingConfiguration` reports both, whether or not
+  indexing is enabled. Commands report their mandatory parameters from the
+  command detail, and command execution concurrency is asked for one unfinished
+  status at a time, because IoT filters executions server side. `iotcore`
+  names the dynamic thing group quota under its own code and now shares the
+  existing check.
+  Three IoT quotas stay open for reasons of their own. `Maximum number of CA
+  certificates with the same subject field` would need the subject parsed out
+  of each certificate's PEM, which `DescribeCACertificate` returns but no
+  dependency here can read. `Maximum number of policies that can be attached to
+  a certificate or Amazon Cognito identity` can be counted for certificates but
+  not for Cognito identities, which IoT cannot enumerate, so the maximum could
+  silently sit on the half that is invisible. The remaining `iotcore` gap is
+  the MQTT broker: unacknowledged publishes, topic aliases, subscriptions per
+  connection and shared subscription groups live in the connection rather than
+  in an inventory.
+- Deepened Amazon Bedrock by 13 catalog quotas. The Data Automation blueprints
+  per project are counted per modality: a project names its blueprints by ARN
+  alone, so each one's `DOCUMENT`, `IMAGE`, `AUDIO` or `VIDEO` type comes from
+  the blueprint detail, and a project holding none still reports zero rather
+  than dropping out of the maximum. Agent collaborators and the parameter map
+  of each action group function are read per agent, the latter from the action
+  group detail because its summary omits the schema. The Advanced Prompt
+  Optimization jobs are split into running and retained over one walk of a
+  listing that offers no status filter, and an unknown status is reported
+  rather than assigned to either side. AWS reissued the knowledge-base quotas
+  under a renamed "Managed Knowledge Bases" product: the three affected codes
+  share the existing checks instead of walking the same API twice.
 - Audited every check's call sites against botocore and fixed what the audit
   found: EFS and EMR addressed their Service Quotas service codes (`elastic‑
   filesystem`, `elasticmapreduce`) as SDK clients, Keyspaces addressed a
@@ -557,52 +840,65 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-2,095 quotas are measurable and still uncovered. Sorting them by what their
+1,985 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 926 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
-| size or period | 722 | the bound applies to one payload, document or retention period, so there is a value to read only while a request is in flight |
-| rate-shaped | 299 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
+| countable | 716 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| size or period | 792 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
+| organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
 
 The countable ones are spread thin. The twelve largest holdings:
 
 | Service | Catalog | Covered | Uncovered | Unmeasurable | Countable |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| bedrock | 809 | 105 | 704 | 146 | 78 |
+| bedrock | 809 | 122 | 687 | 146 | 55 |
 | connect | 361 | 37 | 324 | 283 | 35 |
-| pinpoint | 132 | 10 | 122 | 52 | 31 |
-| iotcore | 240 | 16 | 224 | 173 | 26 |
-| iot | 179 | 18 | 161 | 112 | 23 |
-| ec2 | 1751 | 207 | 1544 | 1526 | 18 |
-| lambda | 70 | 13 | 57 | 28 | 16 |
-| sagemaker | 1913 | 1819 | 94 | 77 | 16 |
+| pinpoint | 132 | 10 | 122 | 52 | 27 |
+| iotcore | 240 | 17 | 223 | 173 | 20 |
 | chime | 83 | 13 | 70 | 51 | 14 |
 | deadline | 32 | 16 | 16 | 0 | 14 |
 | forecast | 40 | 25 | 15 | 0 | 14 |
-| kinesisvideo | 98 | 3 | 95 | 70 | 13 |
+| lambda | 70 | 13 | 57 | 28 | 13 |
+| redshift | 29 | 14 | 15 | 0 | 13 |
+| iot | 179 | 24 | 155 | 112 | 11 |
+| kinesisvideo | 98 | 3 | 95 | 70 | 11 |
+| quicksight | 24 | 4 | 20 | 0 | 11 |
 
 The two tables above are generated by `quota_coverage.py --update-progress`;
 `gap_shape` holds the rules that sort a name into a shape. "Countable"
 classifies the name, not the reach of the API, and the largest holdings are all
 blocked behind that distinction:
 
-- **Bedrock (78)** is mostly per-model. `Model units per provisioned model for
+- **Bedrock (55)** is mostly per-model. `Model units per provisioned model for
   <model>` (25) and `Sum of in-progress and submitted batch inference jobs using
-  a base model for <model>` (11 still open) each name a model in their display
+  a base model for <model>` (8 still open) each name a model in their display
   name only. Reaching them needs the fixed quota-code-to-model mapping
   `bedrock_batch.py` keeps, and that mapping can only be extended against AWS's
-  own model list, never inferred from a display name. Everything Bedrock exposes
+  own model list, never inferred from a display name. The provisioned-model
+  family is blocked more firmly than that: its display names carry a context
+  window, so `Model units per provisioned model for Anthropic Claude V2 100K`
+  and the `18K` quota beside it resolve to one foundation-model ARN, and
+  `ListProvisionedModelThroughputs` reports no context window to tell the two
+  apart. A model list alone would not settle them. Everything Bedrock exposes
   without that resolution is now measured: provisioned throughput units, the
   knowledge-base ingestion jobs and the Automated Reasoning policy builds live
-  in `bedrock_throughput.py`.
+  in `bedrock_throughput.py`. Two of the remainder are blocked for their own
+  reasons. `APIs per Agent` counts the operations in an action group's OpenAPI
+  document, which `GetAgentActionGroup` returns either inline or as an S3
+  pointer; reading only the inline half would report a confident undercount for
+  every agent that stores its schema in a bucket. `(Model customization)
+  Scheduled customization jobs` names a state `ListModelCustomizationJobs` does
+  not have: its status filter offers InProgress, Completed, Failed, Stopping and
+  Stopped, so any mapping to "scheduled" would be a guess.
 - **Connect (35)** is workforce management: staffing groups, shift profiles,
   forecast groups, schedules and capacity plans. This SDK ships no operation
   for any of them; `connect` has no `list_staffing_groups`, `list_schedules` or
   equivalent.
-- **Pinpoint (31)** is almost entirely per-request: attribute counts, template
+- **Pinpoint (28)** is almost entirely per-request: attribute counts, template
   character counts and payload sizes that exist only while a call is in flight.
 
 The `no SDK client` shape was split out of `countable` for the same reason.
@@ -619,7 +915,19 @@ again overnight; `SDK_REMOVED` in `quota_coverage.py` holds the list and
 `test_every_service_listed_as_dropped_really_has_no_client` fails the moment
 botocore ships one of them again.
 
-After those, no reachable service holds more than 26, so each further service is
+`organization-wide` is the same argument about reach rather than wording. EC2
+states its capacity block limits twice, once per account and once per
+organization, and this collector holds one account's credentials: the
+account-scoped half is measured and the organization-wide half cannot be seen
+at all. Those ten, with two License Manager aggregates and one Service Catalog
+quota, were being ranked as available work and made EC2 read as the
+fifth-largest countable holding while its measurable half was already done.
+Service Catalog's `Delegated administrators per organization` shows where the
+line falls: Organizations answers that one directly, so it is measured instead
+of classified, and because covered quotas are classified first it never reaches
+the rule at all.
+
+After those, no reachable service holds more than 25, so each further service is
 a handful of quotas for a full traversal of its API. That is the shape of the
 remaining work: broad rather than deep. The services the shape change promoted
 into the table are not deeper than the ones it removed: Deadline Cloud's 14 need
