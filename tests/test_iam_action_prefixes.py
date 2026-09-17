@@ -124,7 +124,8 @@ def test_every_operation_a_check_actually_makes_is_granted():
         _results, sites = run(service, checks)
         called.update(sites)
     for _module, entry, keys in entry_points():
-        run_entry(entry, keys)
+        _results, sites = run_entry(entry, keys)
+        called.update(sites)
     models, ungranted = {}, set()
     for service, method, _key in called:
         if service in RETIRED or service not in available or service in VERB_AUTHORISED:

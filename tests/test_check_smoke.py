@@ -68,8 +68,9 @@ ENTRY_POINTS = sorted(entry_points())
 @pytest.mark.parametrize('populated', [True, False], ids=['populated', 'empty'])
 def test_every_entry_point_module_runs_without_error(module, entry, keys, populated):
     """These modules build their checks when called, so CHECKS discovery misses them."""
+    results, _sites = run_entry(entry, keys, populated=populated)
     failures = [f"{result['quotaCode']}: {result['qualityReason'].splitlines()[0]}"
-                for result in run_entry(entry, keys, populated=populated)
+                for result in results
                 if result['qualityStatus'] == 'ERROR'
                 and (result['serviceCode'], result['quotaCode']) not in ALLOWED]
     assert not failures, module
@@ -82,7 +83,7 @@ def test_every_entry_point_declares_the_quotas_it_measures(module, entry, keys):
     from importlib import import_module
 
     declared = set(import_module(module).CUSTOM_KEYS)
-    measured = {(result['serviceCode'], result['quotaCode'])
-                for result in run_entry(entry, sorted(declared))}
+    results, _sites = run_entry(entry, sorted(declared))
+    measured = {(result['serviceCode'], result['quotaCode']) for result in results}
     assert measured == declared, {'undeclared': sorted(measured - declared),
                                   'unmeasured': sorted(declared - measured)}
