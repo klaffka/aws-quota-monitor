@@ -1,12 +1,27 @@
-"""Amazon Forecast resource, parallel task and dataset group quotas.
+"""Amazon Forecast resource, parallel task, dataset and predictor quotas.
 
-The column, row, file and horizon quotas bound one dataset or request, the
-`QueryForecast` parallelism is a request rate, and tags per resource would need
-a tag listing for every resource in the account.
+The column and horizon quotas read as bounds on one dataset or request, but the
+describe operations report both as resolved configuration: a dataset's schema
+lists its columns and a predictor states the horizon it was built for, so they
+are inventories rather than bounds and are measured here.
+
+The row and S3 file quotas really do bound the data behind a dataset, which no
+operation reports. The `QueryForecast` parallelism is a request rate, and tags
+per resource would need a tag listing for every resource in the account.
+
+`Maximum number of backtest windows` is left open on purpose. It lives in
+`EvaluationParameters`, which `CreatePredictor` treats as optional and defaults
+to one window; whether a describe echoes that default for a predictor built
+without it is not something this catalog can settle, and counting only the
+predictors that state it would report a confident undercount for every account
+that took the default.
 """
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 FORECAST = 'forecast'
+# Each of the three dataset types has a column quota of its own, so a type the
+# SDK does not name belongs to a quota that is not measured here at all.
+DATASET_TYPES = {'TARGET_TIME_SERIES', 'RELATED_TIME_SERIES', 'ITEM_METADATA'}
 # Forecast reports lifecycle statuses as <VERB>_<STATE>; a resource is still
 # being built while its state is pending or in progress.
 RUNNING_SUFFIXES = ('_PENDING', '_IN_PROGRESS')
@@ -56,6 +71,63 @@ def predictors(ctx, auto=None):
     if auto is None:
         return items
     return [item for item in items if bool(item.get('IsAutoPredictor')) is auto]
+
+
+def _identity(item, field, subject):
+    value = item.get(field)
+    if not isinstance(value, str) or not value:
+        raise NoData(f'Forecast {subject} is missing its identity')
+    return value
+
+
+def columns_per_dataset(dataset_type):
+    """Measure the widest schema among the datasets of one type."""
+    def check(ctx):
+        values = []
+        for summary in ctx.call(FORECAST, 'list_datasets', 'Datasets'):
+            arn = _identity(summary, 'DatasetArn', 'dataset')
+            kind = summary.get('DatasetType')
+            if kind not in DATASET_TYPES:
+                raise NoData('Forecast dataset has an unknown dataset type')
+            if kind != dataset_type:
+                continue
+            detail = ctx.call(FORECAST, 'describe_dataset', DatasetArn=arn)
+            attributes = (detail.get('Schema') or {}).get('Attributes')
+            if not isinstance(attributes, list):
+                raise NoData('Forecast dataset has no schema')
+            values.append((arn, len(attributes), None))
+        return maximum(values, 'ForecastDataset', 'forecast:DescribeDataset')
+    return check
+
+
+def forecast_horizon(ctx):
+    """An auto predictor answers a different describe than a classic one."""
+    values = []
+    for summary in predictors(ctx):
+        arn = _identity(summary, 'PredictorArn', 'predictor')
+        method = ('describe_auto_predictor' if summary.get('IsAutoPredictor')
+                  else 'describe_predictor')
+        detail = ctx.call(FORECAST, method, PredictorArn=arn)
+        horizon = detail.get('ForecastHorizon')
+        if not isinstance(horizon, int):
+            raise NoData('Forecast predictor states no horizon')
+        values.append((arn, horizon, None))
+    return maximum(values, 'ForecastPredictor',
+                   'forecast:DescribePredictor+DescribeAutoPredictor')
+
+
+def forecasts_per_export(ctx):
+    """The export summary names the forecasts it exports, so no describe runs."""
+    values = []
+    for summary in ctx.call(FORECAST, 'list_what_if_forecast_exports',
+                            'WhatIfForecastExports'):
+        arn = _identity(summary, 'WhatIfForecastExportArn', 'what-if forecast export')
+        forecasts = summary.get('WhatIfForecastArns')
+        if not isinstance(forecasts, list) or not forecasts:
+            raise NoData('Forecast what-if export names no forecast')
+        values.append((arn, len(forecasts), None))
+    return maximum(values, 'ForecastWhatIfForecastExport',
+                   'forecast:ListWhatIfForecastExports')
 
 
 CHECKS = [
@@ -117,6 +189,16 @@ CHECKS = [
     ('L-B50F9B6C', 'Maximum parallel running CreateWhatIfForecastExport tasks',
      _parallel_tasks('list_what_if_forecast_exports', 'WhatIfForecastExports',
                      'what-if forecast export')),
+    ('L-9FD32A46', 'Maximum number of columns in a target time series dataset',
+     columns_per_dataset('TARGET_TIME_SERIES')),
+    ('L-3D30706E', 'Maximum number of columns in a related time series dataset',
+     columns_per_dataset('RELATED_TIME_SERIES')),
+    ('L-F37CCDC6', 'Maximum number of columns in an item metadata dataset',
+     columns_per_dataset('ITEM_METADATA')),
+    ('L-57E6FE87', 'Maximum forecast horizon', forecast_horizon),
+    ('L-50FA8F07',
+     'The maximum number of What-if Forecasts in a CreateWhatIfForecastExport task',
+     forecasts_per_export),
 ]
 
 
