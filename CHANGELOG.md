@@ -48,6 +48,15 @@ All notable changes to this project are recorded here. Versions follow
   test behind them only checked that every open quota was documented and never
   that a documented one was still open; it now checks both.
 
+### Fixed
+
+- Clean Rooms protected job and protected query counts, which the collector had
+  been calling without an IAM grant and which answered `AccessDenied` on every
+  run. The guard that should have caught this discarded the call sites of the
+  six modules that build their checks when the collector calls them; it now
+  reads them, resolves an operation passed through a helper's parameter, and
+  records the checks it cannot drive past their first call.
+
 ### Added
 
 - A project logo, and a README header carrying the coverage figure, with a test

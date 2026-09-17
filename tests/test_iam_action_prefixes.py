@@ -5,6 +5,7 @@ Amazon Managed Prometheus as `aps`. A policy written against the client name
 grants nothing, and the collector only finds out with an AccessDenied at run
 time, so the prefixes are checked against botocore's signing names here.
 """
+import ast
 import re
 from pathlib import Path
 
@@ -68,6 +69,74 @@ S3_ALIASES = {
 }
 
 
+def _parameters(function):
+    arguments = function.args
+    return [argument.arg for argument in
+            (*arguments.posonlyargs, *arguments.args, *arguments.kwonlyargs)]
+
+
+def _argument_source(node, parameters, constants, value_of):
+    """Where one ctx.call argument comes from: a literal, or a parameter."""
+    value = value_of(node, constants)
+    if value is not None:
+        return ('const', value)
+    if isinstance(node, ast.Name) and node.id in parameters:
+        return ('param', node.id)
+    return None
+
+
+def _indirect_call_sites(path):
+    """Yield (service, operation) for a ctx.call that reads either half from the
+    enclosing helper's parameter.
+
+    Roughly one call site in seven routes through such a helper -- omics'
+    `resource_count(ctx, method, key)` is the shape -- and the plain AST walk
+    sees the parameter name instead of an operation. Every caller inside the
+    module binds that parameter to a literal, so the pair resolves there.
+
+    Both halves must come from one call node. Crossing every service literal in
+    a module with every operation literal invents grants no check asks for: it
+    reports `sso:ListApplications` for misc_counts, which holds `sso` as a
+    catalog key and `list_applications` for servicecatalog-appregistry.
+    """
+    from tests.test_check_client_names import _literals, _value
+
+    tree = ast.parse(path.read_text(encoding='utf-8'))
+    constants = _literals(tree)
+    templates, signatures = {}, {}
+    for function in ast.walk(tree):
+        if not isinstance(function, ast.FunctionDef):
+            continue
+        parameters = _parameters(function)
+        signatures[function.name] = parameters
+        for node in ast.walk(function):
+            if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                    and node.func.attr == 'call' and len(node.args) >= 2):
+                continue
+            service = _argument_source(node.args[0], parameters, constants, _value)
+            operation = _argument_source(node.args[1], parameters, constants, _value)
+            if service and operation and 'param' in (service[0], operation[0]):
+                templates.setdefault(function.name, set()).add((service, operation))
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id in templates):
+            continue
+        bound = dict(zip(signatures[node.func.id], node.args))
+        bound.update({keyword.arg: keyword.value
+                      for keyword in node.keywords if keyword.arg})
+
+        def resolve(source):
+            if source[0] == 'const':
+                return source[1]
+            argument = bound.get(source[1])
+            return _value(argument, constants) if argument is not None else None
+
+        for service, operation in templates[node.func.id]:
+            names = (resolve(service), resolve(operation))
+            if all(names):
+                yield names
+
+
 def test_every_operation_a_check_calls_is_granted_somewhere():
     """A new check without its IAM action fails with AccessDenied in production."""
     import boto3
@@ -81,7 +150,8 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
     granted = {(match.group(1), match.group(2)) for match in ACTION.finditer(policy)}
     models, ungranted = {}, []
     for path in MODULES:
-        for service, method in _call_sites(path, {'call'}, arity=2):
+        sites = [*_call_sites(path, {'call'}, arity=2), *_indirect_call_sites(path)]
+        for service, method in sites:
             if not service or not method or service in RETIRED \
                     or service not in available or service in VERB_AUTHORISED:
                 continue
@@ -124,7 +194,8 @@ def test_every_operation_a_check_actually_makes_is_granted():
         _results, sites = run(service, checks)
         called.update(sites)
     for _module, entry, keys in entry_points():
-        run_entry(entry, keys)
+        _results, sites = run_entry(entry, keys)
+        called.update(sites)
     models, ungranted = {}, set()
     for service, method, _key in called:
         if service in RETIRED or service not in available or service in VERB_AUTHORISED:

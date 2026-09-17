@@ -161,13 +161,20 @@ def entry_points():
 
 
 def run_entry(entry, keys, populated=True):
-    """Run a module through its collector entry point against the same stubs."""
+    """Run a module through its collector entry point and return (measurements,
+    recorded call sites), the same pair `run` returns.
+
+    Returning the sites is what lets the IAM guard see these modules at all: an
+    entry point builds its checks when called, so the AST walk cannot reach them
+    and discarding the sites left every call they make unguarded.
+    """
     session = boto3.Session(region_name=REGION)
     quotas = [{'ServiceCode': service, 'QuotaCode': code, 'Value': 100, 'Unit': 'Count'}
               for service, code in keys]
     ctx = CheckContext(session, quotas, account=ACCOUNT, now=MOMENT)
-    ctx.call = ShapeCall(session, populated=populated)
-    return entry(ctx=ctx)
+    call = ShapeCall(session, populated=populated)
+    ctx.call = call
+    return entry(ctx=ctx), call.sites
 
 
 def run(service, checks, populated=True):
