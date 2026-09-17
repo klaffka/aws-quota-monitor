@@ -1654,19 +1654,13 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-D79BB1C9` — **Workspaces per AWS IAM Identity Center** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-DEC3FFCF` — **mainframe Business Document Generation Monthly Lines of Code** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `quicksight` (12 offene Quotas)
+## `quicksight` (6 offene Quotas)
 
 - `L-01C190BD` — **API_CREATE-INGESTION: Calls per 24 hour period from Standard edition** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-843701D0` — **Maximum number of characters per specified Control values** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-92D2E884` — **The maximum amount of time to wait for a dataset preview** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-AECE65ED` — **Calculated field expression length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-B8F293B6` — **Custom action name length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-BF25D425` — **Email aliases per group for email reports** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-C1F9B371` — **URL action hyperlink length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-C2064901` — **Data Prep: Fields per dataset** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-E3375426` — **API_CREATE-INGESTION: Calls per 24 hour period from Enterprise edition** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-E43AEF3C` — **Custom actions per visual** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-E9E486C4` — **Display items per sheet control** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-F1EA8033` — **Query timeout for visuals** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
 ## `rds` (6 offene Quotas)
