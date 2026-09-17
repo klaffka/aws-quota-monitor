@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,702 | 2,076 |
+| implemented | 2,705 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,083 | 4,457 |
-| uncovered | 6,998 | 5,941 |
+| covered | 5,086 | 4,457 |
+| uncovered | 6,995 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.07%** of the whole union, or
-**71.98%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.10%** of the whole union, or
+**72.02%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,34 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Measured three more IoT Core scopes, two of them by changing the direction of
+  a walk rather than by adding one. `HTTP Action: Maximum number of headers per
+  action` reads the rule detail the action count already fetches, so the second
+  quota costs no call at all; an action that is not an HTTP action has no header
+  list to measure and one that sets no header holds none rather than dropping
+  out of the maximum.
+  `Maximum number of policies that can be attached to a certificate or Amazon
+  Cognito identity` is counted per target instead of per certificate. Walking
+  certificates would have reached only half the quota's scope, because a Cognito
+  identity has no listing operation of its own, and it would have cost one call
+  per certificate in a fleet. Every target of either kind is named by the policy
+  attached to it, so the walk runs from the policy side: bounded by the policy
+  quota, and complete. `Maximum number of propagating attributes` is the MQTT 5
+  user-property configuration a thing type carries.
+  `Maximum number of retained messages per account` was investigated and
+  deliberately left alone. The data plane answers it through
+  `ListRetainedMessages`, but AWS publishes an official `AWS/Usage`
+  `ResourceCount` metric for it, and an official metric wins over a resource
+  check: the check would have been registered, counted as implemented, and never
+  run. It was caught because the covered total moved by one less than the
+  implemented total. No test asserts that invariant today.
+  The thing-scoped quotas stay open for a cost reason rather than a reach one:
+  attributes on a thing, thing groups a thing belongs to and thing types
+  associated with a thing each need a describe per thing, which a fleet makes
+  unbounded. `Maximum number of CA certificates with the same subject field` is
+  blocked outright: `DescribeCACertificate` reports the certificate as PEM and
+  never as a parsed subject, and no X.509 parser ships in the layer.
 
 - Measured the six QuickSight quotas that live inside an analysis or dashboard
   definition. The module had left them open because they sit in a document
@@ -867,12 +895,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,979 quotas are measurable and still uncovered. Sorting them by what their
+1,976 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 714 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 711 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
@@ -885,7 +913,7 @@ The countable ones are spread thin. The twelve largest holdings:
 | bedrock | 809 | 122 | 687 | 146 | 55 |
 | connect | 361 | 37 | 324 | 283 | 35 |
 | pinpoint | 132 | 10 | 122 | 52 | 27 |
-| iotcore | 240 | 17 | 223 | 173 | 20 |
+| iotcore | 240 | 20 | 220 | 173 | 17 |
 | chime | 83 | 13 | 70 | 51 | 14 |
 | deadline | 32 | 16 | 16 | 0 | 14 |
 | forecast | 40 | 25 | 15 | 0 | 14 |

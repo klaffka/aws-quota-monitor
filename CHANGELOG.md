@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- IoT Core HTTP action header, policies-per-target and thing type propagating
+  attribute measurements.
 - QuickSight custom action, sheet control and calculated field measurements,
   read out of the analysis and dashboard definitions.
 - Greengrass V1 group device, function, resource and subscription
