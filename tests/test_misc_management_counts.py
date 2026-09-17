@@ -7,8 +7,11 @@ from modules.qmchecks.rbin import CHECKS as RBIN
 
 
 # The plan- and rotation-scoped contact checks descend into a contact; they are
-# covered by tests/test_ssm_contacts_plans.py against a real client.
-SCOPED = {'L-5AE11799', 'L-F338226A', 'L-D438A616'}
+# covered by tests/test_ssm_contacts_plans.py against a real client. The
+# Well-Architected share checks descend into a lens, workload or review template
+# and are covered by tests/test_databrew_and_wellarchitected_scopes.py.
+SCOPED = {'L-5AE11799', 'L-F338226A', 'L-D438A616',
+          'L-E62A1DE4', 'L-7E98904D', 'L-A5DDC022'}
 
 
 def test_misc_management_resource_counts():

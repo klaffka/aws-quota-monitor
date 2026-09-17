@@ -8,9 +8,15 @@ from modules.qmchecks.eventbridge import CHECKS as EVENT_CHECKS
 
 
 def test_databrew_resource_counts_use_paginated_lists():
+    # The plain account inventories; the ruleset, project and recipe scopes read
+    # a field of each entry and are covered by
+    # tests/test_databrew_and_wellarchitected_scopes.py.
     ctx = Mock()
     ctx.call.return_value = [{}]
-    assert [check[2](ctx)['usage'] for check in DATABREW_CHECKS] == [1] * len(DATABREW_CHECKS)
+    plain = ['L-CE9E9D8D', 'L-940C8930', 'L-955A1FA6', 'L-BF3E0A94', 'L-EE2782A4',
+             'L-0D2C4DFC']
+    by_code = {code: fn for code, _name, fn in DATABREW_CHECKS}
+    assert [by_code[code](ctx)['usage'] for code in plain] == [1] * len(plain)
 
 
 def test_amplify_ui_resources_are_maximum_per_app_and_environment():
