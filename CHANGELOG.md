@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Direct Connect hosted connection and LAG interface measurements, and Batch
+  service environment and share identifier measurements.
 - ECR replication rule, filter and destination measurements, and CloudTrail
   event selector, data resource and advanced condition measurements.
 - IoT FleetWise signal catalog node, campaign signal and partition, and state
