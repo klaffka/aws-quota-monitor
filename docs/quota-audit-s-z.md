@@ -4,7 +4,7 @@ Generated from `data/service-quotas-20251102T133323Z.json`; unique service/quota
 
 Direct paginated resource inventories are implemented in the collector. Rate, capacity, storage, content, runtime, and parent-detail limits remain explicitly unsupported. REVIEW rows were checked against local Botocore models; safe direct inventories were added where available.
 
-## `s3` (15 open quotas)
+## `s3` (13 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -22,14 +22,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-DEBF781C` | Parts | UNSUPPORTED: no direct persistent resource inventory |
 | `L-DEDCCF9D` | S3 Glacier: Provisioned capacity units | UNSUPPORTED: capacity or runtime quota |
 
-## `s3-outposts` (2 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-C39AA790` | Access Points | UNSUPPORTED: no direct persistent resource inventory |
-| `L-CBA62F6C` | Buckets | UNSUPPORTED: no direct persistent resource inventory |
-
-## `sagemaker` (1549 open quotas)
+## `sagemaker` (1537 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -48,12 +41,10 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-018036DB` | ml.c6gd.16xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-019DC79D` | Studio KernelGateway Apps running on ml.m5d.8xlarge instance | UNSUPPORTED: capacity or runtime quota |
 | `L-01E4E529` | ml.eia1.medium for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-0201B959` | ml.p3.8xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-02134873` | Studio CodeEditor Apps running on ml.m5d.8xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-02BF14DD` | ml.r7i.8xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-0307F515` | ml.m5.xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-0309C694` | ml.m4.2xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-0323EDB4` | ml.p3.2xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-03304C28` | ml.g6.4xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-03767DF9` | ml.m5.4xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-037F309A` | Studio KernelGateway Apps running on ml.g5.12xlarge instance | UNSUPPORTED: capacity or runtime quota |
@@ -248,7 +239,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-23A89612` | Canvas Apps running on ml.m5.4xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-23D6147A` | Studio CodeEditor Apps running on ml.r6id.2xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-23E57EB1` | ml.g6e.48xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-23EDF20C` | ml.p3.8xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-23F5AC7E` | ml.inf1.2xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
 | `L-23FC2F6E` | ml.m7i.16xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-23FF30BF` | ml.r5.12xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
@@ -318,7 +308,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-2CE978FC` | Maximum number instances allowed per SageMaker HyperPod cluster | UNSUPPORTED: capacity or runtime quota |
 | `L-2D2AAC6C` | ml.m6g.xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-2D4C4A2D` | RSessionGateway Apps running on ml.m5d.8xlarge instance | UNSUPPORTED: capacity or runtime quota |
-| `L-2D4C6493` | ml.p3.2xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-2D6DEB3C` | ml.g5.2xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-2D83F796` | ml.m6i.8xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
 | `L-2D8CD70A` | ml.c5.18xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
@@ -549,7 +538,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-55671A7C` | Studio CodeEditor Apps running on ml.g5.12xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-557C20FC` | Studio CodeEditor Apps running on ml.c7i.12xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-558B6165` | ml.r5.2xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-558F1246` | ml.p3.8xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-55E494BC` | ml.m6i.24xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
 | `L-55F9C48A` | ml.r7i.8xlarge for cluster usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-56245D0D` | ml.g6e.2xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
@@ -589,7 +577,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-5C31AAE1` | ml.r5d.xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-5C47EA70` | ml.m5.8xlarge for cluster usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-5C59A967` | ml.m6id.xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
-| `L-5CA5BEE6` | ml.p3.8xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-5D454ED8` | ml.c6i.16xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-5D8382CB` | ml.g5.8xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
 | `L-5DB40C3B` | Studio JupyterLab Apps running on ml.g4dn.16xlarge instances | UNSUPPORTED: capacity or runtime quota |
@@ -742,7 +729,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-75B2C685` | ml.c6i.xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-75EB91B4` | Studio CodeEditor Apps running on ml.r6i.large instances | UNSUPPORTED: capacity or runtime quota |
 | `L-76243C5D` | ml.c7i.48xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-763CF8E3` | ml.p3.16xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-76501DC2` | Studio CodeEditor Apps running on ml.c7i.24xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-769E114F` | ml.g4dn.8xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-76A72DE0` | Studio CodeEditor Apps running on ml.m6i.32xlarge instances | UNSUPPORTED: capacity or runtime quota |
@@ -1062,7 +1048,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-A9165189` | RSessionGateway Apps running on ml.g4dn.8xlarge instance | UNSUPPORTED: capacity or runtime quota |
 | `L-A9527A17` | ml.g6.16xlarge for cluster usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-A97F0519` | ml.g6e.12xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-A99E0304` | ml.p3.16xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-A9CD2FA4` | ml.m7i.8xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
 | `L-A9F2A8B3` | ml.m5.12xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-AA088DA9` | ml.c6i.8xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
@@ -1229,7 +1214,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-C4B5BAD2` | ml.c6gd.4xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-C4DFBAA1` | ml.r5d.4xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-C51A0845` | ml.r7i.24xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-C5621FC4` | ml.p3.16xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-C56471C1` | Studio CodeEditor Apps running on ml.m7i.8xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-C5747110` | ml.m7i.large for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-C57B8181` | ml.r5.xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
@@ -1307,7 +1291,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-D35E48B2` | ml.m4.10xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-D39ED03D` | ml.c7i.12xlarge for processing job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-D3CC7B01` | Studio CodeEditor Apps running on ml.m6id.large instances | UNSUPPORTED: capacity or runtime quota |
-| `L-D438008E` | ml.p3.2xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-D460D348` | ml.m6i.16xlarge for transform job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-D463F25C` | ml.c7i.4xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-D470D954` | ml.g6.xlarge for endpoint usage | UNSUPPORTED: no direct persistent resource inventory |
@@ -1318,7 +1301,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-D531C9E1` | Studio JupyterLab Apps running on ml.p3.16xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-D53933F5` | Studio JupyterLab Apps running on ml.c7i.2xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-D589112D` | ml.m4.2xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
-| `L-D58A90BB` | ml.p3.16xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-D5D3B1E5` | Studio KernelGateway Apps running on ml.r5.4xlarge instance | UNSUPPORTED: capacity or runtime quota |
 | `L-D62610A9` | Total number of trial components allowed from a SageMaker context, excluding those automatically created by SageMaker | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-D6B1EB0D` | ml.r6id.16xlarge for notebook instance usage | UNSUPPORTED: capacity or runtime quota |
@@ -1414,7 +1396,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-E31E799C` | ml.r7i.12xlarge for training job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-E3362D50` | Studio CodeEditor Apps running on ml.c6i.4xlarge instances | UNSUPPORTED: capacity or runtime quota |
 | `L-E3646D22` | Studio CodeEditor Apps running on ml.g5.16xlarge instances | UNSUPPORTED: capacity or runtime quota |
-| `L-E3709F6E` | ml.p3.2xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-E3970643` | ml.m7i.2xlarge for training warm pool usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-E3C0D615` | ml.c4.xlarge for transform job usage | UNSUPPORTED: no direct persistent resource inventory |
 | `L-E3DCB664` | ml.g5.16xlarge for spot training job usage | UNSUPPORTED: no direct persistent resource inventory |
@@ -1601,16 +1582,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-F6D2596E` | Invocations throttle limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
 | `L-FB03E819` | GetSchedule request rate | UNSUPPORTED: API rate/throttle quota |
 
-## `schemas` (5 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-037FC7C4` | Discoverers | UNSUPPORTED: no direct persistent resource inventory |
-| `L-1738102F` | DiscoveredSchemas | UNSUPPORTED: no direct persistent resource inventory |
-| `L-3C443A2A` | SchemaVersions | UNSUPPORTED: no direct persistent resource inventory |
-| `L-85663EFB` | Registries | UNSUPPORTED: no direct persistent resource inventory |
-| `L-EE9E5FA9` | Schemas | UNSUPPORTED: no direct persistent resource inventory |
-
 ## `scn` (10 open quotas)
 
 | Quota code | Quota name | Classification |
@@ -1626,7 +1597,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-D7FA6849` | Insights watchlists per user | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-F1600C71` | AWS Supply Chain data integration flows per instance | UNSUPPORTED: capacity or runtime quota |
 
-## `secretsmanager` (17 open quotas)
+## `secretsmanager` (16 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -1688,41 +1659,26 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-3EEA1272` | Free Amazon S3 storage for code packages | UNSUPPORTED: size/throughput/content quota |
 | `L-41ACBE3C` | Application policy length | UNSUPPORTED: size/throughput/content quota |
 
-## `servicecatalog` (16 open quotas)
+## `servicecatalog` (3 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
-| `L-1639038A` | Attribute groups per region | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-223F4C54` | Applications per attribute group | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-2B360974` | Tags per provisioned product | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-360CDF2E` | Resources per application | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-3BC91705` | Users, groups, and roles per product | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-58FC5582` | Service action associations per provisioning artifact | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-73A88F28` | TagOptions per resource | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-77FEF8C5` | Tags per portfolio | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-79127A24` | Values per TagOption | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-A2FB1BD2` | Shared accounts per portfolio | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-A5846085` | Product versions per product | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-AB79E48B` | Products per portfolio | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-C533FF9A` | Attribute groups per application | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-CA761021` | Delegated administrators per organization | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-CC0BF186` | Tags per product | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-E8959660` | Users, groups, and roles per portfolio | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
-## `servicequotas` (14 open quotas)
+## `servicequotas` (12 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
 | `L-027D2B0A` | Throttle rate for GetRequestedServiceQuotaChange | UNSUPPORTED: API rate/throttle quota |
 | `L-09C84CC6` | Throttle rate for GetServiceQuota | UNSUPPORTED: API rate/throttle quota |
 | `L-0E18483E` | Throttle rate for ListRequestedServiceQuotaChangeHistoryByQuota | UNSUPPORTED: API rate/throttle quota |
-| `L-36BDD542` | Active requests per quota | UNSUPPORTED: API rate/throttle quota |
 | `L-61010047` | Throttle rate for RequestServiceQuotaIncrease | UNSUPPORTED: API rate/throttle quota |
 | `L-6120A68B` | Throttle rate for ListTagsForResource | UNSUPPORTED: API rate/throttle quota |
 | `L-65470577` | Throttle rate for ListServiceQuotas | UNSUPPORTED: API rate/throttle quota |
 | `L-71DCD22A` | Throttle rate for ListAWSDefaultServiceQuotas | UNSUPPORTED: API rate/throttle quota |
 | `L-86127B31` | Throttle rate for TagResource | UNSUPPORTED: API rate/throttle quota |
-| `L-89094105` | Active requests per account per Region | UNSUPPORTED: API rate/throttle quota |
 | `L-A53F603E` | Throttle rate for GetAWSDefaultServiceQuota | UNSUPPORTED: API rate/throttle quota |
 | `L-BF40C7E2` | Throttle rate for UntagResource | UNSUPPORTED: API rate/throttle quota |
 | `L-C7624166` | Throttle rate for ListRequestedServiceQuotaChangeHistory | UNSUPPORTED: API rate/throttle quota |
@@ -1734,13 +1690,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 |---|---|---|
 | `L-804C8AE8` | Sending quota | UNSUPPORTED: no direct persistent resource inventory |
 | `L-CDEF9B6B` | Sending rate | UNSUPPORTED: API rate/throttle quota |
-
-## `shield` (2 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-0BACF966` | Elastic IP address protections | UNSUPPORTED: no direct persistent resource inventory |
-| `L-BBD47253` | Elastic Load Balancing load balancer protections | UNSUPPORTED: no direct persistent resource inventory |
 
 ## `signer` (19 open quotas)
 
@@ -1809,7 +1758,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-DEA21975` | MediaMessageMonthlySpend | UNSUPPORTED: no direct persistent resource inventory |
 | `L-FDAE1CE0` | VoiceMessageMonthlySpend | UNSUPPORTED: no direct persistent resource inventory |
 
-## `snow-device-management` (12 open quotas)
+## `snow-device-management` (10 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -1823,17 +1772,8 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-C90DA346` | CreateTask throttle limit | UNSUPPORTED: API rate/throttle quota |
 | `L-CA980D98` | DescribeExecution throttle limit | UNSUPPORTED: API rate/throttle quota |
 | `L-CCEAB4FA` | ListDevices throttle limit | UNSUPPORTED: API rate/throttle quota |
-| `L-D88A1E78` | Snow Device Management maximum tasks. | UNSUPPORTED: no direct persistent resource inventory |
-| `L-FFEB0409` | Snow Device Management active tasks. | UNSUPPORTED: no direct persistent resource inventory |
 
-## `snowball` (2 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-9F53AA61` | Snowcone devices | UNSUPPORTED: no direct persistent resource inventory |
-| `L-B6883B9F` | Snowball Edge devices | UNSUPPORTED: no direct persistent resource inventory |
-
-## `sns` (44 open quotas)
+## `sns` (43 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -1895,30 +1835,16 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-D06A8815` | Rate of DisassociateWhatsAppBusinessAccount API requests | UNSUPPORTED: API rate/throttle quota |
 | `L-D468F93A` | Rate of UntagResource API requests | UNSUPPORTED: API rate/throttle quota |
 
-## `sqs` (18 open quotas)
+## `sqs` (4 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
-| `L-2DA3E3B2` | Message Retention Time | UNSUPPORTED: size/throughput/content quota |
-| `L-49DA5CEC` | Message Size | UNSUPPORTED: size/throughput/content quota |
-| `L-4BE1B2BD` | Tags per Queue | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-4FF3DAAF` | Batched Message ID Length | UNSUPPORTED: size/throughput/content quota |
-| `L-6A03DCE9` | Conditions per Queue Policy | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-79B6240C` | Actions per Queue Policy | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-81970B52` | Message Size in S3 Bucket | UNSUPPORTED: size/throughput/content quota |
 | `L-98134C75` | Attributes per Message | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-9F628B95` | Statements per Queue Policy | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-A01B4DF0` | UTF-8 Queue Tag Key Length | UNSUPPORTED: size/throughput/content quota |
-| `L-A7816957` | Queue Delivery Delay | UNSUPPORTED: no direct persistent resource inventory |
-| `L-B2A3B9D5` | Message Invisibility Period | UNSUPPORTED: no direct persistent resource inventory |
-| `L-BBEFA6CF` | Queue Policy Size | UNSUPPORTED: size/throughput/content quota |
-| `L-BF2A6161` | UTF-8 Queue Tag Value Length | UNSUPPORTED: size/throughput/content quota |
-| `L-C491D5A4` | In-Flight Messages per Standard Queue | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-E8A9C91E` | Queue Name Length | UNSUPPORTED: size/throughput/content quota |
 | `L-F115E65A` | Messages per Batch | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-F61F33C3` | Principals per Queue Policy | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
-## `ssm` (158 open quotas)
+## `ssm` (150 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -1945,7 +1871,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-2912F481` | Rate of GetParametersByPath requests | UNSUPPORTED: API rate/throttle quota |
 | `L-2A90B152` | Total OpsInsights | UNSUPPORTED: no direct persistent resource inventory |
 | `L-2AB7CEAA` | Transactions per second (TPS) for the StartAccessRequest API | UNSUPPORTED: API rate/throttle quota |
-| `L-2D5C8B1F` | Systems Manager Distributor package versions | UNSUPPORTED: no direct persistent resource inventory |
 | `L-2D95D5B2` | Total OpsItems | UNSUPPORTED: size/throughput/content quota |
 | `L-2E373755` | Inventory item data size per day | UNSUPPORTED: size/throughput/content quota |
 | `L-301DF0C6` | Rate of DescribeParameters requests | UNSUPPORTED: API rate/throttle quota |
@@ -2030,7 +1955,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-BCC99751` | Standard parameter value | UNSUPPORTED: no direct persistent resource inventory |
 | `L-C6126953` | List tags for resource rate | UNSUPPORTED: API rate/throttle quota |
 | `L-C666B4B8` | Inventory data size per request | UNSUPPORTED: size/throughput/content quota |
-| `L-C84673D4` | Advanced parameter policies | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-C98FD403` | Transactions per second (TPS) for the ListComplianceItems API | UNSUPPORTED: API rate/throttle quota |
 | `L-CA06CE12` | Additional access requests that can be queued | UNSUPPORTED: no direct persistent resource inventory |
 | `L-CB14E78C` | Total action items | UNSUPPORTED: size/throughput/content quota |
@@ -2053,9 +1977,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-E265D3AF` | Transactions per second (TPS) for the DescribeInstancePatches API | UNSUPPORTED: API rate/throttle quota |
 | `L-E33D9B0D` | GetOpsItem requests per second | UNSUPPORTED: API rate/throttle quota |
 | `L-E72257B6` | Rate of GetParameter requests | UNSUPPORTED: API rate/throttle quota |
-| `L-E7B4BBE8` | Systems Manager document public shares | UNSUPPORTED: no direct persistent resource inventory |
 | `L-E899D51B` | Transactions per second (TPS) for the GetMaintenanceWindowExecutionTask API | UNSUPPORTED: API rate/throttle quota |
-| `L-E9FF4011` | Systems Manager document versions | UNSUPPORTED: no direct persistent resource inventory |
 | `L-EB5F275D` | Transactions per second (TPS) for the RegisterTaskWithMaintenanceWindow API | UNSUPPORTED: API rate/throttle quota |
 | `L-ECD4A92E` | Transactions per second (TPS) for the GetMaintenanceWindowExecutionTaskInvocation API | UNSUPPORTED: API rate/throttle quota |
 | `L-ED39BA30` | Transactions per second (TPS) for the CreateActivation API | UNSUPPORTED: API rate/throttle quota |
@@ -2067,7 +1989,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-F19BE923` | Transactions per second (TPS) for the DeregisterTaskFromMaintenanceWindow API | UNSUPPORTED: API rate/throttle quota |
 | `L-F25281C0` | Transactions per second (TPS) for the DescribeEffectiveInstanceAssociations API | UNSUPPORTED: API rate/throttle quota |
 | `L-F457BDEB` | Remove tags from resource rate | UNSUPPORTED: API rate/throttle quota |
-| `L-F5EE067E` | Systems Manager document private shares | UNSUPPORTED: no direct persistent resource inventory |
 | `L-F5EE8B1B` | Inventory data retention period | UNSUPPORTED: size/throughput/content quota |
 | `L-F716D492` | Transactions per second (TPS) for the DescribePatchBaselines API | UNSUPPORTED: API rate/throttle quota |
 | `L-F7BECA7A` | Transactions per second (TPS) for the GetCalendarState API | UNSUPPORTED: API rate/throttle quota |
@@ -2075,11 +1996,10 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-F96BC21C` | Transactions per second (TPS) for the DescribeMaintenanceWindowExecutions API | UNSUPPORTED: API rate/throttle quota |
 | `L-F9BD0C82` | Rate of GetParameterHistory requests | UNSUPPORTED: API rate/throttle quota |
 | `L-FA4D3C50` | Transactions per second (TPS) for the DescribeInstancePatchStatesForPatchGroup API | UNSUPPORTED: API rate/throttle quota |
-| `L-FB5A4449` | Association versions | UNSUPPORTED: no direct persistent resource inventory |
 | `L-FBC53ED0` | Transactions per second (TPS) for the DescribeMaintenanceWindowTargets API | UNSUPPORTED: API rate/throttle quota |
 | `L-FD7BBF54` | Systems Manager Automation runbook favorites | UNSUPPORTED: no direct persistent resource inventory |
 
-## `ssm-contacts` (20 open quotas)
+## `ssm-contacts` (17 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2090,18 +2010,15 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-254D300C` | StartEngagement API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-28BF1B5E` | Voice engagement throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-53EDA07E` | All other operations API throttle quota | UNSUPPORTED: API rate/throttle quota |
-| `L-5AE11799` | Stages per plan | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-70D46058` | ListPagesByEngagement API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-73C3F2C3` | SMS engagement throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-8F6873DD` | ListEngagements API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-977ABCD7` | DescribePage API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-D35B01ED` | AcceptPage API throttle quota | UNSUPPORTED: API rate/throttle quota |
-| `L-D438A616` | Contacts per rotation | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-DBEB7593` | Non-mutating SSMContacts-related API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-E25E885A` | ListPageReceipts API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-E86843F5` | GetContact API throttle quota | UNSUPPORTED: API rate/throttle quota |
 | `L-F3345603` | Email engagement throttle quota | UNSUPPORTED: API rate/throttle quota |
-| `L-F338226A` | Contact channels per stage | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-F890E288` | StopEngagement API throttle quota | UNSUPPORTED: API rate/throttle quota |
 
 ## `ssm-guiconnect` (5 open quotas)
@@ -2188,7 +2105,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-6985B686` | Number of unique groups that can be used to evaluate the permissions for a user | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-C4FCA052` | File size of service provider SAML 2.0 certificates (in PEM format) | UNSUPPORTED: size/throughput/content quota |
 
-## `states` (96 open quotas)
+## `states` (95 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2267,7 +2184,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-BE9DC071` | StartMapRun throttle token refill rate per second | UNSUPPORTED: API rate/throttle quota |
 | `L-BF6A8A21` | ListStateMachineAliases throttle token refill rate per second | UNSUPPORTED: API rate/throttle quota |
 | `L-C04F0C78` | CreateStateMachineAlias throttle token bucket size | UNSUPPORTED: API rate/throttle quota |
-| `L-C1D5EBBB` | State machine aliases per state machine | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-C314E25C` | TagResource throttle token refill rate per second | UNSUPPORTED: API rate/throttle quota |
 | `L-C841B85F` | Task retention time in queue | UNSUPPORTED: size/throughput/content quota |
 | `L-C96E1D3D` | DeleteStateMachineAlias throttle token refill rate per second | UNSUPPORTED: API rate/throttle quota |
@@ -2289,34 +2205,21 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-FAA4E8CB` | DeleteStateMachineAlias throttle token bucket size | UNSUPPORTED: API rate/throttle quota |
 | `L-FB14794C` | TestState throttle token bucket size | UNSUPPORTED: API rate/throttle quota |
 
-## `storagegateway` (22 open quotas)
+## `storagegateway` (9 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
-| `L-14F83003` | Cached volume gateway Cache Maximum in TiB | UNSUPPORTED: no direct persistent resource inventory |
-| `L-2232E8E3` | Max virtual tapes in a VTL | UNSUPPORTED: no direct persistent resource inventory |
-| `L-2E88EE16` | Cached volume size in TiB | UNSUPPORTED: size/throughput/content quota |
-| `L-2EC26EAB` | Tape gateway Upload Buffer Maximum in TiB | UNSUPPORTED: no direct persistent resource inventory |
-| `L-311F8856` | Max size of a virtual tape in TiB | UNSUPPORTED: size/throughput/content quota |
-| `L-4951D254` | Total size of tapes in a virtual tape library in PiB | UNSUPPORTED: size/throughput/content quota |
-| `L-5308FBCA` | Size of all stored volumes per gateway in TiB | UNSUPPORTED: size/throughput/content quota |
-| `L-59D49F15` | Tape gateway Cache Maximum in TiB | UNSUPPORTED: no direct persistent resource inventory |
 | `L-6D83F84B` | Cached volume gateway Upload Buffer Minimum in GiB | UNSUPPORTED: no direct persistent resource inventory |
-| `L-6F75AC83` | Size of all cached volumes per gateway in TiB | UNSUPPORTED: size/throughput/content quota |
 | `L-803470D8` | Cached volume gateway Cache Minimum in GiB | UNSUPPORTED: no direct persistent resource inventory |
-| `L-81A6E497` | Stored volume size in TiB | UNSUPPORTED: size/throughput/content quota |
 | `L-87640A7E` | Tape gateway Upload Buffer Minimum in GiB | UNSUPPORTED: no direct persistent resource inventory |
 | `L-96D17DE9` | Minimum size of a virtual tape in GiB | UNSUPPORTED: size/throughput/content quota |
 | `L-98F44425` | File size | UNSUPPORTED: size/throughput/content quota |
-| `L-99E991AF` | Stored volume gateway Upload Buffer Maximum in TiB | UNSUPPORTED: no direct persistent resource inventory |
 | `L-BD85E1A6` | File gateway Cache Minimum in GiB | UNSUPPORTED: no direct persistent resource inventory |
 | `L-C86341FE` | Path length | UNSUPPORTED: size/throughput/content quota |
 | `L-E0AEEBAC` | Stored volume gateway Upload Buffer Minimum in GiB | UNSUPPORTED: no direct persistent resource inventory |
 | `L-F3EDDF8C` | Tape gateway Cache Minimum in GiB | UNSUPPORTED: no direct persistent resource inventory |
-| `L-F5915598` | File gateway Cache Maximum in TiB | UNSUPPORTED: no direct persistent resource inventory |
-| `L-FF1BE522` | Cached volume gateway Upload Buffer Maximum in TiB | UNSUPPORTED: no direct persistent resource inventory |
 
-## `swf` (100 open quotas)
+## `swf` (98 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2419,7 +2322,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-FD69F8F8` | DeleteActivityType throttle burst limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
 | `L-FFE46A4B` | ListDomains throttle burst limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
 
-## `textract` (31 open quotas)
+## `textract` (30 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2449,7 +2352,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-C3BB1AF3` | UntagResource throttle limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
 | `L-CFEC0789` | Async LendingAnalysis throttle limit for max number of concurrent jobs | UNSUPPORTED: API rate/throttle quota |
 | `L-E31D91C2` | StartExpenseAnalysis throttle limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
-| `L-E6985921` | CreateAdapterVersion throttle limit for max number of in-progress adapter versions per account | UNSUPPORTED: API rate/throttle quota |
 | `L-F69F2A31` | DeleteAdapterVersion throttle limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
 | `L-F94EF855` | CreateAdapterVersion throttle limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
 | `L-FA2C35B5` | GetExpenseAnalysis throttle limit in transactions per second | UNSUPPORTED: API rate/throttle quota |
@@ -2488,16 +2390,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-FA296006` | DeleteScheduledQuery request rate | UNSUPPORTED: API rate/throttle quota |
 | `L-FEB34FC6` | Max allowed MaxQueryTCU | UNSUPPORTED: no direct persistent resource inventory |
 
-## `tnb` (4 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-08069DBD` | Function packages | UNSUPPORTED: no direct persistent resource inventory |
-| `L-3328748B` | Network packages | UNSUPPORTED: no direct persistent resource inventory |
-| `L-81A3E723` | Concurrent ongoing network service operations | UNSUPPORTED: capacity or runtime quota |
-| `L-C92FB107` | Network service instances | UNSUPPORTED: capacity or runtime quota |
-
-## `transcribe` (63 open quotas)
+## `transcribe` (55 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2510,14 +2403,11 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-2B8713A4` | Maximum audio file size (Medical) | UNSUPPORTED: size/throughput/content quota |
 | `L-2C7580BC` | Maximum size of a custom vocabulary | UNSUPPORTED: size/throughput/content quota |
 | `L-2D4ED180` | Transactions per second, ListMedicalTranscriptionJobs operation | UNSUPPORTED: API rate/throttle quota |
-| `L-2E269322` | Maximum number of rules per category for Call Analytics batch jobs | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-2F86860B` | Transactions per second, GetCallAnalyticsJob operation | UNSUPPORTED: API rate/throttle quota |
 | `L-30829B86` | Maximum size of a vocabulary filter | UNSUPPORTED: size/throughput/content quota |
-| `L-340B75E2` | Number of pending medical vocabularies | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-3445E3CD` | Maximum number of targets allowed per category for Call Analytics batch jobs | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-34DCCAED` | Number of days that job records are retained (Medical) | UNSUPPORTED: size/throughput/content quota |
 | `L-467D3ED0` | Transactions per second, GetMedicalVocabulary operation | UNSUPPORTED: API rate/throttle quota |
-| `L-48FC5F8A` | Number of concurrent Call Analytics batch jobs | UNSUPPORTED: capacity or runtime quota |
 | `L-49DA58C9` | Transactions per second, StartCallAnalyticsStreamTranscriptionWebsocket | UNSUPPORTED: API rate/throttle quota |
 | `L-49FE4216` | Maximum length of a custom vocabulary phrase | UNSUPPORTED: size/throughput/content quota |
 | `L-4B321684` | Transactions per second, StartCallAnalyticsJob operation | UNSUPPORTED: API rate/throttle quota |
@@ -2525,10 +2415,8 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-4E017343` | Number of channels for channel identification (Medical) | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-5B9152AD` | Maximum audio file length (Medical) | UNSUPPORTED: size/throughput/content quota |
 | `L-612AD79E` | Transactions per second, ListTranscriptionJobs operation | UNSUPPORTED: API rate/throttle quota |
-| `L-63F366BB` | Number of concurrent medical batch transcription jobs | UNSUPPORTED: capacity or runtime quota |
 | `L-67DA1F8F` | Number of channels for channel identification | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-6F37B9E3` | Transactions per second, StartTranscriptionJob operation | UNSUPPORTED: API rate/throttle quota |
-| `L-6F7AB1C9` | Number of concurrent batch transcription jobs | UNSUPPORTED: capacity or runtime quota |
 | `L-765784F2` | Transactions per second, UpdateMedicalVocabulary operation | UNSUPPORTED: API rate/throttle quota |
 | `L-79130216` | Transactions per second, GetTranscriptionJob operation | UNSUPPORTED: API rate/throttle quota |
 | `L-8043D35A` | Maximum audio file size for Call Analytics batch jobs | UNSUPPORTED: size/throughput/content quota |
@@ -2538,7 +2426,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-949A4206` | Job queue bandwidth ratio | UNSUPPORTED: size/throughput/content quota |
 | `L-A34A9084` | Number of concurrent Call Analytics streams (HTTP/2 + Websocket) | UNSUPPORTED: capacity or runtime quota |
 | `L-A4098D0D` | Transactions per second, StartMedicalStreamTranscription | UNSUPPORTED: API rate/throttle quota |
-| `L-A51A98B4` | Number of pending vocabularies | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-A99534C1` | Transactions per second, GetMedicalTranscriptionJob operation | UNSUPPORTED: API rate/throttle quota |
 | `L-AAFCE0A3` | Transactions per second, DeleteMedicalTranscriptionJob operation | UNSUPPORTED: API rate/throttle quota |
 | `L-AED2C08C` | Transactions per second, ListCallAnalyticsCategories operation | UNSUPPORTED: API rate/throttle quota |
@@ -2555,8 +2442,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-D0C82002` | Number of concurrent Medical streams (HTTP/2 + Websocket) | UNSUPPORTED: capacity or runtime quota |
 | `L-D2C499F9` | Transactions per second, ListMedicalVocabularies operation | UNSUPPORTED: API rate/throttle quota |
 | `L-D6EC4EAD` | Minimum audio file duration | UNSUPPORTED: no direct persistent resource inventory |
-| `L-E0D2ADDE` | Number of concurrently training custom language models | UNSUPPORTED: capacity or runtime quota |
-| `L-E3EBEDF2` | Maximum number of categories for Call Analytics batch jobs | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-E9D8884B` | Transactions per second, DeleteCallAnalyticsJob operation | UNSUPPORTED: API rate/throttle quota |
 | `L-EC6090B0` | Minimum audio file duration (Medical) | UNSUPPORTED: no direct persistent resource inventory |
 | `L-ED89E5C0` | Transactions per second, DeleteMedicalVocabulary operation | UNSUPPORTED: API rate/throttle quota |
@@ -2565,7 +2450,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-F6E06B47` | Transactions per second, StartCallAnalyticsStreamTranscription | UNSUPPORTED: API rate/throttle quota |
 | `L-FE4C37F7` | Maximum audio file size | UNSUPPORTED: size/throughput/content quota |
 
-## `transfer` (24 open quotas)
+## `transfer` (20 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2575,7 +2460,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-1B7183EB` | Concurrent AS2 messages per server | UNSUPPORTED: capacity or runtime quota |
 | `L-2259D421` | File size | UNSUPPORTED: size/throughput/content quota |
 | `L-2B1BC0C3` | Number of files per StartFileTransfer request | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-2F6B27A1` | Maximum logical directory mappings entries | UNSUPPORTED: no direct persistent resource inventory |
 | `L-396F6E73` | Concurrent multiplexed SFTP sessions per connection | UNSUPPORTED: capacity or runtime quota |
 | `L-3B829EB0` | Number of authentication requests per user per second | UNSUPPORTED: API rate/throttle quota |
 | `L-4963D6B7` | Rate of StartRemoteMove files per SFTP connector | UNSUPPORTED: API rate/throttle quota |
@@ -2583,23 +2467,13 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-4BAB8288` | Concurrent sessions per server | UNSUPPORTED: capacity or runtime quota |
 | `L-57D537DE` | Rate of StartFileTransfer files per SFTP connector | UNSUPPORTED: API rate/throttle quota |
 | `L-83F728FB` | Concurrent AS2 messages per connector | UNSUPPORTED: capacity or runtime quota |
-| `L-843894CE` | Maximum number of AD Groups for access | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-90797EDA` | SSH keys per Service Managed user | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-9A414140` | Maximum outbound AS2 message size | UNSUPPORTED: size/throughput/content quota |
 | `L-ACBBA5DF` | Maximum logical directory mappings characters | UNSUPPORTED: size/throughput/content quota |
-| `L-B2750988` | Certificates per profile | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-B51E8407` | Maximum web app units per web app | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-B6C4BD5F` | Idle connection timeout | UNSUPPORTED: no direct persistent resource inventory |
 | `L-CD3E054C` | New executions refill rate per workflow per second | UNSUPPORTED: API rate/throttle quota |
 | `L-CFAB221D` | Rate of StartRemoteDelete files per SFTP connector | UNSUPPORTED: API rate/throttle quota |
 | `L-E5F10FFD` | Rate of StartFileTransfer files per AS2 connector | UNSUPPORTED: API rate/throttle quota |
-
-## `translate` (2 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-10DB0BCF` | Concurrent batch translation jobs | UNSUPPORTED: capacity or runtime quota |
-| `L-4011ABD8` | Custom terminology files | UNSUPPORTED: no direct persistent resource inventory |
 
 ## `verifiedpermissions` (27 open quotas)
 
@@ -2633,14 +2507,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-E1924570` | GetPolicyStore requests per second per Region per account | UNSUPPORTED: API rate/throttle quota |
 | `L-F81CF58F` | DeletePolicy requests per second per Region per account | UNSUPPORTED: API rate/throttle quota |
 
-## `vmimportexport` (2 open quotas)
-
-| Quota code | Quota name | Classification |
-|---|---|---|
-| `L-0994E50B` | Concurrent task limit for ImportInstance, ImportVolume, and CreateInstanceExportTask | UNSUPPORTED: capacity or runtime quota |
-| `L-66ABAAD5` | Concurrent task limit for ImportImage, ImportSnapshot, and ExportImage | UNSUPPORTED: capacity or runtime quota |
-
-## `voiceid` (8 open quotas)
+## `voiceid` (4 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2662,71 +2529,39 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 |---|---|---|
 | `L-87FCA9B2` | Auth policy size | UNSUPPORTED: size/throughput/content quota |
 
-## `waf-regional` (22 open quotas)
+## `waf-regional` (6 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
-| `L-0043356F` | Logging destination configurations per web ACL | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-02647DC9` | Search length | UNSUPPORTED: size/throughput/content quota |
 | `L-28FAE46F` | Rate of requests | UNSUPPORTED: API rate/throttle quota |
 | `L-343F131E` | IP addresses blocked per rate-based rule | UNSUPPORTED: API rate/throttle quota |
-| `L-5510BCA0` | Filters per size constraint condition | UNSUPPORTED: size/throughput/content quota |
-| `L-55785BA2` | Web ACLs | UNSUPPORTED: no direct persistent resource inventory |
-| `L-6DA23DDF` | Rate-based rules | UNSUPPORTED: API rate/throttle quota |
 | `L-797E08C8` | Regex pattern length | UNSUPPORTED: size/throughput/content quota |
-| `L-7BF8015E` | Rules | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-7EF6FB27` | Rate-based rule rate | UNSUPPORTED: API rate/throttle quota |
-| `L-8EEF0989` | Regex pattern sets | UNSUPPORTED: no direct persistent resource inventory |
-| `L-954F3F3A` | Filters per SQL injection match condition | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-9C634948` | Conditions per rule | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-ACF59499` | GeoMatchSets | UNSUPPORTED: no direct persistent resource inventory |
 | `L-AEEA10B9` | HTTP header name length | UNSUPPORTED: size/throughput/content quota |
-| `L-AF52C91B` | IP address ranges per IP set match condition | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-C47A352B` | Filters per string match condition | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-DF027FCD` | Pattern sets per regex match condition | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-EFDFFE2D` | Filters per cross-site scripting match condition | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-FFB853E8` | Locations per GeoMatchSet | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
-## `wafv2` (21 open quotas)
+## `wafv2` (6 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
-| `L-0224FEE0` | Maximum number of characters allowed in a regex pattern per account in WAF for regional | UNSUPPORTED: size/throughput/content quota |
 | `L-030B54CC` | Maximum number of referenced statements per rule group or web ACL in WAF for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-041DD6D3` | Maximum number of text transformations per rule statement for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-0A8A309C` | Maximum size in kilobytes of the custom response body content for a single custom response definition for regional | UNSUPPORTED: size/throughput/content quota |
-| `L-11D00F38` | Number of token domains per web ACL for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-2D9CB303` | Maximum number of custom request headers per web ACL or rule group for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-45C90A8A` | Maximum number of custom headers for a single custom response definition for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-5E8DF1EF` | Maximum number of bytes in a string match (byte match) string in WAF for regional | UNSUPPORTED: size/throughput/content quota |
-| `L-6F32B880` | Maximum combined size in kilobytes of all response body content for a single rule group or a single web ACL for regional | UNSUPPORTED: size/throughput/content quota |
-| `L-71C2E81B` | Maximum number of custom response bodies per web ACL or rule group for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-74EBD1DD` | Maximum number of unique IP addresses that can be blocked per rate-based rule for regional | UNSUPPORTED: API rate/throttle quota |
 | `L-8B48556D` | Maximum size in kilobytes of a web request body that can be inspected for Application Load Balancer and AWS AppSync protections | UNSUPPORTED: size/throughput/content quota |
-| `L-91DEFBB6` | Maximum number of web ACL capacity units in a rule group in WAF for regional | UNSUPPORTED: capacity or runtime quota |
-| `L-9E6FF091` | Maximum number of rate-based statements per rule group in WAF for regional | UNSUPPORTED: API rate/throttle quota |
 | `L-A85235F6` | Maximum number of requests per second per web ACL for regional | UNSUPPORTED: API rate/throttle quota |
-| `L-B1635397` | Maximum number of rate-based statements per web ACL in WAF for regional | UNSUPPORTED: API rate/throttle quota |
 | `L-C928281E` | Minimum request rate that can be defined for a rate-based rule for regional | UNSUPPORTED: API rate/throttle quota |
-| `L-CCCD1D7B` | Maximum number of custom headers for a single custom request definition for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-D95DED7E` | Maximum size in kilobytes of a web request body that can be inspected for CloudFront, API Gateway, Amazon Cognito, App Runner, and Verified Access protections | UNSUPPORTED: size/throughput/content quota |
-| `L-D9F31E8A` | Maximum number of web ACL capacity units in a web ACL in WAF for regional | UNSUPPORTED: capacity or runtime quota |
-| `L-E4E414A8` | Maximum number of custom response headers per web ACL or rule group for regional | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
-## `wellarchitected` (8 open quotas)
+## `wellarchitected` (5 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
 | `L-0979631D` | Versions per lens | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-0AA67FCF` | Pillars per lens | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-7E98904D` | Shares per workload | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-84104561` | Choices per question | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-A5DDC022` | Shares per review template | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-D5439D2C` | Lens size | UNSUPPORTED: size/throughput/content quota |
-| `L-E62A1DE4` | Shares per lens | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-FCB0C16C` | Questions per pillar | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
-## `wisdom` (65 open quotas)
+## `wisdom` (59 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2768,7 +2603,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-869A5CB8` | Rate of API requests for DeleteAssistantAssociation | UNSUPPORTED: API rate/throttle quota |
 | `L-8B3876B5` | Rate of API requests for ListAssistants | UNSUPPORTED: API rate/throttle quota |
 | `L-8B41D6E7` | Maximum number of attachments per email message template | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-8EAC5E16` | Maximum number of message templates per knowldege base | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-9B912B0C` | Rate of API requests for SearchContent | UNSUPPORTED: API rate/throttle quota |
 | `L-9F242C3F` | Rate of API requests for UpdateMessageTemplate | UNSUPPORTED: API rate/throttle quota |
 | `L-A00E39EA` | Rate of API requests for DeleteAssistant | UNSUPPORTED: API rate/throttle quota |
@@ -2785,15 +2619,13 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-CA23568A` | Rate of API requests for QueryAssistant | UNSUPPORTED: API rate/throttle quota |
 | `L-CA2E4BF7` | Rate of API requests for GetRecommendations | UNSUPPORTED: API rate/throttle quota |
 | `L-CBEEAAE4` | Rate of API requests for SearchSessions | UNSUPPORTED: API rate/throttle quota |
-| `L-DA307021` | Assistant association | UNSUPPORTED: no direct persistent resource inventory |
 | `L-E85308FD` | Rate of API requests for UpdateContent | UNSUPPORTED: API rate/throttle quota |
 | `L-E9948A8B` | Rate of API requests for RemoveKnowledgeBaseTemplateUri | UNSUPPORTED: API rate/throttle quota |
 | `L-EB422E2D` | Rate of API requests for DeleteQuickResponse | UNSUPPORTED: API rate/throttle quota |
-| `L-F84C0EB2` | Maximum number of versions per message template | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-FBCC7857` | Rate of API requests for ListMessageTemplateVersions | UNSUPPORTED: API rate/throttle quota |
 | `L-FE0F5908` | Rate of API requests for StartContentUpload | UNSUPPORTED: API rate/throttle quota |
 
-## `workspaces` (15 open quotas)
+## `workspaces` (14 open quotas)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2812,7 +2644,7 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-D6CFBE96` | WorkSpaces Pools | UNSUPPORTED: no direct persistent resource inventory |
 | `L-F7854FE2` | General Purpose PowerPro streaming instances for WorkSpaces Pools | UNSUPPORTED: capacity or runtime quota |
 
-## `workspaces-instances` (1 open quotas)
+## `workspaces-instances` (1 open quota)
 
 | Quota code | Quota name | Classification |
 |---|---|---|
@@ -2896,20 +2728,9 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-E75A2BBF` | Segments per second | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
 
-## `servicediscovery` (4 offene Quotas)
+## `servicediscovery` (3 offene Quotas)
 
 - `L-0BA10AAE` — **DiscoverInstancesRevision operation per account rate** — `USAGE_METRIC`: Request rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-514A639A` — **DiscoverInstances operation per account steady rate** — `USAGE_METRIC`: Request rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-76CF203B` — **DiscoverInstances operation per account burst rate** — `USAGE_METRIC`: Request burst rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 
-## `appstream2` (2 offene Quotas)
-
-- `L-DE32F884` — **Image builders** — now implemented via paginated `DescribeImageBuilders`.
-- `L-D949908C` — **App block builders** — now implemented via paginated `DescribeAppBlockBuilders`.
-
-## `voiceid` (4 open quotas)
-
-- `L-3790424B` — **Watchlists per domain** — implemented via paginated domain-scoped inventory.
-- `L-65FE7850` — **Speakers per domain** — implemented via paginated domain-scoped inventory.
-- `L-38B73369` — **Active fraudster registration jobs per domain** — implemented via domain-scoped inventory.
-- `L-55441DAB` — **Active speaker enrollment jobs per domain** — implemented via domain-scoped inventory.
