@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Resilience Hub application component and cross-account role measurements.
 - License Manager rules-per-ruleset and rulesets-per-asset-group measurements.
 - ECS Service Connect namespace and provisioning task measurements.
 - Forecast dataset column, predictor horizon and what-if export measurements.

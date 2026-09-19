@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,715 | 2,076 |
+| implemented | 2,717 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,095 | 4,457 |
-| uncovered | 6,986 | 5,941 |
+| covered | 5,097 | 4,457 |
+| uncovered | 6,984 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.17%** of the whole union, or
-**72.15%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.19%** of the whole union, or
+**72.18%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,34 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Measured two Resilience Hub scopes and closed four investigations that had
+  looked open. `Number of Application Components per resource` reads the
+  `appComponents` list each physical resource carries, on the application and
+  version walk the module already makes and under a grant already in place. A
+  resource belonging to no component counts as zero rather than dropping out of
+  the maximum, and the optional resource name falls back to the logical id.
+  `Number of ResilienceHubV2 cross-account role ARNs per service` needs one
+  `GetService` per service: the service summary does not carry the permission
+  model, and a service confined to one account carries none at all, which is
+  zero rather than absent. Both clients sign as `resiliencehub`, so the second
+  generation's grant needs no prefix alias.
+  `Number of ResilienceHubV2 assumptions per service` is not measured because
+  the service model names no assumption anywhere -- not on `GetService`, not on
+  any shape it reaches. `Number of Compliance Readiness Policies` is blocked
+  more narrowly: the service ships resiliency policies, and counting those as
+  compliance readiness policies would be a guess about what the quota names.
+  Four more services were checked over without finding work. MediaTailor,
+  TwinMaker and Transcribe already record their verdicts in their own module
+  docstrings, and re-reading them confirmed the reasoning: MediaTailor's source
+  and package quotas name no scope, TwinMaker's components are listed per entity
+  in a workspace holding tens of thousands, and Transcribe's remaining quotas
+  count live streams no API lists. SiteWise is the one that had no note, and now
+  has a reason rather than silence: its dashboard and gateway quotas live inside
+  `dashboardDefinition` and `capabilityConfiguration`, which the service model
+  types as plain strings holding a document, so counting the visualizations or
+  OPC UA sources inside one would mean parsing a format the model does not
+  describe -- the same objection as the Cedar policy text in AgentCore.
 
 - Measured two License Manager asset scopes for no additional call. Both
   listings return the whole object rather than a summary, so `Rules per custom
@@ -976,12 +1004,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,967 quotas are measurable and still uncovered. Sorting them by what their
+1,965 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 702 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 700 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |

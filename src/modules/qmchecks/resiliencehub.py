@@ -5,6 +5,13 @@ Terraform state files offered to a single import call, and the retention and
 size quotas bound a document or a period. The `ResilienceHubV2` quotas belong
 to the second-generation service and are read through its own client, whose
 status values are upper case where the first generation's are mixed case.
+
+`Number of ResilienceHubV2 assumptions per service` stays open because the
+service model names no assumption anywhere: neither `GetService` nor any shape
+it reaches reports one. `Number of Compliance Readiness Policies` stays open
+for a narrower reason: the service ships resiliency policies, not compliance
+readiness policies, and counting the one as the other would be a guess about
+what the quota names.
 """
 from collections import Counter
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
@@ -187,6 +194,40 @@ def v2_tags_per_input_source(ctx):
                    'resiliencehubv2:ListInputSources')
 
 
+def app_components_per_resource(ctx):
+    """Measure the resource each application version places in the most components."""
+    values = []
+    for app in apps(ctx):
+        for resource in ctx.call(RESILIENCEHUB, 'list_app_version_resources',
+                                 'physicalResources', appArn=app,
+                                 appVersion=latest_version(app, ctx)):
+            # The resource name is optional; the logical id always names one.
+            identity = (resource.get('resourceName')
+                        or (resource.get('logicalResourceId') or {}).get('identifier'))
+            if not isinstance(identity, str) or not identity:
+                raise NoData('Resilience Hub resource is missing its identity')
+            components = resource.get('appComponents') or []
+            if not isinstance(components, list):
+                raise NoData('Resilience Hub resource has an invalid component list')
+            values.append((f'{app}/{identity}', len(components), None))
+    return maximum(values, 'ResilienceHubResource',
+                   'resiliencehub:ListAppVersionResources')
+
+
+def v2_cross_account_roles(ctx):
+    """A service confined to one account reaches across none, which is zero."""
+    values = []
+    for arn in v2_services(ctx):
+        service = ctx.call(RESILIENCEHUBV2, 'get_service', serviceArn=arn).get('service')
+        if not isinstance(service, dict):
+            raise NoData('Resilience Hub service has no detail')
+        roles = (service.get('permissionModel') or {}).get('crossAccountRoles') or []
+        if not isinstance(roles, list):
+            raise NoData('Resilience Hub service has an invalid cross-account role list')
+        values.append((arn, len(roles), None))
+    return maximum(values, 'ResilienceHubService', 'resiliencehubv2:GetService')
+
+
 CHECKS = [
     ('L-CBE304D4', 'Number of applications',
      lambda ctx: dict(usage=len(apps(ctx)), source='resiliencehub:ListApps',
@@ -242,6 +283,10 @@ CHECKS = [
      v2_services_per_user_journey),
     ('L-04E7C378', 'Number of ResilienceHubV2 tags per input source',
      v2_tags_per_input_source),
+    ('L-3DCDC079', 'Number of Application Components per resource',
+     app_components_per_resource),
+    ('L-BC37F660', 'Number of ResilienceHubV2 cross-account role ARNs per service',
+     v2_cross_account_roles),
 ]
 
 
