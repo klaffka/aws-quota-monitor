@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2184**
+Total open entries: **2182**
 
 
 ## access-analyzer
@@ -1946,7 +1946,6 @@ Total open entries: **2184**
 - `L-22AE4B75` — Burst rate of service read actions (or bucket maximum capacity)
 - `L-281CBA4C` — Burst rate of cluster resource read actions (or bucket maximum capacity)
 - `L-2AB0A1F7` — Subnets per awsvpcConfiguration
-- `L-2D029656` — Services per namespace
 - `L-321A0372` — Sustained rate of service read actions (or bucket refill rate)
 - `L-35D944A8` — Burst rate of cluster read actions (or bucket maximum capacity)
 - `L-3B4FAC68` — Burst rate of cluster resource modify actions (or bucket maximum capacity)
@@ -1981,7 +1980,6 @@ Total open entries: **2184**
 - `L-A9E5EB0F` — Sustained rate of capacity provider modify actions (or bucket refill rate)
 - `L-AA0D4951` — Burst rate of service modify actions (or bucket maximum capacity)
 - `L-B4EF2B3D` — Burst rate of tag read actions (or bucket maximum capacity)
-- `L-B7718569` — Tasks in PROVISIONING state per cluster
 - `L-C26103FB` — Sustained rate of task protection actions (or bucket refill rate)
 - `L-C3AEE9D2` — Sustained rate of cluster resource modify actions (or bucket refill rate)
 - `L-C5297B3A` — Sustained rate of service modify actions (or bucket refill rate)

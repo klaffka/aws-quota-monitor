@@ -468,6 +468,8 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "ecs:ListTaskDefinitionFamilies"
           , "ecs:ListTaskDefinitions"
           , "ecs:ListContainerInstances"
+          , "ecs:ListTasks"
+          , "ecs:DescribeTasks"
           , "eks:ListClusters"
           , "eks:ListNodegroups"
           , "eks:ListFargateProfiles"
