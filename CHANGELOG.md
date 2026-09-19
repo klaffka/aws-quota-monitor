@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- DynamoDB secondary index and X-Ray group and sampling rule tag measurements.
 - Transfer Family web app unit measurement.
 - Resilience Hub application component and cross-account role measurements.
 - License Manager rules-per-ruleset and rulesets-per-asset-group measurements.

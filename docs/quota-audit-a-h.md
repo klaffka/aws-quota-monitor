@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2182**
+Total open entries: **2181**
 
 
 ## access-analyzer
@@ -1842,7 +1842,6 @@ Total open entries: **2182**
 - `L-CF0CBE56` — Table-level read throughput limit
 - `L-D98E8184` — Maximum Incremental Export concurrent requests
 - `L-F3CA5463` — Provisioned capacity decreases per day
-- `L-F7858A77` — Global Secondary Indexes per table
 
 ## ebs
 

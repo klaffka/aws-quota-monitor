@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,718 | 2,076 |
+| implemented | 2,721 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,098 | 4,457 |
-| uncovered | 6,983 | 5,941 |
+| covered | 5,101 | 4,457 |
+| uncovered | 6,980 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.20%** of the whole union, or
-**72.19%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.22%** of the whole union, or
+**72.23%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,30 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Widened the sweep from module docstrings to the progress document as well,
+  and measured the three quotas it turned up. Ranking services by the quotas
+  neither their own docstring nor this document discusses leaves 186 across 72
+  services, most of them already covered by a verdict written in aggregate
+  rather than quota by quota. Three were genuinely unexamined and all three are
+  measurable.
+  `Global Secondary Indexes per table` reads `DescribeTable` on the listing the
+  table count already makes; a table holding no index counts as zero rather than
+  dropping out of the maximum. X-Ray's `Tags per group` and `Tags per custom
+  sampling rule` each list the tags of one kind of resource, on the two listings
+  that module already walks. These two are worth telling apart from the tag
+  quotas that stay open elsewhere: ECS's `Tags per resource` spans every ECS
+  resource type, so measuring the two this collector describes would undercount
+  the rest, while X-Ray names the resource type in the quota itself and the
+  listing is complete.
+  A sampling rule record wraps the rule, and the rule carries two ARNs:
+  `RuleARN` names the rule and `ResourceARN` names what it matches. The tag
+  listing takes the first. `RuleARN` is optional where the rest of the rule is
+  required, so a record without one is refused rather than skipped.
+  `Indexed annotations per trace` stays open and now says why: the indexing
+  rules state which annotations X-Ray indexes, not how many any one trace
+  carries, and no operation reports that. DynamoDB's remaining four count work
+  in flight or name a period.
 
 - Swept the services whose modules carried no rejection note, and measured the
   one quota the sweep turned up. `Maximum web app units per web app` is
@@ -1027,12 +1051,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,964 quotas are measurable and still uncovered. Sorting them by what their
+1,961 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 699 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 696 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
