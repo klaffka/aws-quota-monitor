@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,721 | 2,076 |
+| implemented | 2,725 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,101 | 4,457 |
-| uncovered | 6,980 | 5,941 |
+| covered | 5,105 | 4,457 |
+| uncovered | 6,976 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.22%** of the whole union, or
-**72.23%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.26%** of the whole union, or
+**72.29%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,32 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Measured four quotas across three services, two of them for no extra call.
+  `Dataflow endpoint group limit` counts the listing Ground Station already
+  walks for the endpoints inside each group, and `Manifests per origin endpoint`
+  sums the four manifest lists the MediaPackage V2 endpoint listing already
+  carries -- HLS, low-latency HLS, DASH and Microsoft Smooth Streaming, which
+  the quota bounds together. The Mainframe Modernization storage quotas cost one
+  `GetEnvironment` per environment: a storage configuration is a union naming
+  either an EFS or an FSx mount, so the two quotas count the same list through
+  different members, and an environment mounting nothing counts as zero.
+  Three neighbouring quotas were examined and left open. Ground Station's
+  ephemeris quotas are the sharpest case: `ListEphemerides` takes a mandatory
+  start and end time and filters by the window an ephemeris is valid for, so an
+  enabled one outside whatever window was chosen would simply not be counted,
+  and no window can be shown to cover them all. `Max DataTransferEndpoints Per
+  AWS Account` has no listing under any name.
+  Well-Architected was the round's most promising candidate and does not work.
+  `Pillars per lens`, `Questions per pillar` and `Choices per question` are all
+  answered by `ListAnswers`, which returns a pillar id and a choice list per
+  question -- but it requires a `WorkloadId`, so only lenses attached to a
+  workload review are readable. A custom lens consumes those quotas whether or
+  not anyone reviewed against it, so measuring the reviewed ones would report a
+  confident undercount, the same objection that keeps the ECS
+  `awsvpcConfiguration` quotas open. Lightsail's `Origins per distribution` is a
+  different kind of dead end: the distribution carries a single `origin` rather
+  than a list, so the measurement would be the constant one.
 
 - Widened the sweep from module docstrings to the progress document as well,
   and measured the three quotas it turned up. Ranking services by the quotas
@@ -1051,12 +1077,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,961 quotas are measurable and still uncovered. Sorting them by what their
+1,957 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 696 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 692 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |

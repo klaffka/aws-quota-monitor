@@ -1439,6 +1439,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "imagebuilder:GetWorkflow"
           , "m2:ListApplications"
           , "m2:ListEnvironments"
+          , "m2:GetEnvironment"
           , "entityresolution:ListMatchingWorkflows"
           , "entityresolution:ListMatchingJobs"
           , "entityresolution:ListIdMappingJobs"
