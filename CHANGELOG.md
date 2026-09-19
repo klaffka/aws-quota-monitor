@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- ECS Service Connect namespace and provisioning task measurements.
 - Forecast dataset column, predictor horizon and what-if export measurements.
 - IoT Core HTTP action header, policies-per-target, thing type propagating
   attribute and retained message measurements.
