@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,713 | 2,076 |
+| implemented | 2,715 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,093 | 4,457 |
-| uncovered | 6,988 | 5,941 |
+| covered | 5,095 | 4,457 |
+| uncovered | 6,986 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.16%** of the whole union, or
-**72.12%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.17%** of the whole union, or
+**72.15%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,36 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Measured two License Manager asset scopes for no additional call. Both
+  listings return the whole object rather than a summary, so `Rules per custom
+  license asset ruleset` and `License asset rulesets per asset group` read the
+  inventory the account counts beside them already fetched, under grants that
+  were already in place. An empty ruleset or a group associating nothing counts
+  as zero rather than dropping out of the maximum. Whether the ruleset listing
+  holds only custom rulesets was settled before this change rather than by it:
+  `Custom license asset rulesets per account` has counted that listing whole
+  since it was written.
+  Three AgentCore entries under "Next investigations" are resolved as blocked
+  rather than pending. `Temporal Policies per Policy Engine` and `Temporal
+  Operators per Policy` both need the policy text: `GetPolicy` returns the
+  definition as a Cedar statement string, so classifying a policy as temporal or
+  counting the operators inside one would need a Cedar parser this package does
+  not ship -- the same shape as the X.509 subject that blocks the IoT CA
+  certificate quota. `Tools per target` is blocked for the reason that keeps
+  Bedrock's `APIs per Agent` open, in the same words: only an MCP Lambda
+  target's `toolSchema.inlinePayload` is a list of tools. An OpenAPI, Smithy or
+  MCP server target carries either an S3 pointer or a schema document that would
+  have to be parsed, and an API Gateway target lists overrides and filters
+  rather than the tools themselves, so counting the inline case alone would
+  report a confident undercount for every other target type.
+  Two services were checked over and hold nothing reachable. Macie's eight are
+  per-object detection limits and Data Exchange's seven bound one job or name
+  products that live in the Marketplace catalog rather than in Data Exchange.
+  EFS's two mount target quotas were re-examined and left as `efs.py` already
+  has them: neither name says whose mount targets it counts, and the account
+  total and the per-file-system maximum are both defensible readings of the same
+  listing.
 
 - Measured two ECS scopes and rejected two others that had looked like the
   better candidates. `Services per namespace` counts what Service Connect places
@@ -946,12 +976,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,969 quotas are measurable and still uncovered. Sorting them by what their
+1,967 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 704 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 702 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
@@ -1052,7 +1082,9 @@ connection and call limits that exist only while traffic is in flight.
 - Bedrock model/token quotas and API rate quotas: identify exact telemetry and aggregation windows. Minute sums cannot establish per-second peaks or token-bucket occupancy.
 - Bedrock batch jobs: verify quota reservation in transitional states and remaining model mappings (Claude Opus 5, MiniMax M2.5, NVIDIA Nemotron 3 Super 120B A12B). Input record/file quotas require a separate data-aware check.
 - Bedrock configuration: verify node accounting inside Flow loops, Automated Reasoning build reservations and annotations, and Data Automation project blueprint/fallback accounting. Resolve any blueprint version `0` returned by populated inventories before assigning it a quota meaning. Verify evaluation transitions and populated live policy/version inventories separately from offline method availability.
-- AgentCore remaining configuration limits: temporal policies, tools per target and policy-generation windows.
+- AgentCore policy-generation windows. The other two entries this line used to
+  carry are settled and recorded above: temporal policies and tools per target
+  are blocked rather than pending.
 - Connect remaining limits: concurrent contacts via instance-scoped official metrics; data-table value/version semantics; agent-status accounting; additional queue configuration limits. Verify the new per-instance checks with live populated inventories where available.
 - Verify ambiguous AppStream image-builder quota accounting and scaling transitions using stronger AWS evidence.
 - Audit runtime success separately from implementation availability. Missing metrics, denied API calls and ambiguous resource states remain explicit.

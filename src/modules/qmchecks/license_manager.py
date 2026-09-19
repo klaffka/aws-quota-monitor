@@ -3,6 +3,11 @@
 The instance aggregation quotas count what License Manager tracks across an
 organization rather than a listable inventory, `Total number counted entitlements
 per checkout` bounds a single checkout, and `GetAccessTokens calls` is a rate.
+
+The asset group and ruleset scopes need no call of their own: both listings
+return the whole object rather than a summary, so the rules of a ruleset and the
+rulesets a group associates arrive with the inventory the account counts already
+read.
 """
 from collections import Counter
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
@@ -101,6 +106,23 @@ def associations_per_resource(ctx):
                    'license-manager:ListAssociationsForLicenseConfiguration')
 
 
+def _asset_maximum(method, key, field, resource_type):
+    """Measure one list carried by the objects a listing already returns."""
+    def check(ctx):
+        values = []
+        for item in ctx.call(LICENSE_MANAGER, method, key):
+            arn = item.get(f'{resource_type}Arn')
+            if not isinstance(arn, str) or not arn:
+                raise NoData(f'License Manager {key} entry is missing its ARN')
+            held = item.get(field) or []
+            if not isinstance(held, list):
+                raise NoData(f'License Manager {key} entry has an invalid {field} list')
+            values.append((arn, len(held), None))
+        return maximum(values, resource_type,
+                       f'license-manager:{"".join(part.title() for part in method.split("_"))}')
+    return check
+
+
 CHECKS = [
     ('L-CDB75D7A', 'License configurations',
      _count('list_license_configurations', 'LicenseConfigurations',
@@ -117,6 +139,12 @@ CHECKS = [
     ('L-9FC671A7', 'Custom license asset rulesets per account',
      _count('list_license_asset_rulesets', 'LicenseAssetRulesets',
             'license-manager:ListLicenseAssetRulesets')),
+    ('L-A6872F54', 'Rules per custom license asset ruleset',
+     _asset_maximum('list_license_asset_rulesets', 'LicenseAssetRulesets',
+                    'Rules', 'LicenseAssetRuleset')),
+    ('L-60C1FE55', 'License asset rulesets per asset group',
+     _asset_maximum('list_license_asset_groups', 'LicenseAssetGroups',
+                    'AssociatedLicenseAssetRulesetARNs', 'LicenseAssetGroup')),
     ('L-55F04DE6', 'Number of grants per license', grants_per_license),
     ('L-992B7443', 'Number of tokens per account and license', tokens_per_license),
     ('L-48BF1E76', 'Number of received licenses per product',
