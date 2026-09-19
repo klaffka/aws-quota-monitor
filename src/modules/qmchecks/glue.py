@@ -1,4 +1,11 @@
-"""AWS Glue regional resource, configuration, and active-run quotas."""
+"""AWS Glue catalog, crawler, job and session inventories.
+
+The remaining quotas are capacity or service constants rather than inventories:
+the DPU quotas meter compute, the observation and completion request quotas
+count work in flight, and `Number of connection types` names the connection
+types Glue itself supports rather than anything an account creates. The three
+`Global` quotas name no resource this SDK lists.
+"""
 from modules.qmcore.aws import CheckContext, NoData, session_from_env
 from modules.qmcore.aws import maximum
 
