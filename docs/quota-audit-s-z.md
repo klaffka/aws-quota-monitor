@@ -2722,8 +2722,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-998BFF16` | Trace and service graph retention in days | UNSUPPORTED: size/throughput/content quota |
 | `L-C6B6F05D` | Indexed annotations per trace | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-D781C0FD` | Segment document size | UNSUPPORTED: size/throughput/content quota |
-| `L-DB51D338` | Tags per custom sampling rule | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-E2DD2778` | Tags per group | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-E75A2BBF` | Segments per second | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
 
