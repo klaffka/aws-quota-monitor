@@ -1,4 +1,10 @@
-"""AWS Ground Station regional resource inventories."""
+"""AWS Ground Station regional resource inventories.
+
+The ephemeris quotas are left open. `ListEphemerides` takes a mandatory start
+and end time and filters by the window an ephemeris is valid for, so an enabled
+or validating one outside the window chosen would simply not be counted, and no
+window can be shown to cover them all.
+"""
 from modules.qmcore.aws import CheckContext, session_from_env, maximum
 
 
@@ -8,6 +14,9 @@ def count(ctx, method, key):
 
 CHECKS = [
     ('L-5CCF0BC2', 'Config limit', lambda ctx: count(ctx, 'list_configs', 'configList')),
+    ('L-D6A1915B', 'Dataflow endpoint group limit',
+     lambda ctx: count(ctx, 'list_dataflow_endpoint_groups',
+                       'dataflowEndpointGroupList')),
     ('L-5342B9BF', 'Mission profile limit', lambda ctx: count(ctx, 'list_mission_profiles', 'missionProfileList')),
     ('L-98A63A85', 'Dataflow endpoints per group limit',
      lambda ctx: maximum([(g.get('dataflowEndpointGroupId'), len(g.get('endpointsDetails', [])), None)

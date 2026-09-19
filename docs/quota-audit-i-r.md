@@ -1013,12 +1013,10 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-DAB2DC95` — **Minimum image dimension (in pixels) for a training or test image** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-EF7B9086` — **Maximum image file size (in MB) for a training or test image** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `m2` (4 offene Quotas)
+## `m2` (2 offene Quotas)
 
 - `L-24ACBEAE` — **Max Instances Per High Availability Environment** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-536F13DF` — **Max DataTransferEndpoints Per AWS Account** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-5D943D0B` — **Max number of EFS filesystems per environment** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-C1C41257` — **Max number of FSX filesystems per environment** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 
 ## `macie2` (19 offene Quotas)
 
@@ -1136,9 +1134,8 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-F461E421` — **Rate of ingest requests per channel** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F7CB14AC` — **Live manifest length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `mediapackagev2` (12 offene Quotas)
+## `mediapackagev2` (11 offene Quotas)
 
-- `L-0FB78A52` — **Manifests per origin endpoint** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-327832D0` — **Rate of manifest egress requests per origin endpoint** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-3982B8D7` — **Time-shifted manifest length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-628CF433` — **Active harvest jobs per channel group** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.

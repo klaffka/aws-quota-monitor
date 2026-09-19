@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2181**
+Total open entries: **2180**
 
 
 ## access-analyzer
@@ -2437,7 +2437,6 @@ Total open entries: **2181**
 - `L-09DEC198` — Contact Lead Time Maximum
 - `L-BD84767C` — Enabled Ephemerides limit
 - `L-CCFDE387` — Maximum Contact Duration
-- `L-D6A1915B` — Dataflow endpoint group limit
 - `L-DE376FC5` — Ephemeris Validation limit
 - `L-DF7B6DEC` — Scheduled Contacts Limit
 - `L-FED20749` — Scheduled Minutes Limit

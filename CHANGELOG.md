@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Ground Station dataflow endpoint group, MediaPackage V2 manifest and
+  Mainframe Modernization filesystem measurements.
 - DynamoDB secondary index and X-Ray group and sampling rule tag measurements.
 - Transfer Family web app unit measurement.
 - Resilience Hub application component and cross-account role measurements.
