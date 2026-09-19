@@ -635,6 +635,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "securityhub:ListMembers"
           , "securityhub:GetInvitationsCount"
           , "transfer:ListWebApps"
+          , "transfer:DescribeWebApp"
           , "transfer:ListProfiles"
           , "transfer:ListAccesses"
           , "transfer:DescribeProfile"

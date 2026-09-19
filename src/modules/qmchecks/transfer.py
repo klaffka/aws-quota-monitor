@@ -1,5 +1,13 @@
-"""AWS Transfer Family regional account resource quotas."""
-from modules.qmcore.aws import CheckContext, NoData, session_from_env
+"""AWS Transfer Family regional account resource quotas.
+
+The remaining quotas count traffic rather than configuration: concurrent AS2
+messages on a server or connector, multiplexed SFTP sessions on a connection
+and concurrent sessions on a server all exist only while a transfer is in
+flight, and `Maximum number of new executions per workflow` bounds how fast
+executions may start. Web app units are different, and are measured: they are
+provisioned capacity that `DescribeWebApp` reports back.
+"""
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 
 def resource_count(ctx, method, key):
@@ -108,8 +116,25 @@ def directory_accesses_per_server(ctx):
     return maximum(values, 'TransferServer', 'transfer:ListServers+ListAccesses')
 
 
+def web_app_units(ctx):
+    """Measure the capacity each web app runs on, which its detail reports."""
+    values = []
+    for summary in ctx.call('transfer', 'list_web_apps', 'WebApps'):
+        identity = summary.get('WebAppId')
+        if not isinstance(identity, str) or not identity:
+            raise NoData('Transfer web app is missing its identity')
+        detail = ctx.call('transfer', 'describe_web_app',
+                          WebAppId=identity).get('WebApp') or {}
+        units = (detail.get('WebAppUnits') or {}).get('Provisioned')
+        if not isinstance(units, int):
+            raise NoData('Transfer web app states no provisioned units')
+        values.append((identity, units, None))
+    return maximum(values, 'TransferWebApp', 'transfer:DescribeWebApp')
+
+
 CHECKS = [
     ('L-7E767654', 'Web apps per account', lambda ctx: resource_count(ctx, 'list_web_apps', 'WebApps')),
+    ('L-B51E8407', 'Maximum web app units per web app', web_app_units),
     ('L-858EB316', 'Profiles per account', lambda ctx: resource_count(ctx, 'list_profiles', 'Profiles')),
     ('L-8A2575E3', 'Workflows per account', lambda ctx: resource_count(ctx, 'list_workflows', 'Workflows')),
     ('L-C08739CA', 'Agreements per account',

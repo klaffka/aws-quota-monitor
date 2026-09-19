@@ -1,4 +1,10 @@
-"""AWS Step Functions resource quotas backed by complete inventories."""
+"""AWS Step Functions state machine, activity and alias inventories.
+
+The remaining quotas all state a clock or a concurrency: execution time, idle
+time and task execution time name a period, maximum concurrency and the Map Run
+item and redrive limits bound one distributed execution, and activity pollers
+per ARN counts workers connected at the moment. None is an inventory.
+"""
 from modules.qmcore.aws import CheckContext, maximum, session_from_env
 
 
