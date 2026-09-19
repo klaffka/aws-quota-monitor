@@ -1,4 +1,13 @@
-"""AWS IoT SiteWise regional resource, model, and hierarchy quotas."""
+"""AWS IoT SiteWise regional resource, model, and hierarchy quotas.
+
+The dashboard and gateway quotas are left open. `DescribeDashboard` returns
+`dashboardDefinition` and `DescribeGatewayCapabilityConfiguration` returns
+`capabilityConfiguration`, and the service model types both as a plain string
+holding a document, so counting the visualizations, their metrics or the OPC UA
+sources inside one would mean parsing a format the model does not describe. The
+property dependency quotas need the formula expressions of an asset model
+resolved against each other, which no operation reports.
+"""
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 

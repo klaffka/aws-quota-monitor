@@ -1030,6 +1030,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "resiliencehub:ListAppAssessments"
           , "resiliencehub:ListRecommendationTemplates"
           , "resiliencehub:ListServices"
+          , "resiliencehub:GetService"
           , "resiliencehub:ListSystems"
           , "resiliencehub:ListPolicies"
           , "resiliencehub:ListResources"
