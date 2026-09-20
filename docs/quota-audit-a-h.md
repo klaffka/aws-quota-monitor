@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2177**
+Total open entries: **2175**
 
 
 ## access-analyzer
@@ -91,7 +91,6 @@ Total open entries: **2177**
 - `L-46624B39` — API Payload Size
 - `L-5244589D` — Method ARN Length
 - `L-60AC41CD` — WebSocket Idle Connection Timeout
-- `L-68B79FF0` — RoutingRules Per Domain Name
 - `L-8A5B8E43` — Throttle rate
 - `L-8B81B02C` — Maximum resource policy size in bytes
 - `L-8C2F9A1D` — Maximum API caching TTL
@@ -100,7 +99,6 @@ Total open entries: **2177**
 - `L-9ED1E49A` — WebSocket new connections rate
 - `L-A6CCE716` — Connection duration for WebSocket API
 - `L-A7033131` — Regional API URL Length
-- `L-A9DBC573` — API Stage throttles in a usage plan
 - `L-B2CF62DC` — Stage Variable Value Length
 - `L-CC2525B6` — Maximum Cached Response Size
 - `L-CDF5615A` — Throttle burst rate
