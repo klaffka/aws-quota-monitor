@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2171**
+Total open entries: **2170**
 
 
 ## access-analyzer
@@ -67,7 +67,6 @@ Total open entries: **2171**
 
 - `L-2A8ABB91` — Concurrent jobs
 - `L-2FC3A2FA` — Maximum app creations per hour
-- `L-85685B2E` — Subdomains per domain
 - `L-895E890C` — Build artifact size
 - `L-A0FC4951` — Environment cache artifact size
 - `L-CE88B60E` — Request tokens per second

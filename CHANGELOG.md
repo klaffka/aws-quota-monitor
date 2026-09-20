@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Amplify subdomain measurement.
 - OpenSearch dedicated master, IVS chat room and CloudWatch canary measurements.
 - Observability Access Manager sink link, ElastiCache shard node, DocumentDB
   elastic shard and CloudTrail dashboard widget measurements.
