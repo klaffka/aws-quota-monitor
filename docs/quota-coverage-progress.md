@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,728 | 2,076 |
+| implemented | 2,730 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,108 | 4,457 |
-| uncovered | 6,973 | 5,941 |
+| covered | 5,110 | 4,457 |
+| uncovered | 6,971 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.28%** of the whole union, or
-**72.33%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.30%** of the whole union, or
+**72.36%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,25 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Measured two API Gateway scopes, one of them across the service's two
+  generations. Service Quotas files `RoutingRules Per Domain Name` under
+  `apigateway`, but routing rules belong to the HTTP API side: the same domain
+  names carry them and only the V2 listing reports the `RoutingMode` that says
+  whether a domain can hold one at all. A domain in `API_MAPPING_ONLY` mode
+  routes by mapping, so it counts as zero and is never asked for rules, while a
+  mode the SDK does not name is refused rather than guessed at. `API Stage
+  throttles in a usage plan` needs no call of its own: each API stage in the
+  usage plan listing carries a throttle map keyed by method, and the quota
+  bounds them together, so the maps are summed per plan.
+  Incident Manager's `Timeline events per incident` was examined and left open
+  on cost. `ListIncidentRecords` returns resolved incidents as well as open
+  ones, so a timeline call per incident grows without bound as an account
+  accumulates history, and filtering to open incidents would undercount every
+  resolved one the quota still applies to. DataZone's `Business Glossary Terms`
+  is blocked differently: this SDK ships no glossary term listing, and the
+  generic `Search` operation answers over an index whose scope the quota name
+  does not match.
 
 - Measured three specification scopes, all of them one describe away from a
   walk their module already makes. A virtual node's backends and a route's
@@ -1098,12 +1117,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,954 quotas are measurable and still uncovered. Sorting them by what their
+1,952 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 689 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 687 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |

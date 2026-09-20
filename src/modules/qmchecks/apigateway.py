@@ -3,6 +3,10 @@
 The payload, header, URL and template size quotas bound a single request or
 document, the timeout and TTL quotas name a period, and the WebSocket
 connection duration and idle timeout describe one connection's lifetime.
+
+Routing rules belong to the HTTP API domain listing even though Service Quotas
+files the quota under `apigateway`: the same domain names carry them, and only
+the V2 listing reports the routing mode that says whether a domain has any.
 """
 from collections import Counter
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
@@ -163,6 +167,44 @@ def product_rest_endpoint_pages_per_product(ctx):
     return _pages_per_product(ctx, 'list_product_rest_endpoint_pages', 'Items')
 
 
+# A domain in API_MAPPING_ONLY mode routes by mapping and holds no rule at all.
+ROUTING_MODES = {'API_MAPPING_ONLY', 'ROUTING_RULE_ONLY',
+                 'ROUTING_RULE_THEN_API_MAPPING'}
+RULE_MODES = {'ROUTING_RULE_ONLY', 'ROUTING_RULE_THEN_API_MAPPING'}
+
+
+def routing_rules_per_domain(ctx):
+    """Count the rules of each domain, asking only those that can hold one."""
+    values = []
+    for domain in ctx.call(APIGATEWAYV2, 'get_domain_names', 'Items'):
+        name = _identity(domain, 'DomainName', 'domain name')
+        mode = domain.get('RoutingMode')
+        if mode not in ROUTING_MODES:
+            raise NoData('API Gateway domain name has an unknown routing mode')
+        if mode not in RULE_MODES:
+            values.append((name, 0, None))
+            continue
+        rules = ctx.call(APIGATEWAYV2, 'list_routing_rules', 'RoutingRules',
+                         DomainName=name)
+        values.append((name, len(rules), None))
+    return maximum(values, 'DomainName', 'apigatewayv2:ListRoutingRules')
+
+
+def api_stage_throttles_per_usage_plan(ctx):
+    """A usage plan throttles per method, so its stages' throttle maps are summed."""
+    values = []
+    for plan in ctx.call(APIGATEWAY, 'get_usage_plans', 'items'):
+        identity = _identity(plan, 'id', 'usage plan')
+        usage = 0
+        for stage in plan.get('apiStages') or ():
+            throttle = stage.get('throttle') or {}
+            if not isinstance(throttle, dict):
+                raise NoData('API Gateway usage plan stage has an invalid throttle')
+            usage += len(throttle)
+        values.append((identity, usage, None))
+    return maximum(values, 'UsagePlan', 'apigateway:GetUsagePlans')
+
+
 CHECKS = [
     ('L-AA0FF27B', 'Regional APIs', lambda ctx: endpoint_count(ctx, 'REGIONAL')),
     ('L-B97207D0', 'Edge-optimized APIs', lambda ctx: endpoint_count(ctx, 'EDGE')),
@@ -203,6 +245,9 @@ CHECKS = [
     ('L-95BA6EA5', 'Stage variables per stage',
      _stage_maximum('variables', 'variable map')),
     ('L-FB4F0270', 'Tags Per Stage', _stage_maximum('tags', 'tag map')),
+    ('L-68B79FF0', 'RoutingRules Per Domain Name', routing_rules_per_domain),
+    ('L-A9DBC573', 'API Stage throttles in a usage plan',
+     api_stage_throttles_per_usage_plan),
 ]
 
 
