@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,738 | 2,076 |
+| implemented | 2,743 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,118 | 4,457 |
-| uncovered | 6,963 | 5,941 |
+| covered | 5,123 | 4,457 |
+| uncovered | 6,958 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.36%** of the whole union, or
-**72.47%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.41%** of the whole union, or
+**72.54%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,27 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Turned the sweep on the `size or period` shape, which the countable rounds
+  never touched, and it is not the dead end the label suggests. Ranking its 788
+  quotas the same way -- by what neither a module docstring nor this document
+  discusses -- leaves 158 across 51 services. Most really are payload bounds:
+  Bedrock's batch inference file sizes, Macie's per-format file limits,
+  Personalize's training data volumes, message payloads in Pinpoint and AppFlow.
+  IoT's are different, and five of them are measured now. `JobId Length`,
+  `Comment length`, `Job description length`, `JobTemplateId Length` and `Job
+  Template description length` bound a *stored field* rather than a request, so
+  each is the longest value the inventory holds. Every one of them rides a call
+  already made: `targets_per_job` walks every job and describes each one, and
+  the job template count reads a listing that carries both the id and the
+  description. No new call, no new grant.
+  An optional field that is absent is a length of nothing rather than a missing
+  value, which is why a job with no comment counts as zero instead of being
+  refused. `DocumentSource length` is the one left open: it lives on the job
+  template detail, which nothing else fetches.
+  The distinction worth carrying forward is between a bound on what may be sent
+  and a bound on what is stored. The first has no inventory; the second is an
+  inventory measured in characters rather than in items.
 
 - Measured `Subdomains per domain` and finished the sweep. Amplify already
   walked every app's domain associations for the domain count, and the listing
@@ -1177,13 +1198,13 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,944 quotas are measurable and still uncovered. Sorting them by what their
+1,939 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
 | countable | 679 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
-| size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| size or period | 783 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
 | organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
@@ -1200,7 +1221,7 @@ The countable ones are spread thin. The twelve largest holdings:
 | deadline | 32 | 16 | 16 | 0 | 14 |
 | lambda | 70 | 13 | 57 | 28 | 13 |
 | redshift | 29 | 14 | 15 | 0 | 13 |
-| iot | 179 | 24 | 155 | 112 | 11 |
+| iot | 179 | 29 | 150 | 112 | 11 |
 | kinesisvideo | 98 | 3 | 95 | 70 | 11 |
 | bedrock-agentcore | 199 | 29 | 170 | 134 | 9 |
 | forecast | 40 | 30 | 10 | 0 | 9 |

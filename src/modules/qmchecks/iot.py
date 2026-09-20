@@ -4,6 +4,13 @@ The wildcard and query term quotas bound a single query, the tunnel quotas bound
 one tunnel, and the pre-signed URL and timer quotas name a period. The named
 shadow and geo location filters are different: they configure the fleet index
 for the whole account, so GetIndexingConfiguration reports them.
+
+The job and job template length quotas bound a stored field rather than a
+request, so each is the longest value the inventory holds. They ride the walks
+`targets_per_job` and the job template count already make, and an optional
+field that is absent is a length of nothing rather than a missing value.
+`DocumentSource length` is the exception and stays open: it lives on the job
+template detail, which nothing else fetches.
 """
 from collections import Counter
 from datetime import timedelta
@@ -218,6 +225,44 @@ def percentiles_per_fleet_metric(ctx):
     return maximum(values, 'IoTFleetMetric', 'iot:ListFleetMetrics+DescribeFleetMetric')
 
 
+def jobs(ctx):
+    """Every job, finished or not; a job keeps its fields after it completes."""
+    for job in ctx.call(IOT, 'list_jobs', 'jobs'):
+        identity = job.get('jobId')
+        if not isinstance(identity, str) or not identity:
+            raise NoData('IoT job is missing its identity')
+        yield identity
+
+
+def job_id_length(ctx):
+    return maximum([(identity, len(identity), None) for identity in jobs(ctx)],
+                   'IoTJob', 'iot:ListJobs')
+
+
+def job_field_length(field):
+    def check(ctx):
+        values = []
+        for identity in jobs(ctx):
+            detail = ctx.call(IOT, 'describe_job', jobId=identity).get('job') or {}
+            values.append((identity, len(detail.get(field) or ''), None))
+        return maximum(values, 'IoTJob', 'iot:DescribeJob')
+    return check
+
+
+def job_template_field_length(field):
+    """The template listing carries both the id and the description."""
+    def check(ctx):
+        values = []
+        for template in ctx.call(IOT, 'list_job_templates', 'jobTemplates'):
+            identity = template.get('jobTemplateId')
+            if not isinstance(identity, str) or not identity:
+                raise NoData('IoT job template is missing its identity')
+            value = identity if field == 'jobTemplateId' else template.get(field) or ''
+            values.append((identity, len(value), None))
+        return maximum(values, 'IoTJobTemplate', 'iot:ListJobTemplates')
+    return check
+
+
 CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups', dynamic_thing_groups),
           ('L-AE68DCD9', 'Maximum number of custom fields in AWS things index',
            lambda ctx: index_custom_fields(ctx, 'thingIndexingConfiguration')),
@@ -228,6 +273,13 @@ CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups', dynamic_thing_group
           ('L-B2C87795', 'Maximum number of job templates',
            lambda ctx: dict(usage=len(ctx.call('iot', 'list_job_templates', 'jobTemplates')),
                             source='iot:ListJobTemplates', method='ACCOUNT_COUNT')),
+          ('L-E41D2F60', 'JobId Length', job_id_length),
+          ('L-3123807D', 'Comment length', job_field_length('comment')),
+          ('L-94973834', 'Job description length', job_field_length('description')),
+          ('L-3470FAF6', 'JobTemplateId Length',
+           job_template_field_length('jobTemplateId')),
+          ('L-CEAD881C', 'Job Template description length',
+           job_template_field_length('description')),
           ('L-0D30EFBA', 'Scheduled audits',
            lambda ctx: dict(usage=len(ctx.call('iot', 'list_scheduled_audits', 'scheduledAudits')),
                             source='iot:ListScheduledAudits', method='ACCOUNT_COUNT')),

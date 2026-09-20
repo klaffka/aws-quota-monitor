@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- IoT job and job template identifier, comment and description length
+  measurements.
 - Amplify subdomain measurement.
 - OpenSearch dedicated master, IVS chat room and CloudWatch canary measurements.
 - Observability Access Manager sink link, ElastiCache shard node, DocumentDB

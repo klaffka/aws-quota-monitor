@@ -18,7 +18,7 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 
 - `L-4C7E946E` — **Days that health events are retained** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `iot` (152 offene Quotas)
+## `iot` (147 offene Quotas)
 
 - `L-002E66AE` — **DescribeDimension API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-00511A32` — **Maximum connection rate** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -49,9 +49,7 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-23B1CFB2` — **DescribeIndex rate** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-23F244D4` — **CreateJob throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-2B367AAD` — **Storage duration for detect metrics** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
-- `L-3123807D` — **Comment length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-32F19277` — **DescribeAuditMitigationActionsTask API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-3470FAF6` — **JobTemplateId Length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-36FC3065` — **StatusDetail map value length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-382CCFC0` — **DescribeTunnel API throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-3AA926CF` — **CancelAuditTask API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -113,7 +111,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-90F8C878` — **Maximum number of query terms per dynamic group** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-9227E25C` — **ListAuditSuppressions API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-9299DD15` — **ListSecurityProfilesForTarget API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-94973834` — **Job description length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-95D5D7AB` — **StatusDetail map key-value pairs** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-99780C4B` — **DeleteJobTemplate throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-9AE67DFC` — **Device metric peak reporting rate for an account** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -144,7 +141,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-CCBF5835` — **ListCommandExecutions throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-CD7FC91A` — **DeleteCustomMetric API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-CE4D15EC` — **Maximum number of tags per resource** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
-- `L-CEAD881C` — **Job Template description length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-CF4F23BC` — **DetachSecurityProfile API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-D18738F6` — **ListDetectMitigationActionsTasks API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-D3020048` — **DescribeJobTemplate throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -155,7 +151,6 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-DC1637B1` — **ListMetricValues API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-DCAEF14C` — **DescribeDetectMitigationActionsTask API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-DEC656C5` — **CancelJob throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-E41D2F60` — **JobId Length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-E68D12E6` — **CreateCustomMetric API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-E70CF14E` — **DeleteAuditSuppression API TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-E72C1C85` — **OpenTunnel API throttle limit** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
