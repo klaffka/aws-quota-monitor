@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,730 | 2,076 |
+| implemented | 2,734 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,110 | 4,457 |
-| uncovered | 6,971 | 5,941 |
+| covered | 5,114 | 4,457 |
+| uncovered | 6,967 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.30%** of the whole union, or
-**72.36%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.33%** of the whole union, or
+**72.42%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,27 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Worked the tail of the sweep, where every remaining service holds one or two
+  open quotas rather than a group. Four of them are per-parent scopes their
+  module could reach with one more call: the links attached to an Observability
+  Access Manager sink, the nodes in an ElastiCache shard, the shards of a
+  DocumentDB elastic cluster and the widgets on a CloudTrail dashboard. A sink
+  nothing is attached to and a dashboard holding no widget both count as zero
+  rather than dropping out of the maximum.
+  `Nodes per shard` is the one worth reading twice. ElastiCache reports shards
+  as the `NodeGroups` of a replication group, and the quota is per shard, so the
+  maximum runs over every shard of every group rather than over the groups. A
+  group's identity alone would have named the wrong resource.
+  Three more singletons are reachable but were left for their own change,
+  because none of their services has a module yet and each would need the
+  registry and collector wiring as well: `ivschat` rooms, an OpenSearch domain's
+  dedicated master instances, and the canary limit Service Quotas files under
+  `monitoring` while the Synthetics client answers it. The rest of the tail is
+  per-request or per-path: Polly's lexicons in one synthesis task, MediaStore
+  folder levels, Lake Formation subfolders in an S3 path, DataSync files per
+  task, Cassandra subqueries in one statement and CodeDeploy's traffic shift
+  increment.
 
 - Measured two API Gateway scopes, one of them across the service's two
   generations. Service Quotas files `RoutingRules Per Domain Name` under
@@ -1117,12 +1138,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,952 quotas are measurable and still uncovered. Sorting them by what their
+1,948 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 687 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 683 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |

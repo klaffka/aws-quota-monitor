@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2175**
+Total open entries: **2172**
 
 
 ## access-analyzer
@@ -1257,7 +1257,6 @@ Total open entries: **2175**
 - `L-8191F390` — Transactions per second (TPS) for the StartDashboardRefresh API
 - `L-81CCF560` — Transactions per second (TPS) for the ListInsightsMetricData API
 - `L-82338BB4` — Transactions per second (TPS) for the UpdateEventDataStore API
-- `L-84EB1525` — Widgets per dashboard
 - `L-865ADF4E` — Transactions per second (TPS) for the UpdateTrail API
 - `L-866533BF` — Transactions per second (TPS) for the DeleteTrail API
 - `L-8719FDD4` — Transactions per second (TPS) for the PutInsightSelectors API
@@ -1810,7 +1809,6 @@ Total open entries: **2175**
 ## docdb-elastic
 
 - `L-00CE4D32` — Manual cluster snapshots
-- `L-5CF76496` — Shards per elastic cluster
 - `L-A5B61A35` — Tags per resource
 - `L-BA054AA8` — Elastic clusters vCPU limit
 
@@ -1988,7 +1986,6 @@ Total open entries: **2175**
 ## elasticache
 
 - `L-75A7B5A4` — Serverless snapshots per day per cache
-- `L-7D6587E6` — Nodes per shard
 - `L-8C334AD1` — Nodes per cluster (Memcached)
 - `L-943F0F1C` — Users per User Group
 - `L-A87EE522` — Subnets per subnet group
