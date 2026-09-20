@@ -192,6 +192,14 @@ CHECKS = {
         ('L-5407D8DA', 'Policies per Region', lambda c: dict(usage=len(c.call('dlm', 'get_lifecycle_policies', 'Policies')), source='dlm:GetLifecyclePolicies', method='ACCOUNT_COUNT')),
         ('L-DCA05F2F', 'Target accounts per sharing rule', dlm_share_targets),
     ],
+    # Service Quotas files the canary limit under CloudWatch, but the Synthetics
+    # client is what lists canaries.
+    'monitoring': [
+        ('L-C1FE0F5C', 'Canary limit', lambda c: dict(usage=len(c.call('synthetics', 'describe_canaries', 'Canaries')), source='synthetics:DescribeCanaries', method='ACCOUNT_COUNT')),
+    ],
+    'ivschat': [
+        ('L-85B84D18', 'Rooms', lambda c: dict(usage=len(c.call('ivschat', 'list_rooms', 'rooms')), source='ivschat:ListRooms', method='ACCOUNT_COUNT')),
+    ],
     'ssm-contacts': [
         ('L-7DD2017D', 'Contacts per account', lambda c: dict(usage=len(c.call('ssm-contacts', 'list_contacts', 'Contacts')), source='ssm-contacts:ListContacts', method='ACCOUNT_COUNT')),
         ('L-4EA3AB3A', 'Rotations per account', lambda c: dict(usage=len(c.call('ssm-contacts', 'list_rotations', 'Rotations')), source='ssm-contacts:ListRotations', method='ACCOUNT_COUNT')),

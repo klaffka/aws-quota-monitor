@@ -38,8 +38,14 @@ def test_directory_service_counts_types():
 
 def test_opensearch_and_applications_are_independent_services():
     ctx = Mock(quotas={('es', 'L-076D529E'): {'Value': 100, 'Unit': 'None'},
+                       ('es', 'L-AE676A72'): {'Value': 5, 'Unit': 'None'},
                        ('opensearch', 'L-B9142967'): {'Value': 30, 'Unit': 'None'}})
     def call(service, method, key=None, **kwargs):
+        # The domain describe is fetched whole, so it answers with its response.
+        if method == 'describe_elasticsearch_domains':
+            return {'DomainStatusList': [
+                {'DomainName': 'domain',
+                 'ElasticsearchClusterConfig': {'DedicatedMasterCount': 3}}]}
         return ([{'DomainName': 'domain'}] if service == 'es' else
                 [{'id': 'app', 'arn': 'arn:aws:opensearch:eu-central-1:123:application/app',
                   'status': 'ACTIVE'}])
@@ -49,7 +55,8 @@ def test_opensearch_and_applications_are_independent_services():
          'usageValue': fn(ctx)['usage']} for code, _, fn in checks]
     entries = get_current_quotastatus_opensearch(ctx=ctx)
     assert {(e['serviceCode'], e['quotaCode'], e['usageValue']) for e in entries} == {
-        ('es', 'L-076D529E', 1), ('opensearch', 'L-B9142967', 1),
+        ('es', 'L-076D529E', 1), ('es', 'L-AE676A72', 3),
+        ('opensearch', 'L-B9142967', 1),
     }
 
 

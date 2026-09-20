@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,734 | 2,076 |
+| implemented | 2,737 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,114 | 4,457 |
-| uncovered | 6,967 | 5,941 |
+| covered | 5,117 | 4,457 |
+| uncovered | 6,964 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.33%** of the whole union, or
-**72.42%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.36%** of the whole union, or
+**72.46%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,25 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Measured the three singletons the previous change deferred, and none of them
+  needed the new module they looked like they would. OpenSearch already had one:
+  `opensearch.py` carries the `es` domain count through `CUSTOM_KEYS` even
+  though the registry files it under `opensearch`, so `Dedicated master
+  instances per domain` joined its domain checks. The chat room and canary
+  counts went into `misc_counts.py`, whose `CHECKS` dict is keyed by service and
+  already registered, so neither needed a registry entry or a collector call.
+  `Dedicated master instances per domain` describes every domain in one call
+  rather than one call each, because `DescribeElasticsearchDomains` takes the
+  whole name list. A domain running no dedicated masters reports no count at
+  all, which is a real zero rather than a missing value, while an account with
+  no domain makes no describe call.
+  The canary limit is the one that crosses services. Service Quotas files it
+  under `monitoring`, but CloudWatch does not list canaries -- the Synthetics
+  client does, and it signs under its own prefix, so the grant is
+  `synthetics:DescribeCanaries` against a quota whose service code is
+  `monitoring`. That is the same shape as the API Gateway routing rules filed
+  under `apigateway` and answered by the V2 client.
 
 - Worked the tail of the sweep, where every remaining service holds one or two
   open quotas rather than a group. Four of them are per-parent scopes their
@@ -1138,12 +1157,12 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,948 quotas are measurable and still uncovered. Sorting them by what their
+1,945 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
-| countable | 683 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
+| countable | 680 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 788 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
