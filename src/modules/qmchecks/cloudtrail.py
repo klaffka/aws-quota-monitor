@@ -2,6 +2,9 @@
 
 One GetEventSelectors call per trail answers all three selector quotas, so the
 trails are walked once however many of them are asked for.
+
+A dashboard's widgets are not in the listing, so each dashboard is fetched; one
+holding none still counts as zero rather than dropping out of the maximum.
 """
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
@@ -41,6 +44,20 @@ def advanced_conditions_per_trail(ctx):
                    'CloudTrailTrail', 'cloudtrail:GetEventSelectors')
 
 
+def widgets_per_dashboard(ctx):
+    values = []
+    for dashboard in ctx.call('cloudtrail', 'list_dashboards', 'Dashboards'):
+        arn = dashboard.get('DashboardArn')
+        if not isinstance(arn, str) or not arn:
+            raise NoData('CloudTrail dashboard is missing its ARN')
+        detail = ctx.call('cloudtrail', 'get_dashboard', DashboardId=arn)
+        widgets = detail.get('Widgets') or []
+        if not isinstance(widgets, list):
+            raise NoData('CloudTrail dashboard has an invalid widget list')
+        values.append((arn, len(widgets), None))
+    return maximum(values, 'CloudTrailDashboard', 'cloudtrail:GetDashboard')
+
+
 CHECKS = [
     ('L-1568E18E', 'Trails per region',
      lambda ctx: resource_count(ctx, 'describe_trails', 'trailList')),
@@ -55,6 +72,7 @@ CHECKS = [
      data_resources_per_trail),
     ('L-203ED99D', 'Conditions across all advanced event selectors',
      advanced_conditions_per_trail),
+    ('L-84EB1525', 'Widgets per dashboard', widgets_per_dashboard),
 ]
 
 

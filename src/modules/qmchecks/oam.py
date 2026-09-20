@@ -1,5 +1,17 @@
-"""AWS CloudWatch Observability Access Manager resource counts."""
-from modules.qmcore.aws import CheckContext, session_from_env
+"""AWS CloudWatch Observability Access Manager resource counts and sink links."""
+from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
+
+
+def links_per_sink(ctx):
+    """A sink nothing is attached to still holds the quota, so it counts zero."""
+    values = []
+    for sink in ctx.call('oam', 'list_sinks', 'Items'):
+        arn = sink.get('Arn')
+        if not isinstance(arn, str) or not arn:
+            raise NoData('Observability Access Manager sink is missing its ARN')
+        links = ctx.call('oam', 'list_attached_links', 'Items', SinkIdentifier=arn)
+        values.append((arn, len(links), None))
+    return maximum(values, 'ObservabilitySink', 'oam:ListAttachedLinks')
 
 CHECKS = [
     ('L-92C40D6D', 'Number of links',
@@ -8,6 +20,7 @@ CHECKS = [
     ('L-AA726EB1', 'Number of sinks',
      lambda c: dict(usage=len(c.call('oam', 'list_sinks', 'Items')),
                     source='oam:ListSinks', method='ACCOUNT_COUNT')),
+    ('L-303A1B23', 'Links per sink', links_per_sink),
 ]
 
 

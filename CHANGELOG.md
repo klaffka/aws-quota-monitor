@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- Observability Access Manager sink link, ElastiCache shard node, DocumentDB
+  elastic shard and CloudTrail dashboard widget measurements.
 - API Gateway routing rule and usage plan throttle measurements.
 - App Mesh virtual node backend and route weighted target measurements, and
   CodeArtifact repository upstream measurement.
