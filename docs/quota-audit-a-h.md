@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2180**
+Total open entries: **2177**
 
 
 ## access-analyzer
@@ -221,8 +221,6 @@ Total open entries: **2180**
 
 - `L-33E8F9C9` — Connected Envoy processes per virtual gateway
 - `L-606A910B` — Connected Envoy processes per virtual node
-- `L-8775AB18` — Backends per virtual node
-- `L-AE1D9567` — Weighted targets per route
 
 ## appstream2
 
@@ -1307,7 +1305,6 @@ Total open entries: **2180**
 - `L-AA0DC56D` — Asset file size
 - `L-BD902DFC` — Requests without authentication token per IP address
 - `L-CBBCDF5C` — ListPackageVersions requests per second
-- `L-D42B1EF2` — Direct upstreams per repository
 - `L-F39CF68A` — Read requests per second from a single AWS account
 
 ## codebuild

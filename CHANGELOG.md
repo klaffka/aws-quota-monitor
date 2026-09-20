@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- App Mesh virtual node backend and route weighted target measurements, and
+  CodeArtifact repository upstream measurement.
 - Ground Station dataflow endpoint group, MediaPackage V2 manifest and
   Mainframe Modernization filesystem measurements.
 - DynamoDB secondary index and X-Ray group and sampling rule tag measurements.
