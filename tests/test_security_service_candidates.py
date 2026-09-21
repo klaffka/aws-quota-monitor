@@ -51,6 +51,12 @@ def test_transfer_checks_use_paginated_resource_keys():
             return {'Profile': {'ProfileId': kwargs['ProfileId'], 'CertificateIds': [{}]}}
         if method == 'list_connectors':
             return [{'ConnectorType': 'AS2'}, {'ConnectorType': 'SFTP'}]
+        if method == 'list_web_apps':
+            return [{'WebAppId': 'w-one'}, {'WebAppId': 'w-two'}]
+        if method == 'describe_web_app':
+            units = {'w-one': 2, 'w-two': 5}[kwargs['WebAppId']]
+            return {'WebApp': {'WebAppId': kwargs['WebAppId'],
+                               'WebAppUnits': {'Provisioned': units}}}
         return [{'id': 'one'}, {'id': 'two'}]
     ctx.call.side_effect = calls
     usage = {code: check(ctx)['usage'] for code, _name, check in TRANSFER_CHECKS}
@@ -65,6 +71,8 @@ def test_transfer_checks_use_paginated_resource_keys():
     assert usage['L-101C3D29'] == 2
     assert usage['L-2F6B27A1'] == 3
     assert usage['L-B2750988'] == 1
+    # Web app units are the busiest app's provisioned capacity, not a count.
+    assert usage['L-B51E8407'] == 5
     # Only the service-managed server holds users, and only the directory-backed
     # one holds accesses; both would be 2 if the provider were ignored.
     assert usage['L-90797EDA'] == 4

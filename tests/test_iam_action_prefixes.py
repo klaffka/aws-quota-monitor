@@ -59,8 +59,10 @@ def test_no_statement_grants_the_same_action_twice():
 # API Gateway authorises by HTTP verb rather than by operation, and S3's IAM
 # action names differ from its API operation names.
 VERB_AUTHORISED = {'apigateway', 'apigatewayv2'}
-# CloudWatch signs as `monitoring` but authorises as `cloudwatch`.
-PREFIX_ALIASES = {'monitoring': 'cloudwatch'}
+# CloudWatch signs as `monitoring` but authorises as `cloudwatch`, and the IoT
+# data plane signs as `iotdata` while authorising under the control plane's
+# `iot` prefix.
+PREFIX_ALIASES = {'monitoring': 'cloudwatch', 'iotdata': 'iot'}
 S3_ALIASES = {
     'ListBuckets': 'ListAllMyBuckets',
     'GetBucketReplication': 'GetReplicationConfiguration',

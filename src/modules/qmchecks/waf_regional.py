@@ -118,6 +118,21 @@ def locations_per_geo_match_set(ctx):
                    'GeoMatchSet', 'waf-regional:GetGeoMatchSet')
 
 
+
+def longest_regex_pattern(ctx):
+    """Measure the longest stored pattern; a set holding none holds zero."""
+    values = []
+    for identity in _identities(ctx, 'list_regex_pattern_sets', 'RegexPatternSets',
+                                'RegexPatternSetId'):
+        response = ctx.call(WAF_REGIONAL, 'get_regex_pattern_set',
+                            RegexPatternSetId=identity)
+        patterns = (response.get('RegexPatternSet') or {}).get('RegexPatternStrings')
+        if not isinstance(patterns, list):
+            raise NoData('WAF Classic pattern set has no RegexPatternStrings list')
+        values.append((identity, max((len(p) for p in patterns), default=0), None))
+    return maximum(values, 'RegexPatternSet', 'waf-regional:GetRegexPatternSet')
+
+
 CHECKS = [
     ('L-9692AA5E', 'Rules per web ACL',
      lambda ctx: _max_children(ctx, 'list_web_acls', 'WebACLs', 'get_web_acl',
@@ -127,6 +142,7 @@ CHECKS = [
                                'get_regex_pattern_set', 'RegexPatternSetId',
                                'RegexPatternSet', 'RegexPatternStrings',
                                'RegexPatternSet')),
+    ('L-797E08C8', 'Regex pattern length', longest_regex_pattern),
     ('L-55785BA2', 'Web ACLs',
      _count('list_web_acls', 'WebACLs', 'WebACLId', 'waf-regional:ListWebACLs')),
     ('L-7BF8015E', 'Rules',

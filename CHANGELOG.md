@@ -7,6 +7,33 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- DynamoDB and Keyspaces table-level provisioned throughput measurements.
+- IoT pre-signed URL lifetime and API Gateway cache TTL measurements.
+- WAF Classic regex pattern length and MediaPackage time-shifted manifest
+  window measurements.
+- IoT job and job template identifier, comment and description length
+  measurements.
+- Amplify subdomain measurement.
+- OpenSearch dedicated master, IVS chat room and CloudWatch canary measurements.
+- Observability Access Manager sink link, ElastiCache shard node, DocumentDB
+  elastic shard and CloudTrail dashboard widget measurements.
+- API Gateway routing rule and usage plan throttle measurements.
+- App Mesh virtual node backend and route weighted target measurements, and
+  CodeArtifact repository upstream measurement.
+- Ground Station dataflow endpoint group, MediaPackage V2 manifest and
+  Mainframe Modernization filesystem measurements.
+- DynamoDB secondary index and X-Ray group and sampling rule tag measurements.
+- Transfer Family web app unit measurement.
+- Resilience Hub application component and cross-account role measurements.
+- License Manager rules-per-ruleset and rulesets-per-asset-group measurements.
+- ECS Service Connect namespace and provisioning task measurements.
+- Forecast dataset column, predictor horizon and what-if export measurements.
+- IoT Core HTTP action header, policies-per-target, thing type propagating
+  attribute and retained message measurements.
+- A census of the quotas that hold both a custom check and a compatible official
+  usage metric, so a check the collector would skip cannot be added unnoticed.
+- QuickSight custom action, sheet control and calculated field measurements,
+  read out of the analysis and dashboard definitions.
 - Greengrass V1 group device, function, resource and subscription
   measurements.
 - Direct Connect hosted connection and LAG interface measurements, and Batch

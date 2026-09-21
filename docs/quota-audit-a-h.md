@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2189**
+Total open entries: **2165**
 
 
 ## access-analyzer
@@ -67,7 +67,6 @@ Total open entries: **2189**
 
 - `L-2A8ABB91` — Concurrent jobs
 - `L-2FC3A2FA` — Maximum app creations per hour
-- `L-85685B2E` — Subdomains per domain
 - `L-895E890C` — Build artifact size
 - `L-A0FC4951` — Environment cache artifact size
 - `L-CE88B60E` — Request tokens per second
@@ -91,16 +90,13 @@ Total open entries: **2189**
 - `L-46624B39` — API Payload Size
 - `L-5244589D` — Method ARN Length
 - `L-60AC41CD` — WebSocket Idle Connection Timeout
-- `L-68B79FF0` — RoutingRules Per Domain Name
 - `L-8A5B8E43` — Throttle rate
 - `L-8B81B02C` — Maximum resource policy size in bytes
-- `L-8C2F9A1D` — Maximum API caching TTL
 - `L-8E6A5A87` — Maximum Iterations In Mapping Template
 - `L-9C147DE4` — Edge API URL Length
 - `L-9ED1E49A` — WebSocket new connections rate
 - `L-A6CCE716` — Connection duration for WebSocket API
 - `L-A7033131` — Regional API URL Length
-- `L-A9DBC573` — API Stage throttles in a usage plan
 - `L-B2CF62DC` — Stage Variable Value Length
 - `L-CC2525B6` — Maximum Cached Response Size
 - `L-CDF5615A` — Throttle burst rate
@@ -221,8 +217,6 @@ Total open entries: **2189**
 
 - `L-33E8F9C9` — Connected Envoy processes per virtual gateway
 - `L-606A910B` — Connected Envoy processes per virtual node
-- `L-8775AB18` — Backends per virtual node
-- `L-AE1D9567` — Weighted targets per route
 
 ## appstream2
 
@@ -926,12 +920,10 @@ Total open entries: **2189**
 ## cassandra
 
 - `L-0659E12E` — Max clustering key size
-- `L-17766544` — Table-level read throughput quota
 - `L-29E90199` — Concurrent DDL operations
 - `L-2C5B14BD` — Account-level write throughput quota (Provisioned mode)
 - `L-2FC1B9A1` — Max subqueries per IN SELECT statement
 - `L-324B5396` — Max partition key size
-- `L-3D8ED127` — Table-level write throughput quota
 - `L-4C49F3DB` — Max amount of data restored using Point-in-time Recovery (PITR)
 - `L-5823D982` — Max static data per logical partition
 - `L-6632AD49` — Max write capacity for a table using change-data-capture (CDC)
@@ -1261,7 +1253,6 @@ Total open entries: **2189**
 - `L-8191F390` — Transactions per second (TPS) for the StartDashboardRefresh API
 - `L-81CCF560` — Transactions per second (TPS) for the ListInsightsMetricData API
 - `L-82338BB4` — Transactions per second (TPS) for the UpdateEventDataStore API
-- `L-84EB1525` — Widgets per dashboard
 - `L-865ADF4E` — Transactions per second (TPS) for the UpdateTrail API
 - `L-866533BF` — Transactions per second (TPS) for the DeleteTrail API
 - `L-8719FDD4` — Transactions per second (TPS) for the PutInsightSelectors API
@@ -1307,7 +1298,6 @@ Total open entries: **2189**
 - `L-AA0DC56D` — Asset file size
 - `L-BD902DFC` — Requests without authentication token per IP address
 - `L-CBBCDF5C` — ListPackageVersions requests per second
-- `L-D42B1EF2` — Direct upstreams per repository
 - `L-F39CF68A` — Read requests per second from a single AWS account
 
 ## codebuild
@@ -1815,7 +1805,6 @@ Total open entries: **2189**
 ## docdb-elastic
 
 - `L-00CE4D32` — Manual cluster snapshots
-- `L-5CF76496` — Shards per elastic cluster
 - `L-A5B61A35` — Tags per resource
 - `L-BA054AA8` — Elastic clusters vCPU limit
 
@@ -1837,12 +1826,9 @@ Total open entries: **2189**
 - `L-34F8CCC8` — Account-level write throughput limit (Provisioned mode)
 - `L-6F30DCE1` — Maximum Incremental Export period window
 - `L-923BEB7A` — Write throughput limit for DynamoDB Streams (Provisioned mode)
-- `L-AB614373` — Table-level write throughput limit
 - `L-C2098644` — Minimum Incremental Export period window
-- `L-CF0CBE56` — Table-level read throughput limit
 - `L-D98E8184` — Maximum Incremental Export concurrent requests
 - `L-F3CA5463` — Provisioned capacity decreases per day
-- `L-F7858A77` — Global Secondary Indexes per table
 
 ## ebs
 
@@ -1946,7 +1932,6 @@ Total open entries: **2189**
 - `L-22AE4B75` — Burst rate of service read actions (or bucket maximum capacity)
 - `L-281CBA4C` — Burst rate of cluster resource read actions (or bucket maximum capacity)
 - `L-2AB0A1F7` — Subnets per awsvpcConfiguration
-- `L-2D029656` — Services per namespace
 - `L-321A0372` — Sustained rate of service read actions (or bucket refill rate)
 - `L-35D944A8` — Burst rate of cluster read actions (or bucket maximum capacity)
 - `L-3B4FAC68` — Burst rate of cluster resource modify actions (or bucket maximum capacity)
@@ -1981,7 +1966,6 @@ Total open entries: **2189**
 - `L-A9E5EB0F` — Sustained rate of capacity provider modify actions (or bucket refill rate)
 - `L-AA0D4951` — Burst rate of service modify actions (or bucket maximum capacity)
 - `L-B4EF2B3D` — Burst rate of tag read actions (or bucket maximum capacity)
-- `L-B7718569` — Tasks in PROVISIONING state per cluster
 - `L-C26103FB` — Sustained rate of task protection actions (or bucket refill rate)
 - `L-C3AEE9D2` — Sustained rate of cluster resource modify actions (or bucket refill rate)
 - `L-C5297B3A` — Sustained rate of service modify actions (or bucket refill rate)
@@ -1996,7 +1980,6 @@ Total open entries: **2189**
 ## elasticache
 
 - `L-75A7B5A4` — Serverless snapshots per day per cache
-- `L-7D6587E6` — Nodes per shard
 - `L-8C334AD1` — Nodes per cluster (Memcached)
 - `L-943F0F1C` — Users per User Group
 - `L-A87EE522` — Subnets per subnet group
@@ -2190,7 +2173,6 @@ Total open entries: **2189**
 
 - `L-1F053E6F` — Warm instances per domain
 - `L-6408ABDE` — Instances per domain
-- `L-AE676A72` — Dedicated master instances per domain
 - `L-E9BC8C95` — Instances per domain (T2 instance type)
 
 ## events
@@ -2274,21 +2256,16 @@ Total open entries: **2189**
 
 ## forecast
 
-- `L-3D30706E` — Maximum number of columns in a related time series dataset
 - `L-3F8C5D53` — Maximum number of files in your Amazon S3 bucket
 - `L-4A218FD9` — Maximum number of time series per predictor
 - `L-4F7B6EC8` — Maximum number of backtest windows
-- `L-50FA8F07` — The maximum number of What-if Forecasts in a CreateWhatIfForecastExport task
-- `L-57E6FE87` — Maximum forecast horizon
 - `L-60743B41` — Maximum number of tags you can add to a resource
 - `L-618F5043` — Maximum number of rows in a dataset
 - `L-690B4DB2` — Maximum cumulative size of all files in your Amazon S3 bucket
 - `L-710D1193` — Maximum parallel running Stop jobs per resource type
-- `L-9FD32A46` — Maximum number of columns in a target time series dataset
 - `L-B77118AF` — Maximum parallel running QueryForecast API tasks
 - `L-B8197A69` — Maximum time for which a forecast can be queried on console or QueryForecast API
 - `L-BDD6E332` — Maximum parallel running CreatePredictor tasks using AutoML
-- `L-F37CCDC6` — Maximum number of columns in an item metadata dataset
 
 ## gamelift
 
@@ -2445,7 +2422,6 @@ Total open entries: **2189**
 - `L-09DEC198` — Contact Lead Time Maximum
 - `L-BD84767C` — Enabled Ephemerides limit
 - `L-CCFDE387` — Maximum Contact Duration
-- `L-D6A1915B` — Dataflow endpoint group limit
 - `L-DE376FC5` — Ephemeris Validation limit
 - `L-DF7B6DEC` — Scheduled Contacts Limit
 - `L-FED20749` — Scheduled Minutes Limit

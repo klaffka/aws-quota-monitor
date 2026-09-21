@@ -1,13 +1,32 @@
-"""AWS IoT Core endpoint, rule, thing group and logging inventories.
+"""AWS IoT Core endpoint, rule, thing group, policy and logging inventories.
 
 The MQTT protocol quotas describe one connection or message: unacknowledged
 publishes, topic aliases, subscriptions per connection, shared subscription
 groups and expiry intervals all live in the broker rather than in an inventory.
+
+`Maximum number of retained messages per account` is answered on the data plane
+rather than the control plane. AWS also publishes an official usage metric for
+it (`AWS/Usage` `ResourceCount`, resource `ApproximateRetainedMessageCount`),
+which wins wherever a catalog carries it, so this check is the fallback for one
+that does not. `tests/test_metric_overlap.py` records that on purpose.
+
+The thing-scoped quotas -- attributes on a thing with and without a thing type,
+thing groups a thing belongs to, thing types associated with a thing -- would
+each need a describe for every thing in the registry, which a fleet makes
+unbounded. `Maximum number of CA certificates with the same subject field` is
+blocked for a different reason: DescribeCACertificate reports the certificate as
+PEM and never as a parsed subject, and reading a subject out of it would need an
+X.509 parser this package does not ship.
 """
+from collections import Counter
+
 from modules.qmchecks.iot import dynamic_thing_groups
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 IOT = 'iot'
+# The retained message store answers on the data plane, which signs as
+# `iotdata` while authorising under the control plane's `iot:` prefix.
+IOT_DATA = 'iot-data'
 
 
 def _count(method, key, source):
@@ -15,8 +34,8 @@ def _count(method, key, source):
                             method='ACCOUNT_COUNT')
 
 
-def actions_per_topic_rule(ctx):
-    values = []
+def topic_rule_actions(ctx):
+    """Yield (rule name, its actions) for every topic rule, detail included."""
     for summary in ctx.call(IOT, 'list_topic_rules', 'rules'):
         name = summary.get('ruleName')
         if not isinstance(name, str) or not name:
@@ -27,8 +46,66 @@ def actions_per_topic_rule(ctx):
         actions = rule.get('actions') or []
         if not isinstance(actions, list):
             raise NoData('IoT topic rule has an invalid action list')
-        values.append((name, len(actions), None))
+        yield name, actions
+
+
+def actions_per_topic_rule(ctx):
+    values = [(name, len(actions), None)
+              for name, actions in topic_rule_actions(ctx)]
     return maximum(values, 'IoTTopicRule', 'iot:GetTopicRule')
+
+
+def headers_per_http_action(ctx):
+    """An action is one kind of sink; only the HTTP one carries headers."""
+    values = []
+    for name, actions in topic_rule_actions(ctx):
+        for index, action in enumerate(actions):
+            http = action.get('http')
+            if not isinstance(http, dict):
+                continue
+            headers = http.get('headers') or []
+            if not isinstance(headers, list):
+                raise NoData('IoT HTTP action has an invalid header list')
+            values.append((f'{name}#{index}', len(headers), None))
+    return maximum(values, 'IoTTopicRuleAction', 'iot:GetTopicRule')
+
+
+def policies_per_target(ctx):
+    """Count the policies on a target rather than the targets on a policy.
+
+    The quota bounds what may be attached to one certificate or Cognito
+    identity. Walking certificates would reach only half of that, because a
+    Cognito identity has no listing; every target of either kind is named by
+    the policy it is attached to, so the walk is made from the policy side.
+    """
+    counts = Counter()
+    for policy in ctx.call(IOT, 'list_policies', 'policies'):
+        name = policy.get('policyName') or policy.get('name')
+        if not isinstance(name, str) or not name:
+            raise NoData('IoT policy is missing its name')
+        for target in ctx.call(IOT, 'list_targets_for_policy', 'targets',
+                               policyName=name):
+            if not isinstance(target, str) or not target:
+                raise NoData('IoT policy names an invalid target')
+            counts[target] += 1
+    return maximum(((target, count, None) for target, count in counts.items()),
+                   'IoTPolicyTarget', 'iot:ListTargetsForPolicy')
+
+
+def propagating_attributes(ctx):
+    """A thing type propagates MQTT 5 user properties; one setting none has zero."""
+    values = []
+    for thing_type in ctx.call(IOT, 'list_thing_types', 'thingTypes'):
+        name = thing_type.get('thingTypeName')
+        if not isinstance(name, str) or not name:
+            raise NoData('IoT thing type is missing its name')
+        properties = thing_type.get('thingTypeProperties') or {}
+        mqtt5 = properties.get('mqtt5Configuration') or {}
+        attributes = mqtt5.get('propagatingAttributes') or []
+        if not isinstance(attributes, list):
+            raise NoData('IoT thing type has an invalid propagating attribute list')
+        values.append((name, len(attributes), None))
+    return maximum(values, 'IoTThingType', 'iot:ListThingTypes')
 
 
 def thing_groups(ctx):
@@ -158,6 +235,18 @@ CHECKS = [
     ('L-9D744041', 'Maximum number of direct child groups', direct_child_groups),
     # Both service codes name this quota over the same thing group inventory.
     ('L-6EC13FE5', 'Maximum number of dynamic groups', dynamic_thing_groups),
+    ('L-5C16DE50', 'HTTP Action: Maximum number of headers per action',
+     headers_per_http_action),
+    ('L-BC2638B3',
+     'Maximum number of policies that can be attached to a certificate or '
+     'Amazon Cognito identity',
+     policies_per_target),
+    ('L-FBACAF74', 'Maximum number of propagating attributes',
+     propagating_attributes),
+    ('L-57BADEF0', 'Maximum number of retained messages per account',
+     lambda c: dict(usage=len(c.call(IOT_DATA, 'list_retained_messages',
+                                     'retainedTopics')),
+                    source='iot:ListRetainedMessages', method='ACCOUNT_COUNT')),
 ]
 
 

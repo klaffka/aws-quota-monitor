@@ -2469,7 +2469,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-83F728FB` | Concurrent AS2 messages per connector | UNSUPPORTED: capacity or runtime quota |
 | `L-9A414140` | Maximum outbound AS2 message size | UNSUPPORTED: size/throughput/content quota |
 | `L-ACBBA5DF` | Maximum logical directory mappings characters | UNSUPPORTED: size/throughput/content quota |
-| `L-B51E8407` | Maximum web app units per web app | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-B6C4BD5F` | Idle connection timeout | UNSUPPORTED: no direct persistent resource inventory |
 | `L-CD3E054C` | New executions refill rate per workflow per second | UNSUPPORTED: API rate/throttle quota |
 | `L-CFAB221D` | Rate of StartRemoteDelete files per SFTP connector | UNSUPPORTED: API rate/throttle quota |
@@ -2536,7 +2535,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-02647DC9` | Search length | UNSUPPORTED: size/throughput/content quota |
 | `L-28FAE46F` | Rate of requests | UNSUPPORTED: API rate/throttle quota |
 | `L-343F131E` | IP addresses blocked per rate-based rule | UNSUPPORTED: API rate/throttle quota |
-| `L-797E08C8` | Regex pattern length | UNSUPPORTED: size/throughput/content quota |
 | `L-7EF6FB27` | Rate-based rule rate | UNSUPPORTED: API rate/throttle quota |
 | `L-AEEA10B9` | HTTP header name length | UNSUPPORTED: size/throughput/content quota |
 
@@ -2723,8 +2721,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-998BFF16` | Trace and service graph retention in days | UNSUPPORTED: size/throughput/content quota |
 | `L-C6B6F05D` | Indexed annotations per trace | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-D781C0FD` | Segment document size | UNSUPPORTED: size/throughput/content quota |
-| `L-DB51D338` | Tags per custom sampling rule | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
-| `L-E2DD2778` | Tags per group | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 | `L-E75A2BBF` | Segments per second | REVIEW: parent-scoped or resource count; no unambiguous API mapping |
 
 
