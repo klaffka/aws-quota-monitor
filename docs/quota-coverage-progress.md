@@ -90,6 +90,31 @@ records how far the current AWS APIs reach.
 
 ## Latest verified changes
 
+- Two open questions answered, and neither produced a measurement. That is the
+  result rather than a gap in it.
+  The first was the project's own: "inspect hooks-per-resource and nested-module
+  depth only if stored configuration exposes an exact scope." It does not.
+  CloudFormation reports hooks through `DescribeChangeSetHooks` and
+  `ListHookResults`, which describe one change set or one invocation rather than
+  what is attached to a resource type; the targeting lives inside the hook's
+  configuration schema, a JSON document the service model types as a string.
+  `Nested modules` bounds how deeply modules nest inside a template, and a
+  module is registered as a type without recording where it is used. Both are
+  blocked, and the investigation line now says so instead of asking again.
+  The second was a check on the exclusion rules rather than on coverage. They
+  remove 5,019 quotas from the measurable base, and the Textract note already
+  records how nearly a loose `throttle limit` rule swallowed six countable
+  quotas. Reading every excluded quota whose name reads like an inventory --
+  `maximum number of`, `number of`, `per account`, `per region` -- and is not
+  also worded as a rate returns two, and both are excluded correctly: IoT's
+  `Device Shadow API requests/second per account` states its window with a
+  slash, and Transfer's `Number of files per StartFileTransfer request` bounds
+  one call. No quota is excluded that should be measured.
+  With every gap shape now worked through, this is where the mechanical search
+  ends. What is left needs either a populated live account -- which the
+  remaining investigations all ask for -- or telemetry this collector does not
+  have.
+
 - Opened the `rate-shaped` class, which no round had touched, and found that
   the same stored-versus-observed cut applies there too. Bedrock holds 214 of
   its 316, all per-model inference rates this collector cannot see. Of the
@@ -1361,7 +1386,7 @@ connection and call limits that exist only while traffic is in flight.
 
 - FIS has seven open quotas: two duration limits, three resources created internally by the cross-Region route-table action, completed-data retention, and the rolling seven-day DynamoDB action-minute limit. The resolved-target API exposes subnets but not the action's generated route, route-table or managed-prefix-list inventory; duration and rolling-window accounting need a source that cannot undercount elapsed or retained usage.
 - Connect Cases: validate the new related-item and case-rule checks against populated live domains. The remaining catalog entries are per-second API rate/burst quotas whose token occupancy cannot be reconstructed from one-minute CloudWatch sums.
-- CloudFormation: inspect hooks-per-resource and nested-module depth only if stored configuration exposes an exact scope. Stack-instance operation concurrency and import-operation input counts need stronger API evidence. Template checks currently cover deployed active stacks; templates stored outside CloudFormation are not observable through this collector.
+- CloudFormation: the hooks-per-resource and nested-module question is settled and recorded above; neither exposes a stored scope. Stack-instance operation concurrency and import-operation input counts need stronger API evidence. Template checks currently cover deployed active stacks; templates stored outside CloudFormation are not observable through this collector.
 - Rekognition: investigate classification/detection dataset accounting, stored-video job inventories and transitional quota reservations. The inference-unit metadata check still needs validation against a populated live project.
 - Clean Rooms ML's eight remaining quotas: synthetic-data input rows/columns/category cardinality, synthetic MLIC generation concurrency, active audience exports per generation job, and the membership scope of configured model algorithms. Verify pending/cancelling training-instance reservations and populated live inventories separately from implementation availability.
 - The EC2 catalog contains 1,526 token-bucket capacity/refill quotas, identified by their quota names. Exact bucket occupancy needs separate telemetry; these have not been marked covered by counting API calls over longer intervals.
