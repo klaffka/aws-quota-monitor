@@ -11,6 +11,10 @@ request, so each is the longest value the inventory holds. They ride the walks
 field that is absent is a length of nothing rather than a missing value.
 `DocumentSource length` is the exception and stays open: it lives on the job
 template detail, which nothing else fetches.
+
+`Pre-signed URL lifetime` is a period rather than a length but follows the same
+rule: the job stores it, so it is read back. A job whose document is inline
+signs no URL and configures no lifetime, which is zero.
 """
 from collections import Counter
 from datetime import timedelta
@@ -249,6 +253,15 @@ def job_field_length(field):
     return check
 
 
+def presigned_url_lifetime(ctx):
+    values = []
+    for identity in jobs(ctx):
+        detail = ctx.call(IOT, 'describe_job', jobId=identity).get('job') or {}
+        config = detail.get('presignedUrlConfig') or {}
+        values.append((identity, config.get('expiresInSec') or 0, None))
+    return maximum(values, 'IoTJob', 'iot:DescribeJob')
+
+
 def job_template_field_length(field):
     """The template listing carries both the id and the description."""
     def check(ctx):
@@ -273,6 +286,7 @@ CHECKS = [('L-2F036C7C', 'Maximum number of dynamic groups', dynamic_thing_group
           ('L-B2C87795', 'Maximum number of job templates',
            lambda ctx: dict(usage=len(ctx.call('iot', 'list_job_templates', 'jobTemplates')),
                             source='iot:ListJobTemplates', method='ACCOUNT_COUNT')),
+          ('L-FBBB476F', 'Pre-signed URL lifetime', presigned_url_lifetime),
           ('L-E41D2F60', 'JobId Length', job_id_length),
           ('L-3123807D', 'Comment length', job_field_length('comment')),
           ('L-94973834', 'Job description length', job_field_length('description')),

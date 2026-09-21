@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2170**
+Total open entries: **2169**
 
 
 ## access-analyzer
@@ -92,7 +92,6 @@ Total open entries: **2170**
 - `L-60AC41CD` — WebSocket Idle Connection Timeout
 - `L-8A5B8E43` — Throttle rate
 - `L-8B81B02C` — Maximum resource policy size in bytes
-- `L-8C2F9A1D` — Maximum API caching TTL
 - `L-8E6A5A87` — Maximum Iterations In Mapping Template
 - `L-9C147DE4` — Edge API URL Length
 - `L-9ED1E49A` — WebSocket new connections rate

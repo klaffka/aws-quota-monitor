@@ -113,6 +113,21 @@ def _stage_maximum(field, subject):
     return check
 
 
+def cache_ttl_per_stage(ctx):
+    """A stage stores the TTL per method, so the longest one is its usage."""
+    values = []
+    for api in rest_apis(ctx):
+        identity = _identity(api, 'id', 'REST API')
+        for stage in ctx.call(APIGATEWAY, 'get_stages', 'item', restApiId=identity):
+            settings = stage.get('methodSettings') or {}
+            if not isinstance(settings, dict):
+                raise NoData('API Gateway stage has an invalid method setting map')
+            longest = max((entry.get('cacheTtlInSeconds') or 0
+                           for entry in settings.values()), default=0)
+            values.append((f"{identity}/{stage.get('stageName')}", longest, None))
+    return maximum(values, 'Stage', 'apigateway:GetStages')
+
+
 def endpoint_count(ctx, endpoint_type):
     return dict(usage=sum(endpoint_type in api.get('endpointConfiguration', {}).get('types', [])
                           for api in rest_apis(ctx)),
@@ -210,6 +225,7 @@ CHECKS = [
     ('L-B97207D0', 'Edge-optimized APIs', lambda ctx: endpoint_count(ctx, 'EDGE')),
     ('L-A966AB5C', 'Private APIs', lambda ctx: endpoint_count(ctx, 'PRIVATE')),
     ('L-379E48B0', 'Stages per API', stages_per_api),
+    ('L-8C2F9A1D', 'Maximum API caching TTL', cache_ttl_per_stage),
     ('L-7D4D47CD', 'PortalProducts per account',
      lambda ctx: dict(usage=len(portal_products(ctx)), source='apigatewayv2:ListPortalProducts', method='ACCOUNT_COUNT')),
     ('L-F8BD84D3', 'Portals per account',
