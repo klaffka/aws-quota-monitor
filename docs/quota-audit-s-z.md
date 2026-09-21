@@ -2535,7 +2535,6 @@ Direct paginated resource inventories are implemented in the collector. Rate, ca
 | `L-02647DC9` | Search length | UNSUPPORTED: size/throughput/content quota |
 | `L-28FAE46F` | Rate of requests | UNSUPPORTED: API rate/throttle quota |
 | `L-343F131E` | IP addresses blocked per rate-based rule | UNSUPPORTED: API rate/throttle quota |
-| `L-797E08C8` | Regex pattern length | UNSUPPORTED: size/throughput/content quota |
 | `L-7EF6FB27` | Rate-based rule rate | UNSUPPORTED: API rate/throttle quota |
 | `L-AEEA10B9` | HTTP header name length | UNSUPPORTED: size/throughput/content quota |
 
