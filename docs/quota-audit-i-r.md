@@ -1109,7 +1109,7 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-4D7207DE` — **Pull Inputs** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
 - `L-63879FB4` — **MediaLive DescribeThumbnails TPS** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 
-## `mediapackage` (16 offene Quotas)
+## `mediapackage` (15 offene Quotas)
 
 - `L-1D216601` — **Burst rate of REST API requests (VOD)** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-1E11547D` — **Rate of manifest egress requests per asset** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
@@ -1121,17 +1121,15 @@ Jeder Eintrag erhält den konkreten Grund, aus dem er derzeit nicht sicher als M
 - `L-5625C794` — **Ingest streams per channel** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.
 - `L-80529300` — **Rate of segment egress requests per asset** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-81A8E99B` — **Tracks per ingest stream (VOD)** — `UNSUPPORTED`: No local inventory or official UsageMetric mapping was found for this quota in the catalog and registered checks.
-- `L-8D3D8B62` — **Time-shifted manifest length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-BC1EEC38` — **Rate of manifest egress requests per origin endpoint** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-BEF6A5C5` — **Rate of segment egress requests per origin endpoint** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F0A6E997` — **Burst rate of REST API requests (Live)** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F461E421` — **Rate of ingest requests per channel** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
 - `L-F7CB14AC` — **Live manifest length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 
-## `mediapackagev2` (11 offene Quotas)
+## `mediapackagev2` (10 offene Quotas)
 
 - `L-327832D0` — **Rate of manifest egress requests per origin endpoint** — `USAGE_METRIC`: Request/throughput rate; a persistent resource inventory cannot measure current consumption. Requires a compatible official UsageMetric.
-- `L-3982B8D7` — **Time-shifted manifest length** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-628CF433` — **Active harvest jobs per channel group** — `CONCURRENCY`: Concurrency or transient workload limit; list APIs cannot provide an authoritative current usage value for the quota.
 - `L-71A50308` — **Content retention** — `CONFIG_LIMIT`: Payload, configuration, retention, or capacity limit; no current resource count has the same unit or semantics.
 - `L-88EC0651` — **Ingest streams per channel** — `RESOURCE_MAPPING`: Resource-like quota; no unambiguous paginated API-to-quota mapping is registered for this service/quota code, so deriving a count could produce a misleading measurement.

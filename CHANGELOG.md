@@ -7,6 +7,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- WAF Classic regex pattern length and MediaPackage time-shifted manifest
+  window measurements.
 - IoT job and job template identifier, comment and description length
   measurements.
 - Amplify subdomain measurement.

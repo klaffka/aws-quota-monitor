@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,743 | 2,076 |
+| implemented | 2,746 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,123 | 4,457 |
-| uncovered | 6,958 | 5,941 |
+| covered | 5,126 | 4,457 |
+| uncovered | 6,955 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.41%** of the whole union, or
-**72.54%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.43%** of the whole union, or
+**72.59%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,27 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Followed the stored-versus-sent distinction through the rest of the `size or
+  period` shape. Filtering its open quotas for names that describe a stored
+  field rather than a request leaves sixteen candidates across eleven services,
+  and most of those turn out to be per-request after all: Polly's characters in
+  one synthesis task, Bedrock's guardrail text units, Prometheus label sizes,
+  CloudHSM's username and password lengths, which no operation reports at all.
+  Three are configuration and are measured now. `Regex pattern length` is the
+  longest pattern string a WAF Classic pattern set holds, read from the detail
+  the pattern count beside it already fetches. `Time-shifted manifest length` is
+  the startover window an origin endpoint offers, and it exists in both
+  MediaPackage generations: the first carries it in the endpoint listing, so it
+  costs nothing, while the second reports it only from `GetOriginEndpoint`, so
+  that generation pays one call per endpoint.
+  Time shifting is optional, so an endpoint offering none shifts by nothing
+  rather than dropping out of the maximum, the same rule an absent comment
+  follows on an IoT job.
+  What the two rounds on this shape show is that its name describes the quota
+  rather than the answer. A bound stated in bytes, characters or seconds is
+  still an inventory when the value is stored and read back; it stops being one
+  when the value only exists while a request is in flight.
 
 - Turned the sweep on the `size or period` shape, which the countable rounds
   never touched, and it is not the dead end the label suggests. Ranking its 788
@@ -1198,13 +1219,13 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,939 quotas are measurable and still uncovered. Sorting them by what their
+1,936 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
 | countable | 679 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
-| size or period | 783 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| size or period | 780 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
 | organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |

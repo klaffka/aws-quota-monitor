@@ -695,6 +695,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "mediapackagev2:ListChannelGroups"
           , "mediapackagev2:ListChannels"
           , "mediapackagev2:ListOriginEndpoints"
+          , "mediapackagev2:GetOriginEndpoint"
           , "servicediscovery:ListNamespaces"
           , "geo:ListTrackers"
           , "geo:ListTrackerConsumers"

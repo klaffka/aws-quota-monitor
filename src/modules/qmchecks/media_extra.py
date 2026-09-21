@@ -5,7 +5,7 @@ CUSTOM_KEYS = {('mediaconnect', code) for code in (
     'L-F1F62F5D', 'L-A99016A8', 'L-075679EF', 'L-CB77E87E',
     'L-77138741', 'L-58DF4801', 'L-6C50CD26')} | {
     ('mediapackagev2', code) for code in ('L-A7040149', 'L-55777135', 'L-305BEE26',
-                                          'L-0FB78A52')}
+                                          'L-0FB78A52', 'L-3982B8D7')}
 
 FLOW_STATES = {'STANDBY', 'ACTIVE', 'UPDATING', 'DELETING', 'STARTING', 'STOPPING', 'ERROR'}
 ROUTER_IO_STATES = {
@@ -136,11 +136,33 @@ def max_manifests_per_endpoint(c):
     return maximum(values, 'OriginEndpoint', 'mediapackagev2:ListOriginEndpoints')
 
 
+def v2_time_shifted_window(c):
+    """The V2 listing omits the window, so each endpoint is fetched for it."""
+    values = []
+    for group in c.call('mediapackagev2', 'list_channel_groups', 'Items'):
+        group_name = group.get('ChannelGroupName')
+        for channel in c.call('mediapackagev2', 'list_channels', 'Items',
+                              ChannelGroupName=group_name):
+            channel_name = channel.get('ChannelName')
+            for endpoint in c.call('mediapackagev2', 'list_origin_endpoints', 'Items',
+                                   ChannelGroupName=group_name,
+                                   ChannelName=channel_name):
+                name = endpoint.get('OriginEndpointName')
+                if not isinstance(name, str) or not name:
+                    raise NoData('MediaPackage origin endpoint is missing its name')
+                detail = c.call('mediapackagev2', 'get_origin_endpoint',
+                                ChannelGroupName=group_name, ChannelName=channel_name,
+                                OriginEndpointName=name)
+                values.append((name, detail.get('StartoverWindowSeconds') or 0, None))
+    return maximum(values, 'OriginEndpoint', 'mediapackagev2:GetOriginEndpoint')
+
+
 MEDIAPACKAGEV2_CHECKS = [
     ('L-A7040149', 'Channel Groups', count('mediapackagev2', 'list_channel_groups', 'Items')),
     ('L-55777135', 'Channels per channel group', max_channels_per_group),
     ('L-305BEE26', 'Origin endpoints per channel', max_endpoints_per_channel),
     ('L-0FB78A52', 'Manifests per origin endpoint', max_manifests_per_endpoint),
+    ('L-3982B8D7', 'Time-shifted manifest length', v2_time_shifted_window),
 ]
 
 
