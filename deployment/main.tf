@@ -1523,6 +1523,7 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           , "codedeploy:ListGitHubAccountTokenNames"
           , "cassandra:ListTables"
           , "cassandra:ListKeyspaces"
+          , "cassandra:GetTable"
           , "cassandra:ListTypes"
           , "cassandra:GetType"
           , "qldb:ListLedgers"

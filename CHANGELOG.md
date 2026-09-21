@@ -7,6 +7,7 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Added
 
+- DynamoDB and Keyspaces table-level provisioned throughput measurements.
 - IoT pre-signed URL lifetime and API Gateway cache TTL measurements.
 - WAF Classic regex pattern length and MediaPackage time-shifted manifest
   window measurements.

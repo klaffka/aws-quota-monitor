@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,748 | 2,076 |
+| implemented | 2,752 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,128 | 4,457 |
-| uncovered | 6,953 | 5,941 |
+| covered | 5,132 | 4,457 |
+| uncovered | 6,949 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.45%** of the whole union, or
-**72.61%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.48%** of the whole union, or
+**72.67%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,30 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Opened the `rate-shaped` class, which no round had touched, and found that
+  the same stored-versus-observed cut applies there too. Bedrock holds 214 of
+  its 316, all per-model inference rates this collector cannot see. Of the
+  remaining 102, four are not rates at all: DynamoDB and Keyspaces both state a
+  table-level read and write throughput quota, and both bound *provisioned
+  capacity*, which the table stores and reports back.
+  The DynamoDB pair costs nothing -- `describe_table` is already fetched per
+  table for the secondary index count, so three quotas now share one call. The
+  Keyspaces pair needs `GetTable` per table, on the keyspace walk the table
+  count already makes. A table billed per request provisions nothing, which is
+  zero rather than absent.
+  What the class holds otherwise is worth stating so it is not swept again for
+  the same thing. The names landed there because they contain `rate`,
+  `throughput` or `bandwidth`, or state a per-unit-time window, and the great
+  majority really are observed rates: Fargate launch rates, Lambda event source
+  throughput, Chime API rates, IoT connection rates. A filter for names that
+  sound configured -- provisioned, reserved, sampling -- returned nothing at
+  all; these four were found by reading the 102 rather than by pattern.
+  ACM's `certificates created in last 365 days` is the near miss worth
+  recording. The listing carries each certificate's creation time, so the window
+  could be counted -- but the quota counts issuance events, and a certificate
+  deleted inside the window still consumed one while no longer being listed.
+  Counting what remains would undercount every account that deletes.
 
 - Turned the same filter on the period half of the shape, which the length
   rounds had passed over. Twenty-four names mention a retention, a window, a
@@ -1238,14 +1262,14 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,934 quotas are measurable and still uncovered. Sorting them by what their
+1,930 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
 | countable | 679 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
 | size or period | 778 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
-| rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
+| rate-shaped | 312 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
 | organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
 

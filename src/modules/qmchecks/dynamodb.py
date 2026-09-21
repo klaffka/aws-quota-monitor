@@ -2,6 +2,10 @@
 
 `Concurrent control plane operations` and the incremental export quotas count
 work in flight or name a period, so neither is an inventory.
+
+The table-level throughput quotas read as rates but bound provisioned capacity,
+which the table stores: a table billed per request provisions nothing, which is
+zero rather than absent.
 """
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
@@ -26,11 +30,29 @@ def secondary_indexes_per_table(ctx):
     return maximum(values, 'DynamoDBTable', 'dynamodb:DescribeTable')
 
 
+def provisioned_capacity(field):
+    def check(ctx):
+        values = []
+        for name in tables(ctx):
+            if not isinstance(name, str) or not name:
+                raise NoData('DynamoDB table is missing its name')
+            table = ctx.call(DYNAMODB, 'describe_table',
+                             TableName=name).get('Table') or {}
+            throughput = table.get('ProvisionedThroughput') or {}
+            values.append((name, throughput.get(field) or 0, None))
+        return maximum(values, 'DynamoDBTable', 'dynamodb:DescribeTable')
+    return check
+
+
 CHECKS = [
     ('L-F98FE922', 'Maximum number of tables',
      lambda ctx: dict(usage=len(tables(ctx)), source='dynamodb:ListTables',
                       method='ACCOUNT_COUNT')),
     ('L-F7858A77', 'Global Secondary Indexes per table', secondary_indexes_per_table),
+    ('L-CF0CBE56', 'Table-level read throughput limit',
+     provisioned_capacity('ReadCapacityUnits')),
+    ('L-AB614373', 'Table-level write throughput limit',
+     provisioned_capacity('WriteCapacityUnits')),
 ]
 
 
