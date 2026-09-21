@@ -21,15 +21,15 @@ column is measured against an untracked export and is kept for comparison only.
 | Measure | Union | BA export only |
 | --- | ---: | ---: |
 | total | 12,081 | 10,398 |
-| implemented | 2,746 | 2,076 |
+| implemented | 2,748 | 2,076 |
 | compatibleMetric | 2,535 | 2,535 |
-| covered | 5,126 | 4,457 |
-| uncovered | 6,955 | 5,941 |
+| covered | 5,128 | 4,457 |
+| uncovered | 6,953 | 5,941 |
 | unmeasurable | 5,019 | 3,055 |
 | measurable | 7,062 | 7,343 |
 
-Implemented measurement availability: **42.43%** of the whole union, or
-**72.59%** of the 7,062 quotas whose usage can be counted at all.
+Implemented measurement availability: **42.45%** of the whole union, or
+**72.61%** of the 7,062 quotas whose usage can be counted at all.
 
 5,019 quotas are excluded from the second denominator by four rules in
 `quota_coverage.py`, applied in this order:
@@ -89,6 +89,25 @@ regression. Approaching 100% of the measurable base remains open; the section be
 records how far the current AWS APIs reach.
 
 ## Latest verified changes
+
+- Turned the same filter on the period half of the shape, which the length
+  rounds had passed over. Twenty-four names mention a retention, a window, a
+  lifetime or a timeout; most are still runtime -- Kinesis Video's GO_AWAY grace
+  periods, Prometheus query ranges -- and two are stored configuration.
+  `Pre-signed URL lifetime` is what an IoT job stores in `presignedUrlConfig`,
+  read from the detail `targets_per_job` already fetches. `Maximum API caching
+  TTL` is the longest TTL a REST API stage sets across its method settings, read
+  from the stage listing `Stages per API` already walks. Neither costs a call or
+  a grant. A job whose document is inline signs no URL and configures no
+  lifetime, and a stage caching nothing has no TTL; both are zero rather than
+  absent.
+  Worth recording from the search rather than the result: the first pass matched
+  `age` as a period word and pulled in every `storage` and `usage` quota with
+  it. The filter is a way to rank candidates, never evidence about one -- each
+  of the twenty-four still had to be read.
+  The size and period rounds together took this shape from 788 open to 778. What
+  remains is genuinely per-request: payloads, uploads, and documents that exist
+  only while a call is in flight.
 
 - Followed the stored-versus-sent distinction through the rest of the `size or
   period` shape. Filtering its open quotas for names that describe a stored
@@ -1219,13 +1238,13 @@ reports no measurable quota at all rather than nineteen unreachable ones.
 
 ## Largest remaining gaps
 
-1,936 quotas are measurable and still uncovered. Sorting them by what their
+1,934 quotas are measurable and still uncovered. Sorting them by what their
 names describe shows what the remaining work actually is:
 
 | Shape | Quotas | What it would take |
 | --- | ---: | --- |
 | countable | 679 | the name describes a count; whether an API exposes that inventory has to be checked quota by quota |
-| size or period | 780 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
+| size or period | 778 | the bound applies to one payload or document, or states a period in time units, so there is no inventory to count |
 | rate-shaped | 316 | a rate no exclusion rule matches, because the name states neither a window nor an operation |
 | no SDK client | 148 | botocore ships no client for the service any more, so no inventory can be read until AWS restores one |
 | organization-wide | 13 | the quota is counted over every account in the organization, which one account's credentials cannot see |
@@ -1242,7 +1261,7 @@ The countable ones are spread thin. The twelve largest holdings:
 | deadline | 32 | 16 | 16 | 0 | 14 |
 | lambda | 70 | 13 | 57 | 28 | 13 |
 | redshift | 29 | 14 | 15 | 0 | 13 |
-| iot | 179 | 29 | 150 | 112 | 11 |
+| iot | 179 | 30 | 149 | 112 | 11 |
 | kinesisvideo | 98 | 3 | 95 | 70 | 11 |
 | bedrock-agentcore | 199 | 29 | 170 | 134 | 9 |
 | forecast | 40 | 30 | 10 | 0 | 9 |
