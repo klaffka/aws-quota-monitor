@@ -88,6 +88,49 @@ Custom and compatible metric counts overlap; covered is their union.
 regression. Approaching 100% of the measurable base remains open; the section below
 records how far the current AWS APIs reach.
 
+## Where the search stands
+
+The section below is a chronological log and has grown past a hundred entries.
+This is the state it adds up to, so that picking the work up again does not mean
+reading all of it.
+
+**How a service is examined.** A service counts as examined when its own module
+docstring or this document says *why* its open quotas stay open. That test
+replaced reading a service's catalog entries and re-checking its API, which
+twice meant re-deriving a verdict a docstring already held. Ranking services by
+the open quotas neither source discusses is what finds the unexamined ones, and
+it now returns none.
+
+**The five gap shapes, and what each turned out to hold:**
+
+| Shape | State |
+| --- | --- |
+| `countable` | Worked through service by service. Every service carries a verdict. |
+| `size or period` | Worked through twice, once for lengths and once for periods. |
+| `rate-shaped` | Bedrock holds two thirds of it as per-model inference rates; the rest was read by hand. |
+| `no SDK client` | Blocked by definition, and guarded: a test fails when botocore ships one of these services again. |
+| `organization-wide` | Blocked by definition; one account's credentials cannot see the scope. |
+
+**The distinction that did most of the work** is between a bound on what may be
+*sent* and a bound on what is *stored*. A quota stated in bytes, characters or
+seconds is still an inventory when the value is written down and read back --
+a job's comment, a stage's cache TTL, a table's provisioned capacity. It stops
+being one when the value exists only while a request is in flight. The same cut
+runs through all three measurable shapes, and it is why the `size or period` and
+`rate-shaped` labels describe the quota rather than the answer.
+
+**On the filters.** Ranking by a regex is a way to order candidates and never
+evidence about one: a period filter that matched `age` pulled in every `storage`
+and `usage` quota, and a filter for configured-sounding rate names returned
+nothing while four such quotas were found by reading the list. Every candidate a
+filter surfaces still has to be read.
+
+**What is left needs something this collector does not have.** The remaining
+investigations below ask for a populated live account or for telemetry -- bucket
+occupancy, per-second peaks -- that one-minute CloudWatch sums cannot supply.
+The exclusion rules were audited in the other direction as well: no quota is
+excluded that should be measured.
+
 ## Latest verified changes
 
 - Two open questions answered, and neither produced a measurement. That is the
