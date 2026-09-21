@@ -2,6 +2,10 @@
 
 The catalog calls the service `cassandra`, but the SDK client is `keyspaces`,
 and every table and type listing is scoped to one keyspace.
+
+The table-level throughput quotas read as rates but bound provisioned capacity,
+which the table stores: one in on-demand mode provisions nothing, which is zero
+rather than absent.
 """
 from collections import Counter
 
@@ -30,6 +34,26 @@ def tables(ctx):
                 raise NoData('Keyspaces table is missing its name')
             found.append(f'{keyspace}.{name}')
     return found
+
+
+def table_capacity(field):
+    """The listing carries no capacity, so each table is fetched for it."""
+    def check(ctx):
+        values = []
+        for keyspace in keyspaces(ctx):
+            for table in ctx.call(KEYSPACES, 'list_tables', 'tables',
+                                  keyspaceName=keyspace):
+                name = table.get('tableName')
+                if not isinstance(name, str) or not name:
+                    raise NoData('Keyspaces table is missing its name')
+                detail = ctx.call(KEYSPACES, 'get_table', keyspaceName=keyspace,
+                                  tableName=name)
+                if (detail.get('keyspaceName'), detail.get('tableName')) != (keyspace, name):
+                    raise NoData('Keyspaces table does not match the requested identity')
+                capacity = detail.get('capacitySpecification') or {}
+                values.append((f'{keyspace}.{name}', capacity.get(field) or 0, None))
+        return maximum(values, 'KeyspacesTable', 'keyspaces:GetTable')
+    return check
 
 
 def types(ctx):
@@ -114,6 +138,10 @@ CHECKS = [
     ('L-C63C913D', 'Max amount of direct parent UDTs per UDT', parent_types_per_type),
     ('L-F90953AC', 'Max amount of direct child UDTs per UDT', child_types_per_type),
     ('L-964C49BD', 'Max UDT name length', longest_type_name),
+    ('L-17766544', 'Table-level read throughput quota',
+     table_capacity('readCapacityUnits')),
+    ('L-3D8ED127', 'Table-level write throughput quota',
+     table_capacity('writeCapacityUnits')),
 ]
 
 

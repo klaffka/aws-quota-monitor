@@ -4,7 +4,7 @@ Der lokale Service-Quotas-Katalog wurde vollständig gegen die registrierten Che
 
 # Open quota audit A–H
 
-Total open entries: **2169**
+Total open entries: **2165**
 
 
 ## access-analyzer
@@ -920,12 +920,10 @@ Total open entries: **2169**
 ## cassandra
 
 - `L-0659E12E` — Max clustering key size
-- `L-17766544` — Table-level read throughput quota
 - `L-29E90199` — Concurrent DDL operations
 - `L-2C5B14BD` — Account-level write throughput quota (Provisioned mode)
 - `L-2FC1B9A1` — Max subqueries per IN SELECT statement
 - `L-324B5396` — Max partition key size
-- `L-3D8ED127` — Table-level write throughput quota
 - `L-4C49F3DB` — Max amount of data restored using Point-in-time Recovery (PITR)
 - `L-5823D982` — Max static data per logical partition
 - `L-6632AD49` — Max write capacity for a table using change-data-capture (CDC)
@@ -1828,9 +1826,7 @@ Total open entries: **2169**
 - `L-34F8CCC8` — Account-level write throughput limit (Provisioned mode)
 - `L-6F30DCE1` — Maximum Incremental Export period window
 - `L-923BEB7A` — Write throughput limit for DynamoDB Streams (Provisioned mode)
-- `L-AB614373` — Table-level write throughput limit
 - `L-C2098644` — Minimum Incremental Export period window
-- `L-CF0CBE56` — Table-level read throughput limit
 - `L-D98E8184` — Maximum Incremental Export concurrent requests
 - `L-F3CA5463` — Provisioned capacity decreases per day
 
