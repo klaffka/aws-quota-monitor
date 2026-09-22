@@ -75,6 +75,11 @@ All notable changes to this project are recorded here. Versions follow
   test behind them only checked that every open quota was documented and never
   that a documented one was still open; it now checks both.
 
+- The pull request checklist now lists every gate CI runs. Five were missing:
+  the workflow lint, the dependency consistency check, the release metadata
+  check, the compile pass and the quota coverage baseline, so a contributor
+  could tick every box and still see CI fail.
+
 ### Fixed
 
 - Clean Rooms protected job and protected query counts, which the collector had

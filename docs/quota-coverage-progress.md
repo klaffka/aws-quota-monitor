@@ -1,4 +1,4 @@
-# Quota coverage progress — 2026-09-14
+# Quota coverage progress — 2026-09-21
 
 Catalog: `tests/fixtures/quota-catalog-union.json`, the committed union of
 `data/service-quotas-20251102T133323Z.json` and
