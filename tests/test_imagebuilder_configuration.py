@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -6,6 +5,7 @@ import pytest
 from modules.qmchecks import imagebuilder
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 class ImageBuilderContext:
@@ -157,7 +157,6 @@ def test_imagebuilder_extended_checks_are_registered_and_catalog_selected():
 
 
 def test_imagebuilder_configuration_checks_have_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in (
         'ListLifecyclePolicies', 'ListComponents', 'GetComponent', 'ListWorkflows',
         'GetWorkflow', 'ListImageRecipes', 'GetImageRecipe', 'ListContainerRecipes',
@@ -165,4 +164,4 @@ def test_imagebuilder_configuration_checks_have_read_permissions():
         'GetDistributionConfiguration', 'ListImagePipelines',
         'ListInfrastructureConfigurations',
     ):
-        assert f'"imagebuilder:{action}"' in policy
+        assert grants(f'imagebuilder:{action}')

@@ -10,6 +10,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import cloudformation as checks
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
 STACK = 'arn:aws:cloudformation:eu-central-1:123456789012:stack/example/12345678'
@@ -178,4 +179,4 @@ def test_template_checks_are_registered_with_dependency_and_permission():
     assert {('cloudformation', code) for code in codes} <= custom_keys()
     root = Path(__file__).parents[1]
     assert 'PyYAML==6.0.3' in (root / 'requirements.txt').read_text()
-    assert '"cloudformation:GetTemplate"' in (root / 'deployment/main.tf').read_text()
+    assert grants('cloudformation:GetTemplate')

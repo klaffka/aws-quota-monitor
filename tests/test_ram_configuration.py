@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -10,6 +9,7 @@ from modules.qmchecks.ram import (
     resources_per_share,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class RAMContext:
@@ -80,5 +80,4 @@ def test_ram_configuration_rejects_incomplete_or_conflicting_inventories():
 
 
 def test_ram_configuration_check_has_read_permission():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"ram:ListPermissions"' in policy
+    assert grants('ram:ListPermissions')

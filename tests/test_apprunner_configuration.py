@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -10,6 +9,7 @@ from modules.qmchecks.apprunner import (
     vpc_ingress_connections_per_service,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class AppRunnerContext:
@@ -82,10 +82,9 @@ def test_apprunner_configuration_rejects_duplicates_and_unknown_states():
 
 
 def test_apprunner_configuration_checks_have_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in (
         'ListConnections', 'ListAutoScalingConfigurations',
         'ListVpcIngressConnections', 'ListObservabilityConfigurations',
         'ListVpcConnectors',
     ):
-        assert f'"apprunner:{action}"' in policy
+        assert grants(f'apprunner:{action}')

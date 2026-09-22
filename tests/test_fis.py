@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 import pytest
 
@@ -13,6 +12,7 @@ from modules.qmchecks.fis import (
     template_maximum,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class Context:
@@ -182,7 +182,6 @@ def test_fis_check_codes_match_catalog_and_target_actions_are_unique():
 
 
 def test_fis_read_permissions_are_deployed():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('ListExperimentTemplates', 'GetExperimentTemplate', 'ListExperiments',
                    'GetExperiment', 'ListExperimentResolvedTargets'):
-        assert f'"fis:{action}"' in policy
+        assert grants(f'fis:{action}')

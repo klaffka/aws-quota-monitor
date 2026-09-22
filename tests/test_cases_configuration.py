@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -9,6 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import cases
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
 DOMAIN = 'domain-1'
@@ -130,7 +130,6 @@ def test_conflicting_domains_are_rejected_and_empty_inventories_are_zero():
 
 def test_extended_checks_registered_and_permissions_present():
     assert {('cases', code) for code, _, _ in cases.EXTENDED_CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ['ListFields', 'ListFieldOptions', 'ListLayouts', 'GetLayout']:
         # Connect Cases authorises under the cases prefix.
-        assert f'"cases:{action}"' in policy
+        assert grants(f'cases:{action}')

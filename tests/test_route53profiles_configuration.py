@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -8,6 +7,7 @@ from modules.qmchecks.route53profiles import (
     vpcs_per_profile,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class ProfilesContext:
@@ -107,6 +107,5 @@ def test_route53_profiles_reject_unresolved_association_states():
 
 
 def test_route53_profiles_configuration_has_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"route53profiles:ListProfileAssociations"' in policy
-    assert '"route53profiles:ListProfileResourceAssociations"' in policy
+    assert grants('route53profiles:ListProfileAssociations')
+    assert grants('route53profiles:ListProfileResourceAssociations')

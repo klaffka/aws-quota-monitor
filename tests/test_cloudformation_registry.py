@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -9,6 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import cloudformation as checks
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
 NAME = 'Example::Test::Resource'
@@ -88,5 +88,4 @@ def test_empty_registries_are_zero_and_checks_are_registered_with_permission():
     for _, _, check in checks.EXTENDED_CHECKS:
         assert check(ctx)['usage'] == 0
     assert {('cloudformation', code) for code, _, _ in checks.EXTENDED_CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
-    assert '"cloudformation:ListTypeVersions"' in policy
+    assert grants('cloudformation:ListTypeVersions')

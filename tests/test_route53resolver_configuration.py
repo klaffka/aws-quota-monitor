@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -11,6 +10,7 @@ from modules.qmchecks.route53resolver import (
     firewall_rules_per_group,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class ResolverContext:
@@ -131,7 +131,6 @@ def test_route53resolver_registers_all_measurable_catalog_quotas():
 
 
 def test_route53resolver_configuration_has_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"route53resolver:ListFirewallRuleGroupAssociations"' in policy
-    assert '"route53resolver:ListFirewallRules"' in policy
-    assert '"route53profiles:ListProfileResourceAssociations"' in policy
+    assert grants('route53resolver:ListFirewallRuleGroupAssociations')
+    assert grants('route53resolver:ListFirewallRules')
+    assert grants('route53profiles:ListProfileResourceAssociations')

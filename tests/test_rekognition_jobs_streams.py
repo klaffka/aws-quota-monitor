@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -9,6 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import rekognition as checks
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 PROJECT = 'arn:aws:rekognition:eu-central-1:123456789012:project/example/1234567890'
 VIDEO = 'arn:aws:kinesisvideo:eu-central-1:123456789012:stream/video/1234567890'
@@ -202,6 +202,5 @@ def test_checks_register_without_calls_for_absent_service_and_empty_inventories_
     for _, _, fn in checks.EXTENDED_CHECKS:
         assert fn(ctx)['usage'] == 0
     assert {('rekognition', code) for code, _, _ in checks.EXTENDED_CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for name in ['DescribeStreamProcessor', 'ListMediaAnalysisJobs']:
-        assert f'"rekognition:{name}"' in policy
+        assert grants(f'rekognition:{name}')

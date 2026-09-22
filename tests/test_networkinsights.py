@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -6,6 +5,7 @@ import pytest
 from modules.qmchecks import networkinsights
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 class NetworkInsightsContext:
@@ -81,11 +81,10 @@ def test_network_insights_checks_are_registered_selected_and_permitted():
     assert networkinsights.get_current_quotastatus_networkinsights(ctx=context) == []
     assert context.run.call_args.args[1] == networkinsights.CHECKS
 
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in (
         'DescribeNetworkInsightsAccessScopes',
         'DescribeNetworkInsightsAccessScopeAnalyses',
         'DescribeNetworkInsightsPaths',
         'DescribeNetworkInsightsAnalyses',
     ):
-        assert f'"ec2:{action}"' in policy
+        assert grants(f'ec2:{action}')

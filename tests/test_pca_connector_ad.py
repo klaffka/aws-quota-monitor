@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -12,6 +11,7 @@ from modules.qmchecks.pca_connector_ad import (
 )
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 ACCOUNT = '111111111111'
@@ -140,7 +140,6 @@ def test_pca_connector_ad_rejects_unresolved_parent_states():
 
 def test_pca_connector_ad_checks_are_registered_with_read_permissions():
     assert {(SERVICE, code) for code, _, _ in CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('ListConnectors', 'ListTemplates',
                    'ListTemplateGroupAccessControlEntries'):
-        assert f'"{SERVICE}:{action}"' in policy
+        assert grants(f'{SERVICE}:{action}')

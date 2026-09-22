@@ -1,5 +1,4 @@
 from unittest.mock import Mock
-from pathlib import Path
 
 from modules.qmchecks.glue import (CHECKS as GLUE_CHECKS, active_column_statistics_tasks,
                                   active_materialized_view_refreshes, active_runs,
@@ -12,6 +11,7 @@ from modules.qmchecks.glue import (CHECKS as GLUE_CHECKS, active_column_statisti
 from modules.qmchecks.emr import CHECKS as EMR_CHECKS
 from modules.qmchecks.datasync import CHECKS as DATASYNC_CHECKS
 from modules.qmchecks.sagemaker import CHECKS as SAGEMAKER_CHECKS
+from tests.iam_policy import grants
 
 
 def test_glue_resource_counts():
@@ -154,7 +154,6 @@ def test_glue_configuration_and_task_inventories():
 
 
 def test_glue_extended_read_permissions_are_deployed():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     actions = ('GetUserDefinedFunctions', 'GetPartitions', 'GetDevEndpoints', 'GetCatalogs',
                'DescribeIntegrations', 'ListDataQualityRulesets', 'GetJobRuns',
                'GetMLTaskRuns', 'ListDataQualityRulesetEvaluationRuns',
@@ -163,7 +162,7 @@ def test_glue_extended_read_permissions_are_deployed():
                'GetColumnStatisticsTaskRun', 'ListLFTagExpressions')
     for action in actions:
         prefix = 'lakeformation' if action == 'ListLFTagExpressions' else 'glue'
-        assert f'"{prefix}:{action}"' in policy
+        assert grants(f'{prefix}:{action}')
 
 
 def test_emr_counts_only_active_cluster_states():

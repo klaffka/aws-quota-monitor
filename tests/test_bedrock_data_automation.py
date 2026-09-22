@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -11,6 +10,7 @@ from modules.qmchecks.bedrock import CHECKS, get_current_quotastatus_bedrock
 from modules.qmchecks.ssm import EXTENDED_CHECKS as SSM_CHECKS
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
 ARN = 'arn:aws:bedrock:eu-central-1:123456789012:blueprint/abcdefghijkl'
@@ -130,7 +130,6 @@ def test_empty_inventories_are_zero_and_new_checks_have_registration_and_permiss
         assert check(ctx)['usage'] == 0
     assert {('bedrock', code) for code, _, _ in bda.CHECKS} <= custom_keys()
     assert {('ssm', code) for code, _, _ in SSM_CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ['bedrock:GetBlueprint', 'bedrock:ListDataAutomationLibraries', 'bedrock:ListDataAutomationLibraryEntities',
                    'ssm:ListAssociationVersions', 'ssm:DescribeDocumentPermission']:
-        assert f'"{action}"' in policy
+        assert grants(f'{action}')

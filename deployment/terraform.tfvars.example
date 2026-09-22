@@ -1,5 +1,10 @@
 aws_region = "eu-central-1"
 
+# Refuse to plan or apply against any other account. Strongly recommended:
+# resource names derive from the caller, so the wrong credentials otherwise
+# plan a rename rather than an error.
+# aws_account_id = "123456789012"
+
 tags = {
   scope = "BA"
   env   = "prod"

@@ -82,6 +82,31 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
+- The collector's IAM policy can be deployed again. Spelling out all 1,288 read
+  actions produced a document of roughly 41,000 characters against AWS's limit
+  of 10,240 for the sum of a role's inline policies, so `terraform apply` could
+  only fail; the live policy had been stuck at its 883-character February state
+  for seven months. A service's read verbs now collapse to `List*`, `Describe*`
+  and, where that cannot reach stored data, `Get*`, which brings the document to
+  about 7,600 characters. Get grants on s3, iam, kms, lambda, glue,
+  cloudformation, ssm, secretsmanager and their like stay spelled out, so no
+  wildcard reaches an object body, a secret or a parameter. A test now measures
+  every inline policy and fails before the limit is reached.
+
+- A new dependency layer no longer leaves a gap. Publishing one replaced the
+  layer version, and Terraform deleted the old version before the functions
+  pointed at the new one, while the collector runs every ten minutes. The old
+  version is now kept, which also leaves something to roll back to.
+  `create_before_destroy` cannot do this: it propagates to the resource's
+  dependencies, and the data source that reads the built ZIP cannot carry a
+  lifecycle block, so the graph becomes a cycle.
+
+- Terraform refuses to run against an account other than the configured one,
+  when `aws_account_id` is set. The report bucket and several resource names
+  derive from the caller's identity, so planning with the wrong credentials did
+  not fail; it proposed replacing the bucket under a new name, which would have
+  destroyed every stored report.
+
 - Clean Rooms protected job and protected query counts, which the collector had
   been calling without an IAM grant and which answered `AccessDenied` on every
   run. The guard that should have caught this discarded the call sites of the

@@ -1,8 +1,8 @@
 import json
-from pathlib import Path
 
 from modules.qmchecks.aoss import (CHECKS, allocated_capacity, collections_per_group,
                                    document_bytes, policy_size, security_config_size)
+from tests.iam_policy import grants
 
 
 class Context:
@@ -69,9 +69,8 @@ def test_aoss_registers_every_catalog_quota():
 
 
 def test_aoss_read_permissions_are_deployed():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('GetSecurityConfig', 'GetSecurityPolicy', 'GetAccessPolicy',
                    'ListLifecyclePolicies', 'BatchGetLifecyclePolicy',
                    'ListCollectionGroups', 'GetAccountSettings'):
         # The IAM prefix is aoss, not the SDK client name.
-        assert f'"aoss:{action}"' in policy
+        assert grants(f'aoss:{action}')

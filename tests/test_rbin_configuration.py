@@ -1,9 +1,9 @@
-from pathlib import Path
 
 import pytest
 
 from modules.qmchecks.rbin import rule_count, tags_per_rule
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class RecycleBinContext:
@@ -67,5 +67,4 @@ def test_rbin_tags_rejects_duplicate_pairs_and_inconsistent_details():
 
 
 def test_rbin_configuration_check_has_read_permission():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"rbin:GetRule"' in policy
+    assert grants('rbin:GetRule')

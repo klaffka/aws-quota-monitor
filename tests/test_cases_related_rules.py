@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -9,6 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import cases
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
@@ -182,7 +182,6 @@ def test_remaining_content_quota_checks_are_registered_with_permissions():
     codes = {'L-C1AF8D37', 'L-930905B5', 'L-A7158118', 'L-7D21A319',
              'L-F43DCB55', 'L-435DBDE3', 'L-8F7DFC0D'}
     assert {('cases', code) for code in codes} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ('SearchAllRelatedItems', 'BatchGetCaseRule', 'GetTemplate'):
         # Connect Cases authorises under the cases prefix.
-        assert f'"cases:{action}"' in policy
+        assert grants(f'cases:{action}')

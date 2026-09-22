@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -8,6 +7,7 @@ from modules.qmchecks.directoryservice import CHECKS as DS_CHECKS
 from modules.qmchecks.opensearch import application_count, get_current_quotastatus_opensearch
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import granted_prefixes, grants
 
 
 def test_mq_broker_inventory_count():
@@ -84,6 +84,9 @@ def test_opensearch_application_inventory_rejects_incomplete_or_conflicting_item
 
 def test_opensearch_checks_are_registered_with_the_iam_service_prefix():
     assert {('es', 'L-076D529E'), ('opensearch', 'L-B9142967')} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"es:ListApplications"' in policy
-    assert '"opensearch:ListApplications"' not in policy
+    assert grants('es:ListApplications')
+    # OpenSearch authorises under `es`. A grant written for the SDK's client
+    # name would authorise nothing, so the prefix must not appear at all --
+    # asking whether one action is missing no longer works now that the policy
+    # grants a service's read verbs with a wildcard.
+    assert 'opensearch' not in granted_prefixes()
