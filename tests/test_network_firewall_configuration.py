@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -6,6 +5,7 @@ import pytest
 from modules.qmchecks import network_firewall
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 class NetworkFirewallContext:
@@ -245,7 +245,6 @@ def test_network_firewall_checks_are_catalog_selected_and_registered():
 
 
 def test_network_firewall_configuration_checks_have_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in (
         'ListFirewalls', 'DescribeFirewall', 'ListFirewallPolicies',
         'DescribeFirewallPolicy', 'ListRuleGroups', 'DescribeRuleGroup',
@@ -253,4 +252,4 @@ def test_network_firewall_configuration_checks_have_read_permissions():
         'ListVpcEndpointAssociations', 'DescribeVpcEndpointAssociation',
         'ListContainerAssociations', 'DescribeContainerAssociation',
     ):
-        assert f'"network-firewall:{action}"' in policy
+        assert grants(f'network-firewall:{action}')

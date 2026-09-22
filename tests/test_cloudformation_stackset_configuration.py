@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -8,6 +7,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import cloudformation as checks
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 STACK_SET = 'parent-stack-set'
@@ -96,6 +96,5 @@ def test_cloudformation_catalog_code_and_new_permissions_are_exact():
     assert ('cloudformation', 'L-DCC58E6D') in keys
     assert ('cloudformation', 'L-DCC58D6E') not in keys
     assert {('cloudformation', 'L-255FC6A0'), ('cloudformation', 'L-AC58B440')} <= keys
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ('DescribeStackSet', 'ListStackSetOperations'):
-        assert f'"cloudformation:{action}"' in policy
+        assert grants(f'cloudformation:{action}')

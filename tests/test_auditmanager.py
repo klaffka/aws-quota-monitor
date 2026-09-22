@@ -1,10 +1,10 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
 
 from modules.qmchecks.auditmanager import CHECKS, accounts_in_scope, controls_per_framework
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 def test_auditmanager_counts_custom_resources_and_running_assessments():
@@ -56,5 +56,4 @@ def test_auditmanager_accounts_in_scope_rejects_incomplete_details_and_has_permi
     with pytest.raises(NoData, match='invalid account scope'):
         accounts_in_scope(ctx)
 
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"auditmanager:GetAssessment"' in policy
+    assert grants('auditmanager:GetAssessment')

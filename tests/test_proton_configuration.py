@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -10,6 +9,7 @@ from modules.qmchecks.proton import (
     template_versions_per_template,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class ProtonContext:
@@ -132,10 +132,9 @@ def test_proton_rejects_duplicate_and_inconsistent_inventories():
 
 
 def test_proton_configuration_has_all_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in (
         'ListEnvironmentTemplates', 'ListEnvironmentAccountConnections',
         'ListComponents', 'ListEnvironmentTemplateVersions',
         'ListServiceTemplateVersions', 'ListServiceInstances',
     ):
-        assert f'"proton:{action}"' in policy
+        assert grants(f'proton:{action}')

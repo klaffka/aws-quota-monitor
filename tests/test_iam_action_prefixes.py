@@ -6,13 +6,13 @@ grants nothing, and the collector only finds out with an AccessDenied at run
 time, so the prefixes are checked against botocore's signing names here.
 """
 import ast
+import json
 import re
-from pathlib import Path
 
 import boto3
 
-POLICY = Path('deployment/main.tf')
-ACTION = re.compile(r'"([a-z0-9\-]+):([A-Za-z]\w*)"')
+from tests.iam_policy import ACTION, POLICY, granted_actions, is_granted
+
 # Services whose documented IAM prefix is not the signing name botocore
 # reports. CloudWatch signs its requests as `monitoring` but authorises them
 # as `cloudwatch`; `sso` is IAM Identity Center's prefix, while the SDK's `sso`
@@ -148,8 +148,7 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
 
     session = boto3.Session(region_name='eu-central-1')
     available = set(session.get_available_services())
-    policy = POLICY.read_text(encoding='utf-8')
-    granted = {(match.group(1), match.group(2)) for match in ACTION.finditer(policy)}
+    granted = granted_actions()
     models, ungranted = {}, []
     for path in MODULES:
         sites = [*_call_sites(path, {'call'}, arity=2), *_indirect_call_sites(path)]
@@ -167,7 +166,7 @@ def test_every_operation_a_check_calls_is_granted_somewhere():
             # The client name is not the IAM prefix: qconnect signs as wisdom.
             prefix = model.metadata.get('signingName') or model.metadata.get('endpointPrefix')
             prefix = PREFIX_ALIASES.get(prefix, prefix)
-            if (prefix, S3_ALIASES.get(operation, operation)) not in granted:
+            if not is_granted(granted, prefix, S3_ALIASES.get(operation, operation)):
                 ungranted.append(f'{module_id(path)}: {prefix}:{operation}')
     assert not ungranted, f'operations called without an IAM grant: {ungranted}'
 
@@ -189,8 +188,7 @@ def test_every_operation_a_check_actually_makes_is_granted():
 
     session = boto3.Session(region_name='eu-central-1')
     available = set(session.get_available_services())
-    granted = {(match.group(1), match.group(2))
-               for match in ACTION.finditer(POLICY.read_text(encoding='utf-8'))}
+    granted = granted_actions()
     called = set()
     for _module, service, checks in entries():
         _results, sites = run(service, checks)
@@ -213,6 +211,65 @@ def test_every_operation_a_check_actually_makes_is_granted():
         # nothing, which is how MWAA Serverless ran under `airflow:`.
         prefix = model.metadata.get('signingName') or model.metadata.get('endpointPrefix')
         prefix = PREFIX_ALIASES.get(prefix, prefix)
-        if (prefix, S3_ALIASES.get(operation, operation)) not in granted:
+        if not is_granted(granted, prefix, S3_ALIASES.get(operation, operation)):
             ungranted.add(f'{prefix}:{operation}')
     assert not ungranted, f'operations called without an IAM grant: {sorted(ungranted)}'
+
+
+# AWS caps the *sum* of a role's inline policies at 10,240 characters, so
+# splitting a policy in two buys nothing. The grants grew from 883 characters
+# to over forty thousand without any gate noticing: `terraform validate` does
+# not check policy sizes and CI never applies. This is that gate.
+INLINE_POLICY_LIMIT = 10240
+# Stands in for a Terraform reference the size cannot be known for until apply.
+# Longer than a real report-bucket ARN, so the estimate stays an upper bound.
+PLACEHOLDER_ARN = ('arn:aws:servicename:eu-central-1:123456789012:'
+                   'resource-type/a-long-resource-name')
+
+
+def _policy_bodies():
+    """Yield (resource name, the HCL object each policy passes to jsonencode)."""
+    text = POLICY.read_text(encoding='utf-8')
+    for match in re.finditer(r'resource "aws_iam_role_policy" "(\w+)" \{', text):
+        start = text.index('jsonencode({', match.end()) + len('jsonencode(')
+        depth, position = 0, start
+        while True:
+            if text[position] == '{':
+                depth += 1
+            elif text[position] == '}':
+                depth -= 1
+                if depth == 0:
+                    break
+            position += 1
+        yield match.group(1), text[start:position + 1]
+
+
+def _as_document(body):
+    """Read one jsonencode body as the JSON document AWS will store."""
+    body = re.sub(r'#[^\n]*', '', body)
+    body = re.sub(r'"\$\{[^}]*\}[^"]*"', f'"{PLACEHOLDER_ARN}"', body)
+    body = re.sub(r'(?<![":\w])[a-z]\w*(?:\.\w+)+', f'"{PLACEHOLDER_ARN}"', body)
+    body = re.sub(r'([{,]\s*|^\s*|\n\s*)([A-Za-z]\w*)\s*=', r'\1"\2":', body)
+    body = re.sub(r'("(?:[^"\\]|\\.)*")\s*=', r'\1:', body)
+    # HCL separates attributes by newline; JSON wants commas.
+    lines = [line.rstrip() for line in body.split('\n') if line.strip()]
+    joined = []
+    for position, line in enumerate(lines):
+        following = lines[position + 1].lstrip() if position + 1 < len(lines) else ''
+        if line.endswith(('"', ']', '}')) and following \
+                and not following.startswith((']', '}', ',')):
+            line += ','
+        joined.append(line)
+    return json.loads(re.sub(r',(\s*[}\]])', r'\1', '\n'.join(joined)))
+
+
+def test_the_inline_policies_fit_in_one_role():
+    sizes = {name: len(json.dumps(_as_document(body), separators=(',', ':')))
+             for name, body in _policy_bodies()}
+    assert sizes, 'no inline role policies found; the resource shape changed'
+    total = sum(sizes.values())
+    largest = max(sizes, key=sizes.get)
+    assert total <= INLINE_POLICY_LIMIT, (
+        f'inline policies total {total} characters against a {INLINE_POLICY_LIMIT} '
+        f'limit; {largest} alone is {sizes[largest]}. Collapse a service\'s read '
+        f'verbs to one wildcard rather than listing every operation.')

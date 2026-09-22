@@ -1,9 +1,9 @@
-from pathlib import Path
 
 import pytest
 
 from modules.qmchecks.misc_counts import dlm_share_targets
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class DLMContext:
@@ -52,5 +52,4 @@ def test_dlm_target_accounts_rejects_duplicate_accounts_and_inconsistent_details
 
 
 def test_dlm_configuration_check_has_read_permission():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"dlm:GetLifecyclePolicy"' in policy
+    assert grants('dlm:GetLifecyclePolicy')

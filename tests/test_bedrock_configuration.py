@@ -10,6 +10,7 @@ from modules.qmchecks.bedrock_configuration import (
 )
 from modules.qmchecks.bedrock import CHECKS as ORIGINAL, get_current_quotastatus_bedrock
 from modules.qmcore.aws import CheckContext, NoData
+from tests.iam_policy import granted_prefixes, grants
 
 NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
 FID = 'FLOW123456'
@@ -155,12 +156,11 @@ def test_absent_policy_is_empty_but_incomplete_present_policy_is_unknown():
 
 
 def test_deployed_permissions_use_iam_prefix_instead_of_sdk_client_name():
-    from pathlib import Path
-    import re
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
-    actions = set(re.findall(r'"([a-z-]+:[A-Za-z]+)"', policy))
     required = {'ListFlows', 'ListFlowVersions', 'GetFlow', 'GetFlowVersion',
                 'ListPrompts', 'ListGuardrails', 'GetGuardrail', 'ListInferenceProfiles',
                 'ListKnowledgeBases', 'ListBlueprints'}
-    assert {'bedrock:' + name for name in required} <= actions
-    assert not any(action.startswith(('bedrock-agent:', 'bedrock-data-automation:')) for action in actions)
+    ungranted = sorted(name for name in required if not grants('bedrock:' + name))
+    assert not ungranted, f'bedrock operations without a grant: {ungranted}'
+    # These are SDK client names, not IAM prefixes; a grant written for one
+    # authorises nothing.
+    assert not {'bedrock-agent', 'bedrock-data-automation'} & granted_prefixes()

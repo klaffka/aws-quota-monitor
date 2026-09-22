@@ -1,11 +1,11 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
 
-from modules.qmchecks.payment_cryptography import CHECKS, alias_count
+from modules.qmchecks.payment_cryptography import alias_count
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 ACCOUNT = '111111111111'
@@ -44,5 +44,4 @@ def test_payment_cryptography_alias_count_rejects_conflicting_pages():
 
 def test_payment_cryptography_alias_check_is_registered_with_read_permission():
     assert ('payment-cryptography', 'L-10DEBB19') in custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"payment-cryptography:ListAliases"' in policy
+    assert grants('payment-cryptography:ListAliases')

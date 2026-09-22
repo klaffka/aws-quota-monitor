@@ -1,11 +1,11 @@
 import json
-from pathlib import Path
 
 from modules.qmchecks.fms import (PAGE_SIZE, apps_lists, policy_scope, protocols_lists,
                                   managed_list_maximum, network_firewall_cidrs,
                                   network_firewall_capacity,
                                   network_acl_rules, resources_per_set, tags_per_policy,
                                   wafv2_capacity, wafv2_rule_groups)
+from tests.iam_policy import grants
 
 
 class Context:
@@ -183,11 +183,10 @@ def test_network_acl_quota_uses_larger_direction():
 
 
 def test_fms_read_permissions_are_deployed():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('GetPolicy', 'ListAppsLists', 'ListProtocolsLists', 'ListResourceSets',
                    'ListResourceSetResources', 'ListAdminAccountsForOrganization',
                    'ListMemberAccounts'):
-        assert f'"fms:{action}"' in policy
-    assert '"network-firewall:DescribeRuleGroup"' in policy
-    assert '"wafv2:GetRuleGroup"' in policy
-    assert '"wafv2:DescribeManagedRuleGroup"' in policy
+        assert grants(f'fms:{action}')
+    assert grants('network-firewall:DescribeRuleGroup')
+    assert grants('wafv2:GetRuleGroup')
+    assert grants('wafv2:DescribeManagedRuleGroup')

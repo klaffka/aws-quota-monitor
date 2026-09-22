@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -12,6 +11,7 @@ from modules.qmchecks.media_extra import (
 )
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 def test_media_connect_counts():
@@ -104,10 +104,9 @@ def test_media_connect_checks_are_registered_with_read_permissions():
     current_codes = {'L-F1F62F5D', 'L-A99016A8', 'L-CB77E87E',
                      'L-77138741', 'L-58DF4801', 'L-6C50CD26'}
     assert {('mediaconnect', code) for code in current_codes} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('DescribeFlow', 'ListRouterInputs', 'ListRouterOutputs',
                    'ListRouterNetworkInterfaces'):
-        assert f'"mediaconnect:{action}"' in policy
+        assert grants(f'mediaconnect:{action}')
 
 
 def test_media_package_v2_parent_scoped_counts():

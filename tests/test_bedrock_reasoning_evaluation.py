@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock
 
 import boto3
@@ -11,6 +10,7 @@ from modules.qmchecks import bedrock_reasoning as reasoning
 from modules.qmchecks.bedrock import ALL_CHECKS, CHECKS, blueprint_count, get_current_quotastatus_bedrock
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
 ARN = 'arn:aws:bedrock:eu-central-1:123456789012:automated-reasoning-policy/abcdefghijkl'
@@ -236,7 +236,6 @@ def test_new_checks_are_registered_and_have_required_iam_permissions():
     assert len(new) == len({code for code, _, _ in new}) == 16
     assert {('bedrock', code) for code, _, _ in new} <= custom_keys()
     assert len(ALL_CHECKS) == len({code for code, _, _ in ALL_CHECKS})
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text()
     for action in ['ExportAutomatedReasoningPolicyVersion', 'ListAutomatedReasoningPolicyTestCases',
                    'ListEvaluationJobs', 'GetEvaluationJob', 'ListModelImportJobs']:
-        assert f'"bedrock:{action}"' in policy
+        assert grants(f'bedrock:{action}')

@@ -1,4 +1,3 @@
-from pathlib import Path
 
 from modules.qmchecks.sitewise import (assets_per_model, children_per_asset,
                                        component_model_users, composite_depth,
@@ -8,6 +7,7 @@ from modules.qmchecks.sitewise import (assets_per_model, children_per_asset,
                                        formula_maximum,
                                        properties_per_composite,
                                        properties_per_model, running_bulk_imports)
+from tests.iam_policy import grants
 
 
 class Context:
@@ -133,10 +133,9 @@ def test_sitewise_assets_and_jobs():
 
 
 def test_sitewise_extended_read_permissions_are_deployed():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('DescribeAssetModel', 'ListAssetModelProperties',
                    'ListAssetModelCompositeModels', 'DescribeAssetModelCompositeModel',
                    'ListCompositionRelationships', 'ListInterfaceRelationships',
                    'ListAssets', 'ListAssociatedAssets', 'ListBulkImportJobs',
                    'ListWorkspaces', 'ListEnrichmentJobs'):
-        assert f'"iotsitewise:{action}"' in policy
+        assert grants(f'iotsitewise:{action}')

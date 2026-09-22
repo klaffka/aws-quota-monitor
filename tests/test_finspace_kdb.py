@@ -1,11 +1,11 @@
 from unittest.mock import Mock
-from pathlib import Path
 
 import pytest
 
 from modules.qmchecks import finspace
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 class FinSpaceContext:
@@ -162,10 +162,9 @@ def test_finspace_extended_checks_are_catalog_backed_and_selected_by_quota():
 
 
 def test_finspace_checks_have_required_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in (
         'ListKxEnvironments', 'ListKxClusters', 'GetKxCluster', 'ListKxClusterNodes',
         'ListKxScalingGroups', 'ListKxUsers', 'ListKxVolumes', 'GetKxVolume',
         'ListKxDatabases', 'ListKxDataviews',
     ):
-        assert f'"finspace:{action}"' in policy
+        assert grants(f'finspace:{action}')

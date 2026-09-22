@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -9,6 +8,7 @@ from modules.qmchecks.application_autoscaling import (
     step_adjustments_per_policy,
 )
 from modules.qmcore.aws import NoData
+from tests.iam_policy import grants
 
 
 class ScalingContext:
@@ -87,6 +87,5 @@ def test_application_autoscaling_rejects_duplicate_and_malformed_policies():
 
 
 def test_application_autoscaling_configuration_has_read_permissions():
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
-    assert '"application-autoscaling:DescribeScheduledActions"' in policy
-    assert '"application-autoscaling:DescribeScalingPolicies"' in policy
+    assert grants('application-autoscaling:DescribeScheduledActions')
+    assert grants('application-autoscaling:DescribeScalingPolicies')

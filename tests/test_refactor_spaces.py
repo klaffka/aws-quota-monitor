@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 
@@ -11,6 +10,7 @@ from modules.qmchecks.refactor_spaces import (
 )
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 class RefactorContext:
@@ -123,6 +123,5 @@ def test_refactor_spaces_rejects_unknown_state_or_missing_owner():
 
 def test_refactor_spaces_is_registered_with_read_permissions():
     assert {('refactor-spaces', code) for code, _, _ in CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('ListEnvironments', 'ListApplications', 'ListServices', 'ListRoutes'):
-        assert f'"refactor-spaces:{action}"' in policy
+        assert grants(f'refactor-spaces:{action}')

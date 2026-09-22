@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -6,6 +5,7 @@ import pytest
 from modules.qmchecks.outposts import CHECKS, outposts_per_site, site_count, sites
 from modules.qmcore.aws import NoData
 from modules.qmcore.registry import custom_keys
+from tests.iam_policy import grants
 
 
 ACCOUNT = '111111111111'
@@ -77,6 +77,5 @@ def test_outposts_rejects_incomplete_owner_and_parent_data(
 
 def test_outposts_checks_are_registered_with_read_permissions():
     assert {('outposts', code) for code, _, _ in CHECKS} <= custom_keys()
-    policy = (Path(__file__).parents[1] / 'deployment/main.tf').read_text(encoding='utf-8')
     for action in ('ListSites', 'ListOutposts'):
-        assert f'"outposts:{action}"' in policy
+        assert grants(f'outposts:{action}')
