@@ -1,5 +1,11 @@
 provider "aws" {
   region = var.aws_region
+
+  # The report bucket and several resource names are derived from the caller's
+  # account. Planning with the wrong credentials therefore does not fail, it
+  # quietly proposes to replace the bucket under a new name. Naming the account
+  # turns that into a refusal before anything is planned.
+  allowed_account_ids = var.aws_account_id != "" ? [var.aws_account_id] : null
 }
 
 # S3 Bucket for reports
@@ -62,12 +68,14 @@ resource "aws_lambda_layer_version" "qm_dependencies" {
   compatible_runtimes = ["python3.14"]
   source_code_hash    = data.local_file.lambda_layer.content_base64sha256
 
-  # A new dependency set replaces this resource. Without this the old version
-  # is deleted before the functions point at the new one, and the collector
-  # runs every ten minutes, so it would very likely fire into that gap.
-  lifecycle {
-    create_before_destroy = true
-  }
+  # A new dependency set publishes a new layer version and Terraform would
+  # delete the old one first, leaving the functions pointing at a version that
+  # no longer exists -- and the collector runs every ten minutes. Keeping the
+  # old version closes that gap and leaves something to roll back to.
+  # `create_before_destroy` cannot do it here: it propagates to this resource's
+  # dependencies, and the data source that reads the built ZIP cannot carry a
+  # lifecycle block, so the graph becomes a cycle.
+  skip_destroy = true
 
   depends_on = [data.local_file.lambda_layer]
 }

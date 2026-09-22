@@ -710,10 +710,15 @@ for the complete procedure. The workflow does not deploy infrastructure or invok
 
 ## Terraform operations
 
-`deployment/variables.tf` defines `aws_region` (default `eu-central-1`), tags, alert email,
-threshold, report bucket, S3 retention (90 days) and manual report interval (30 days).
-Use your existing `terraform.tfvars`; optional values can be copied from
-`deployment/terraform.tfvars.example`. Region changes target different AWS resources;
+`deployment/variables.tf` defines `aws_region` (default `eu-central-1`), `aws_account_id`,
+tags, alert email, threshold, report bucket, S3 retention (90 days) and manual report
+interval (30 days). Use your existing `terraform.tfvars`; optional values can be copied
+from `deployment/terraform.tfvars.example`.
+
+Set `aws_account_id`. The report bucket and several resource names are derived from the
+caller's identity, so running with credentials for a different account does not fail: it
+proposes replacing the bucket under a new name, which destroys every stored report. With
+the account named, the provider refuses before anything is planned. Region changes target different AWS resources;
 review a plan before applying them.
 
 The deployment provides Lambda error/throttle alarms for both functions and an alarm

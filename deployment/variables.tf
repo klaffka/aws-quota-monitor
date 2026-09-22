@@ -1,3 +1,13 @@
+variable "aws_account_id" {
+  description = "Account this deployment belongs to; refuse to run against any other. Empty disables the check."
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.aws_account_id == "" || can(regex("^[0-9]{12}$", var.aws_account_id))
+    error_message = "aws_account_id must be twelve digits, or empty."
+  }
+}
+
 variable "aws_region" {
   description = "AWS region for all monitor resources"
   type        = string
