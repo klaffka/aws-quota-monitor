@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import pytest
@@ -6,7 +6,7 @@ import pytest
 from modules.qmcore.utilization import ReportPending, read_report
 
 
-NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 11, tzinfo=UTC)
 
 
 def page(records=(), **fields):

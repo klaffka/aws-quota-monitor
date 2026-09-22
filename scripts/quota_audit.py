@@ -5,9 +5,7 @@ The output is deterministic Markdown and includes every catalog entry whose
 quota code is not present in a registered Python check.
 """
 import json
-import re
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
@@ -28,7 +26,7 @@ def audit(catalog_path, source_root="src"):
     rows = [q for (service, code), q in unique.items() if (service, code) not in covered
             and "a" <= service[:1].lower() <= "h"]
     rows.sort(key=lambda q: (q.get("serviceCode", ""), q.get("quotaCode", "")))
-    print("# Open quota audit A–H")
+    print("# Open quota audit A–H")  # noqa: RUF001 - matches the document heading
     print(f"\nTotal open entries: **{len(rows)}**\n")
     current = None
     for quota in rows:

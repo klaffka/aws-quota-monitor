@@ -1,5 +1,5 @@
 """IoT FleetWise signal catalog, campaign and state template scopes."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import iotfleetwise
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 17, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 17, tzinfo=UTC)
 ARN = 'arn:aws:iotfleetwise:eu-central-1:123456789012'
 
 

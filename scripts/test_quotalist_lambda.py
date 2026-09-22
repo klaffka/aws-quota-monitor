@@ -12,7 +12,6 @@ import importlib.util
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 import boto3
 from botocore.exceptions import ClientError
@@ -100,7 +99,7 @@ def main():
 def ensure_table(
     table: str,
     region: str,
-    endpoint: Optional[str],
+    endpoint: str | None,
     billing_mode: str,
     read_capacity: int,
     write_capacity: int,

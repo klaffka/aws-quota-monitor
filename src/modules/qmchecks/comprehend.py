@@ -3,7 +3,6 @@
 Comprehend filters every listing server side, so the active job counts ask for
 each unfinished status rather than listing a service's whole job history.
 """
-from collections import Counter
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 COMPREHEND = 'comprehend'

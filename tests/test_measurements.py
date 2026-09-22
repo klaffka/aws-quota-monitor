@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 import boto3
 import pytest
@@ -13,7 +13,7 @@ from modules.qmchecks.lambda_checks.lambda_checks import (
     environment_size, storage, policy_size, direct_upload_package_size,
 )
 
-NOW = datetime(2026, 3, 1, tzinfo=timezone.utc)
+NOW = datetime(2026, 3, 1, tzinfo=UTC)
 
 
 @pytest.mark.parametrize('limit,usage,status,pct', [(10, 8, 'OK', 80), (0, 8, 'NO_DATA', None),

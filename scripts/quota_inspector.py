@@ -13,7 +13,7 @@ import csv
 import json
 import sys
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Sequence
+from collections.abc import Iterable, Sequence
 
 import boto3
 from botocore.config import Config
@@ -33,7 +33,7 @@ class QuotaRow:
     unit: str | None
     usage_namespace: str | None
     usage_name: str | None
-    usage_dimensions: Dict[str, str] | None
+    usage_dimensions: dict[str, str] | None
     usage_statistic: str | None
 
     def as_dict(self) -> dict:
@@ -96,7 +96,7 @@ def format_bool(value: bool) -> str:
     return "ja" if value else "nein"
 
 
-def format_dimensions(dimensions: Dict[str, str] | None) -> str:
+def format_dimensions(dimensions: dict[str, str] | None) -> str:
     if not dimensions:
         return ""
     return ", ".join(f"{key}={value}" for key, value in sorted(dimensions.items()))
@@ -121,7 +121,7 @@ def render_table(rows: Sequence[QuotaRow]) -> str:
         "Erweiterbar",
         "Usage-Metric",
     )
-    table: List[Sequence[str]] = [
+    table: list[Sequence[str]] = [
         (
             row.service_name,
             row.quota_name,
@@ -161,7 +161,7 @@ def fetch_service_quotas(client, service_code: str) -> Iterable[dict]:
         yield from page.get("Quotas", [])
 
 
-def collect_quotas(region: str, profile: str | None, service_codes: Iterable[str] | None) -> List[QuotaRow]:
+def collect_quotas(region: str, profile: str | None, service_codes: Iterable[str] | None) -> list[QuotaRow]:
     session_kwargs = {"region_name": region}
     if profile:
         session_kwargs["profile_name"] = profile
@@ -169,7 +169,7 @@ def collect_quotas(region: str, profile: str | None, service_codes: Iterable[str
     config = Config(retries={"max_attempts": 10, "mode": "adaptive"})
     client = session.client("service-quotas", config=config)
 
-    rows: List[QuotaRow] = []
+    rows: list[QuotaRow] = []
     for service in iter_services(client, service_codes):
         code = service["ServiceCode"]
         name = service["ServiceName"]

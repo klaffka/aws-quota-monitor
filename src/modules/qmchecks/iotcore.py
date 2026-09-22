@@ -238,8 +238,8 @@ CHECKS = [
     ('L-5C16DE50', 'HTTP Action: Maximum number of headers per action',
      headers_per_http_action),
     ('L-BC2638B3',
-     'Maximum number of policies that can be attached to a certificate or '
-     'Amazon Cognito identity',
+     ('Maximum number of policies that can be attached to a certificate or '
+     'Amazon Cognito identity'),
      policies_per_target),
     ('L-FBACAF74', 'Maximum number of propagating attributes',
      propagating_attributes),

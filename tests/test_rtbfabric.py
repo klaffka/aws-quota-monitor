@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from modules.qmchecks import rtbfabric
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
 
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 REQUESTER = 'gw-requester-1'
 RESPONDER = 'gw-responder-1'
 LINK = 'link-1'

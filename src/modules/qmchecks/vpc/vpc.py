@@ -9,7 +9,7 @@ def inventory(ctx, method, key, **kwargs):
     # Shared VPC visibility must not charge another account's resources to this account.
     if method in {'describe_vpcs', 'describe_security_groups', 'describe_network_interfaces',
                   'describe_subnets', 'describe_route_tables', 'describe_network_acls'}:
-        kwargs['Filters'] = list(kwargs.get('Filters', [])) + [{'Name': 'owner-id', 'Values': [ctx.account]}]
+        kwargs['Filters'] = [*list(kwargs.get('Filters', [])), {'Name': 'owner-id', 'Values': [ctx.account]}]
     return ctx.call('ec2', method, key, **kwargs)
 
 

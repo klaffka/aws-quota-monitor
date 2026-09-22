@@ -179,11 +179,11 @@ CHECKS = [
     ('L-A1C96D1F',
      'Concurrent in progress jobs to import assets from Amazon API Gateway',
      _concurrent_jobs('IMPORT_ASSET_FROM_API_GATEWAY_API')),
-    ('L-7878C4C3', 'Concurrent in progress jobs to create Amazon S3 data access '
-                   'assets from S3 buckets',
+    ('L-7878C4C3', ('Concurrent in progress jobs to create Amazon S3 data access '
+                   'assets from S3 buckets'),
      _concurrent_jobs('CREATE_S3_DATA_ACCESS_FROM_S3_BUCKET')),
-    ('L-426BE746', 'Concurrent in progress jobs to import assets from an AWS Lake '
-                   'Formation tag policy',
+    ('L-426BE746', ('Concurrent in progress jobs to import assets from an AWS Lake '
+                   'Formation tag policy'),
      _concurrent_jobs('IMPORT_ASSETS_FROM_LAKE_FORMATION_TAG_POLICY')),
     ('L-4F23AFE3', 'Active and pending data grants', active_and_pending_data_grants),
     ('L-1FA7039C', 'Pending data grants per consumer', pending_grants_per_consumer),

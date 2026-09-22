@@ -53,8 +53,8 @@ CHECKS = [
      'Concurrent task limit for ImportImage, ImportSnapshot, and ExportImage',
      image_and_snapshot_tasks),
     ('L-0994E50B',
-     'Concurrent task limit for ImportInstance, ImportVolume, and '
-     'CreateInstanceExportTask',
+     ('Concurrent task limit for ImportInstance, ImportVolume, and '
+     'CreateInstanceExportTask'),
      instance_and_volume_tasks),
 ]
 

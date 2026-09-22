@@ -1,5 +1,5 @@
 """Greengrass V1 group scopes, reached through their definition version ARNs."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import greengrass
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 17, tzinfo=timezone.utc).isoformat()
+MOMENT = datetime(2026, 9, 17, tzinfo=UTC).isoformat()
 ACCOUNT = 'arn:aws:greengrass:eu-central-1:123456789012'
 
 

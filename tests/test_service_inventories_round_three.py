@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -12,7 +12,7 @@ from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
 
 ACCOUNT = '123456789012'
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 WORKFLOW = f'arn:aws:airflow:eu-central-1:{ACCOUNT}:workflow/etl'
 OTHER_WORKFLOW = f'arn:aws:airflow:eu-central-1:{ACCOUNT}:workflow/reports'
 SPACE = 'as-00000000000000001'

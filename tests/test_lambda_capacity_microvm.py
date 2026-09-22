@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -11,7 +11,7 @@ from modules.qmcore.registry import custom_keys
 PROVIDER = 'arn:aws:lambda:eu-central-1:123456789012:capacity-provider:graviton'
 OTHER_PROVIDER = 'arn:aws:lambda:eu-central-1:123456789012:capacity-provider:x86'
 IMAGE = 'arn:aws:lambda:eu-central-1:123456789012:microvm-image/base'
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 
 
 def context(code):

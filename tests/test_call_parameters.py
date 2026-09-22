@@ -4,7 +4,7 @@
 so the check failed on every collector run without ever failing a test. The
 stubs here match the request body, so a wrong parameter set cannot pass.
 """
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -15,7 +15,7 @@ from modules.qmchecks import (amplifyuibuilder, datazone, elasticbeanstalk, fms,
 from modules.qmchecks.ec2 import ec2
 from modules.qmcore.aws import CheckContext
 
-MOMENT = datetime(2026, 9, 15, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 15, tzinfo=UTC)
 
 
 def context(service, code):

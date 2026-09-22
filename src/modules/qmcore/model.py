@@ -1,17 +1,17 @@
 """Validated measurements. Unknown values are never numeric zero."""
 import math
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 CALCULATION_VERSION = 2
 STATUSES = {'OK', 'NO_DATA', 'UNSUPPORTED', 'ERROR'}
 
 
 def utcnow():
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def iso(value):
-    return value.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    return value.astimezone(UTC).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def number(value):

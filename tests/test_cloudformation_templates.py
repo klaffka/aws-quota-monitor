@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -12,7 +12,7 @@ from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
 from tests.iam_policy import grants
 
-NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 12, tzinfo=UTC)
 STACK = 'arn:aws:cloudformation:eu-central-1:123456789012:stack/example/12345678'
 YAML_TEMPLATE = '''
 AWSTemplateFormatVersion: '2010-09-09'
@@ -72,7 +72,7 @@ def test_processed_yaml_template_supports_intrinsic_tags_and_all_measurements_sh
             'mapping_name_length': len('RegionMapping'),
             'parameter_name_length': len('ParameterLong'),
             'output_name_length': len('OutputLogicalName'),
-            'description_length': len('Grüße'.encode('utf-8')),
+            'description_length': len('Grüße'.encode()),
         }
         for measure, usage in expected.items():
             result = checks.template_measure(ctx, measure)

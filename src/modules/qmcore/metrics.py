@@ -144,7 +144,9 @@ def fetch_metrics(ctx, quotas, start, end, historical=False):
                     values, times = result.get('Values', []), result.get('Timestamps', [])
                     if len(values) != len(times):
                         errors[index] = 'Metric timestamps and values differ in length'
-                    for value, timestamp in zip(values, times):
+                    # The length mismatch is recorded as an error above; pairing
+                    # what did arrive is deliberate.
+                    for value, timestamp in zip(values, times, strict=False):
                         if not start <= timestamp < end:
                             continue
                         value = number(value)
@@ -164,7 +166,7 @@ def fetch_metrics(ctx, quotas, start, end, historical=False):
             errors.update({i: str(exc) for i in range(len(batch))})
         for index in pending:
             errors[index] = 'CloudWatch pagination did not complete this query'
-        for i, (quota, spec, unit, divisor) in enumerate(batch):
+        for i, (quota, spec, unit, _divisor) in enumerate(batch):
             if i not in seen_ids and i not in errors:
                 errors[i] = 'CloudWatch omitted requested query'
             entry = _entry(ctx, quota, maxima.get(i), 'ERROR' if i in errors else 'OK',

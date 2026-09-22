@@ -193,7 +193,7 @@ def test_network_firewall_rule_group_and_tls_configuration_limits():
     assert network_firewall.rule_group_maximum(
         ctx, 'STATELESS', 'CustomActions')['usage'] == 2
     assert network_firewall.rule_group_maximum(ctx, 'STATEFUL', 'RulesString')['usage'] == len(
-        'alert tcp äny'.encode('utf-8'))
+        'alert tcp äny'.encode())
     assert network_firewall.tls_certificate_maximum(
         ctx, 'ServerCertificates')['usage'] == 3
     assert network_firewall.tls_certificate_maximum(

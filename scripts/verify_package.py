@@ -1,5 +1,4 @@
 """Offline check of the deployable ZIP and isolated dependency layer."""
-import importlib
 import os
 from pathlib import Path
 import subprocess

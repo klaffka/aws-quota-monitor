@@ -186,8 +186,8 @@ CHECKS = [
      _group_maximum('autoScalingGroups', 'Auto Scaling group list')),
     ('L-877B748B', 'Event notification triggers in a deployment group',
      _group_maximum('triggerConfigurations', 'trigger list')),
-    ('L-0CB3C26F', 'Number of deployment groups that can be associated with an '
-                   'Amazon ECS service', deployment_groups_per_ecs_service),
+    ('L-0CB3C26F', ('Number of deployment groups that can be associated with an '
+                   'Amazon ECS service'), deployment_groups_per_ecs_service),
     ('L-5AD34096', 'Custom deployment configurations per account',
      custom_deployment_configurations),
     ('L-AB125F0B', 'Concurrent deployments per account', concurrent_deployments),
@@ -198,11 +198,11 @@ CHECKS = [
                                          'tokenNameList')),
                       source='codedeploy:ListGitHubAccountTokenNames',
                       method='ACCOUNT_COUNT')),
-    ('L-464411D9', 'Number of instances used by concurrent deployments that are in '
-                   'progress per account', instances_in_running_deployments),
+    ('L-464411D9', ('Number of instances used by concurrent deployments that are in '
+                   'progress per account'), instances_in_running_deployments),
     ('L-6BCCFC85', 'Instances count per deployment', instances_per_deployment),
-    ('L-C77AFF36', 'Number of listeners for a traffic route during an Amazon ECS '
-                   'deployment', listeners_per_traffic_route),
+    ('L-C77AFF36', ('Number of listeners for a traffic route during an Amazon ECS '
+                   'deployment'), listeners_per_traffic_route),
 ]
 
 

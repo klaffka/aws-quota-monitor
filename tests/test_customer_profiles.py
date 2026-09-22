@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -10,7 +10,7 @@ from modules.qmcore.registry import custom_keys
 
 DOMAIN = 'retail'
 OTHER = 'wholesale'
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 TIMESTAMPS = {'CreatedAt': NOW, 'LastUpdatedAt': NOW}
 # Each list item shape declares its own required members.
 ITEMS = {

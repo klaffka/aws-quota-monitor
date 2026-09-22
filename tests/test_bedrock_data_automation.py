@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import boto3
@@ -12,7 +12,7 @@ from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
 from tests.iam_policy import grants
 
-NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 11, tzinfo=UTC)
 ARN = 'arn:aws:bedrock:eu-central-1:123456789012:blueprint/abcdefghijkl'
 LIB = 'arn:aws:bedrock:eu-central-1:123456789012:data-automation-library/abcdefghijkl'
 

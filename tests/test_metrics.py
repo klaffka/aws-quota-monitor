@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from unittest.mock import Mock
 import boto3
 import pytest
@@ -57,7 +57,7 @@ def test_metric_query_preserves_dimensions_statistic_and_unit():
         {'Name': 'Region', 'Value': 'eu-central-1'}, {'Name': 'Service', 'Value': 'EC2'}]
     assert entry['usageValue'] == 11 and entry['sampleCount'] == 3
 
-NOW = datetime.now(timezone.utc).replace(second=0, microsecond=0)
+NOW = datetime.now(UTC).replace(second=0, microsecond=0)
 
 
 def quota(code='q'):

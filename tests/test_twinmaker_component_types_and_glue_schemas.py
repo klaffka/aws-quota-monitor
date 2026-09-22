@@ -1,5 +1,5 @@
 """TwinMaker component type scopes and Glue schema version inventories."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import glue, twinmaker
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 16, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 16, tzinfo=UTC)
 ARN = 'arn:aws:glue:eu-central-1:123456789012:schema/registry/one'
 
 

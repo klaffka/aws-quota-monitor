@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 from modules.qmchecks.account_services import (
@@ -9,7 +9,7 @@ from modules.qmchecks.account_services import (
 from modules.qmcore.aws import CheckContext
 
 
-NOW = datetime(2026, 3, 1, tzinfo=timezone.utc)
+NOW = datetime(2026, 3, 1, tzinfo=UTC)
 
 
 def context(quotas):
@@ -67,6 +67,6 @@ def test_iam_failure_is_explicit():
     ctx = context([])
     ctx.call.side_effect = RuntimeError("Throttling")
     entries = get_current_quotastatus_account_services(ctx)
-    result = [entry for entry in entries if entry["serviceCode"] == "iam"][0]
+    result = next(entry for entry in entries if entry["serviceCode"] == "iam")
     assert result["qualityStatus"] == "ERROR"
     assert result["utilizationPct"] is None

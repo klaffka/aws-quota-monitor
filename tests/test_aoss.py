@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from modules.qmchecks.aoss import (CHECKS, allocated_capacity, collections_per_group,
                                    document_bytes, policy_size, security_config_size)
@@ -26,7 +27,7 @@ def test_policy_size_uses_compact_utf8_wire_document():
             'securityPolicyDetail': {'name': 'net-one', 'type': 'network',
                                      'policy': [{'Description': 'Grüße'}]}},
     })
-    expected = len('[{"Description":"Grüße"}]'.encode('utf-8'))
+    expected = len('[{"Description":"Grüße"}]'.encode())
     assert document_bytes([{'Description': 'Grüße'}]) == expected
     assert policy_size(ctx, 'network')['usage'] == expected
 
@@ -62,8 +63,8 @@ def test_collection_generation_and_allocated_capacity_are_scoped_correctly():
 
 
 def test_aoss_registers_every_catalog_quota():
-    catalog = json.loads(open('tests/fixtures/selected-service-quotas.json',
-                              encoding='utf-8').read())
+    catalog = json.loads(Path('tests/fixtures/selected-service-quotas.json')
+                         .read_text(encoding='utf-8'))
     expected = {q['QuotaCode'] for q in catalog if q['ServiceCode'] == 'aoss'}
     assert {code for code, _name, _fn in CHECKS} == expected
 
