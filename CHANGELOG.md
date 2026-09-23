@@ -5,6 +5,10 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
+<!-- Add release notes here. -->
+
+## [0.1.0] - 2026-09-23
+
 ### Added
 
 - DynamoDB and Keyspaces table-level provisioned throughput measurements.
