@@ -58,7 +58,7 @@ def test_each_modality_counts_only_its_own_blueprints(code, expected):
              'creationTime': MOMENT},
             {'projectArn': OTHER, 'projectStage': 'LIVE', 'projectName': 'two',
              'creationTime': MOMENT}]},
-            {'resourceOwner': 'ACCOUNT', 'projectStageFilter': 'ALL'})
+            {'projectStageFilter': 'ALL'})
         stub_project(stub, PROJECT, [('a', 'IMAGE'), ('b', 'IMAGE'), ('c', 'DOCUMENT')])
         stub_project(stub, OTHER, [('d', 'VIDEO')])
         result = check(code, automation.CHECKS)(ctx)
@@ -74,7 +74,7 @@ def test_a_modality_the_split_does_not_know_is_reported_rather_than_dropped():
         stub.add_response('list_data_automation_projects', {'projects': [
             {'projectArn': PROJECT, 'projectStage': 'LIVE', 'projectName': 'one',
              'creationTime': MOMENT}]},
-            {'resourceOwner': 'ACCOUNT', 'projectStageFilter': 'ALL'})
+            {'projectStageFilter': 'ALL'})
         stub.add_response('get_data_automation_project', {'project': {
             'projectArn': PROJECT, 'projectStage': 'LIVE', 'projectName': 'one',
             'creationTime': MOMENT, 'lastModifiedTime': MOMENT, 'status': 'COMPLETED',
@@ -96,7 +96,7 @@ def test_a_project_without_blueprints_still_counts_as_zero():
         stub.add_response('list_data_automation_projects', {'projects': [
             {'projectArn': PROJECT, 'projectStage': 'LIVE', 'projectName': 'one',
              'creationTime': MOMENT}]},
-            {'resourceOwner': 'ACCOUNT', 'projectStageFilter': 'ALL'})
+            {'projectStageFilter': 'ALL'})
         stub.add_response('get_data_automation_project', {'project': {
             'projectArn': PROJECT, 'projectStage': 'LIVE', 'projectName': 'one',
             'creationTime': MOMENT, 'lastModifiedTime': MOMENT, 'status': 'COMPLETED'}},

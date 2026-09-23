@@ -20,6 +20,8 @@ X.509 parser this package does not ship.
 """
 from collections import Counter
 
+from botocore.exceptions import ClientError
+
 from modules.qmchecks.iot import dynamic_thing_groups
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
@@ -193,6 +195,22 @@ def policy_versions(ctx):
     return maximum(values, 'IoTNamedPolicy', 'iot:ListPolicies+ListPolicyVersions')
 
 
+def logging_levels(ctx):
+    """Count the resource-specific logging levels.
+
+    Before SetV2LoggingOptions IoT answers NotConfiguredException, stating that no
+    logging level has been set. That is AWS's own answer about the inventory, not
+    a missing one, so it is zero rather than no data.
+    """
+    try:
+        levels = ctx.call(IOT, 'list_v2_logging_levels', 'logTargetConfigurations')
+    except ClientError as exc:
+        if exc.response.get('Error', {}).get('Code') != 'NotConfiguredException':
+            raise
+        levels = []
+    return dict(usage=len(levels), source='iot:ListV2LoggingLevels', method='ACCOUNT_COUNT')
+
+
 CHECKS = [
     ('L-345B62A1', 'Maximum number of fleet provisioning templates per customer',
      lambda c: dict(usage=len(c.call('iot', 'list_provisioning_templates', 'templates')),
@@ -222,8 +240,7 @@ CHECKS = [
             'iot:ListTopicRuleDestinations')),
     ('L-E1FD4738',
      'Maximum number of resource-specific logging configurations per AWS account',
-     _count('list_v2_logging_levels', 'logTargetConfigurations',
-            'iot:ListV2LoggingLevels')),
+     logging_levels),
     ('L-E0945F24', 'Allowed registration tasks',
      _count('list_thing_registration_tasks', 'taskIds',
             'iot:ListThingRegistrationTasks')),

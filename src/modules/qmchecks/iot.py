@@ -76,6 +76,9 @@ def behaviors_per_security_profile(ctx):
 VALUE_LISTS = ('cidrs', 'ports', 'numbers', 'strings')
 # The states an execution can still leave, so both of them hold the quota.
 COMMAND_RUNNING = ('CREATED', 'IN_PROGRESS')
+# ListCommandExecutions needs a time filter; one opening at the epoch keeps
+# every execution, however long its timeout.
+COMMAND_EPOCH = {'after': '1970-01-01T00:00'}
 
 
 def behaviour_value_elements(ctx):
@@ -135,12 +138,25 @@ def parameters_per_command(ctx):
 
 
 def running_command_executions(ctx):
-    """IoT filters executions server side, so each unfinished state is asked for."""
+    """Walk each command's executions; IoT lists them only per command or device.
+
+    A listing by command ARN refuses a status filter and requires a time filter,
+    so every execution started since the epoch is read and the unfinished ones
+    are counted here.
+    """
     usage = 0
-    for status in COMMAND_RUNNING:
-        usage += len(ctx.call(IOT, 'list_command_executions', 'commandExecutions',
-                              status=status))
-    return dict(usage=usage, source='iot:ListCommandExecutions', method='ACCOUNT_COUNT')
+    for command in ctx.call(IOT, 'list_commands', 'commands'):
+        arn = command.get('commandArn')
+        if not isinstance(arn, str) or not arn:
+            raise NoData('IoT command is missing its ARN')
+        for execution in ctx.call(IOT, 'list_command_executions', 'commandExecutions',
+                                  commandArn=arn, startedTimeFilter=COMMAND_EPOCH):
+            status = execution.get('status')
+            if not isinstance(status, str) or not status:
+                raise NoData('IoT command execution has no status')
+            usage += status in COMMAND_RUNNING
+    return dict(usage=usage, source='iot:ListCommands+ListCommandExecutions',
+                method='ACCOUNT_COUNT')
 
 
 def security_profiles_per_target(ctx):

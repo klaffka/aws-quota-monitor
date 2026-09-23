@@ -106,6 +106,25 @@ def managed_nodes(ctx):
     return maximum(values, 'EKSNodegroup', 'eks:DescribeNodegroup+autoscaling:DescribeAutoScalingGroups')
 
 
+SUBSCRIPTION_STATES = ('CREATING', 'ACTIVE', 'UPDATING', 'EXPIRING', 'EXPIRED', 'DELETING')
+
+
+def anywhere_subscriptions(ctx):
+    """Ask for one state per call: EKS rejects a repeated includeStatus query key
+    as conflicting values, and without it the default listing is not documented
+    to cover every state."""
+    found = set()
+    for state in SUBSCRIPTION_STATES:
+        for subscription in ctx.call('eks', 'list_eks_anywhere_subscriptions', 'subscriptions',
+                                     includeStatus=[state]):
+            identity = subscription.get('id')
+            if not isinstance(identity, str) or not identity:
+                raise NoData('EKS Anywhere subscription is missing its identity')
+            # A subscription changing state between two calls must count once.
+            found.add(identity)
+    return dict(usage=len(found), source='eks:ListEksAnywhereSubscriptions', method='ACCOUNT_COUNT')
+
+
 CHECKS = [
     ('L-1194D53C', 'Clusters', lambda c: dict(usage=len(clusters(c)), source='eks:ListClusters', method='ACCOUNT_COUNT')),
     ('L-6D54EA21', 'Managed node groups per cluster', nodegroups_per_cluster),
@@ -122,10 +141,7 @@ CONFIGURATION_CHECKS = [
     ('L-D78D8AF8', 'Selectors per Fargate profile', fargate_configuration),
     ('L-BD136A63', 'Nodes per managed node group', managed_nodes),
     ('L-C56B9FC3', 'Access entries per cluster', access_entries),
-    ('L-EA277FDC', 'EKS Anywhere Enterprise Subscriptions', lambda c: dict(
-        usage=len(c.call('eks', 'list_eks_anywhere_subscriptions', 'subscriptions',
-                         includeStatus=['CREATING', 'ACTIVE', 'UPDATING', 'EXPIRING', 'EXPIRED', 'DELETING'])),
-        source='eks:ListEksAnywhereSubscriptions', method='ACCOUNT_COUNT')),
+    ('L-EA277FDC', 'EKS Anywhere Enterprise Subscriptions', anywhere_subscriptions),
 ]
 ALL_CHECKS = CHECKS + CONFIGURATION_CHECKS
 

@@ -146,7 +146,7 @@ def test_distribution_lists_are_reported_per_distribution():
                                               ('L-97957401', 2, 'other'),
                                               ('L-A85C5367', 5, 'other')):
         ctx = context(code)
-        with Stubber(ctx.client('lightsail')) as stub:
+        with Stubber(ctx.in_region('us-east-1').client('lightsail')) as stub:
             stub.add_response('get_distributions', {'distributions': distributions}, {})
             result = check(code)(ctx)
             assert (result['usage'], result['resource_id']) == (expected_usage,

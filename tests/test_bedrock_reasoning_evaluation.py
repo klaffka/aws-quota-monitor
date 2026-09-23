@@ -214,7 +214,7 @@ def test_unknown_import_state_is_not_zero_and_empty_inventory_is_zero():
 def test_blueprints_include_development_and_live_without_counting_stages_twice():
     ctx = context('L-23CF4444')
     arn = 'arn:aws:bedrock:eu-central-1:123456789012:blueprint/abcdefghijkl'
-    params = dict(resourceOwner='ACCOUNT', blueprintStageFilter='ALL')
+    params = dict(blueprintStageFilter='ALL')
     with Stubber(ctx.client('bedrock-data-automation')) as stub:
         stub.add_response('list_blueprints', {'blueprints': [{'blueprintArn': arn, 'blueprintStage': 'LIVE', 'creationTime': NOW}], 'nextToken': 'next'}, params)
         stub.add_response('list_blueprints', {'blueprints': [{'blueprintArn': arn, 'blueprintStage': 'DEVELOPMENT', 'creationTime': NOW},

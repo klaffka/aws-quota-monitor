@@ -2,13 +2,14 @@
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 
+# The type enums are title case ('Custom'); 'CUSTOM' is rejected by the API.
 def custom_frameworks(ctx):
     return ctx.call('auditmanager', 'list_assessment_frameworks', 'frameworkMetadataList',
-                    frameworkType='CUSTOM')
+                    frameworkType='Custom')
 
 
 def custom_controls(ctx):
-    return ctx.call('auditmanager', 'list_controls', 'controlMetadataList', controlType='CUSTOM')
+    return ctx.call('auditmanager', 'list_controls', 'controlMetadataList', controlType='Custom')
 
 
 def controls_per_framework(ctx):

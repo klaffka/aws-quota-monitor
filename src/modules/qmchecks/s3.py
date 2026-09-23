@@ -1,5 +1,10 @@
 """S3 account-level access point and Multi-Region Access Point inventories."""
+from botocore.exceptions import ClientError
 from modules.qmcore.aws import CheckContext, maximum, session_from_env
+
+# Multi-Region Access Points are account-global and their control plane
+# answers only in us-west-2, whatever Region the collector runs in.
+MRAP_REGION = 'us-west-2'
 
 def replication_rules_per_bucket(c):
     values = []
@@ -9,11 +14,11 @@ def replication_rules_per_bucket(c):
             continue
         try:
             rules = c.call('s3', 'get_bucket_replication', Bucket=name).get('ReplicationConfiguration', {}).get('Rules', [])
-        except Exception as exc:
-            if 'NoSuchReplicationConfiguration' in str(exc):
-                rules = []
-            else:
+        except ClientError as exc:
+            # A bucket without replication answers with this error: zero rules.
+            if exc.response['Error']['Code'] != 'ReplicationConfigurationNotFoundError':
                 raise
+            rules = []
         values.append((name, len(rules), None))
     return maximum(values, 'S3Bucket', 's3:GetBucketReplication')
 
@@ -69,8 +74,9 @@ CHECKS = [
                                      AccountId=c.account)),
                     source='s3control:ListAccessPoints', method='ACCOUNT_COUNT')),
     ('L-881EA1F4', 'Multi-Region Access Points',
-     lambda c: dict(usage=len(c.call('s3control', 'list_multi_region_access_points',
-                                     'AccessPoints', AccountId=c.account)),
+     lambda c: dict(usage=len(c.in_region(MRAP_REGION).call(
+                        's3control', 'list_multi_region_access_points', 'AccessPoints',
+                        AccountId=c.account)),
                     source='s3control:ListMultiRegionAccessPoints', method='ACCOUNT_COUNT')),
 ]
 

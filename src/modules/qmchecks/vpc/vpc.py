@@ -239,8 +239,10 @@ CHECKS = [
     ('L-44499CD2', 'Subnets that can be shared with an account', lambda c: dict(usage=len({r['arn'] for r in c.call(
         'ram', 'list_resources', 'resources', resourceOwner='OTHER-ACCOUNTS', resourceType='ec2:Subnet')}))),
     ('L-A272D574', 'VPC associations per security group', sg_associations),
+    # EC2 wants ExclusionIds or MaxResults; the page size lets the NextToken loop walk them all.
     ('L-42B9C2CA', 'VPC Block Public Access exclusions per account per Region', lambda c: dict(usage=sum(
-        e['State'] not in {'delete-complete', 'create-failed'} for e in inventory(c, 'describe_vpc_block_public_access_exclusions', 'VpcBlockPublicAccessExclusions')))),
+        e['State'] not in {'delete-complete', 'create-failed'} for e in inventory(
+            c, 'describe_vpc_block_public_access_exclusions', 'VpcBlockPublicAccessExclusions', MaxResults=1000)))),
 ]
 
 

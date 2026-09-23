@@ -39,11 +39,11 @@ def test_blueprint_schema_maximum_includes_saved_versions_and_development_stage(
     raw = '{ "description": "Grüße PRIVATE_TEXT" }'
     with Stubber(ctx.client(bda.SERVICE)) as stub:
         stub.add_response('list_blueprints', {'blueprints': [summary('LIVE'), summary('DEVELOPMENT')]},
-                          {'resourceOwner': 'ACCOUNT', 'blueprintStageFilter': 'ALL'})
+                          {'blueprintStageFilter': 'ALL'})
         stub.add_response('list_blueprints', {'blueprints': [summary(version='2')], 'nextToken': 'next'},
-                          {'blueprintArn': ARN, 'resourceOwner': 'ACCOUNT', 'blueprintStageFilter': 'ALL'})
+                          {'blueprintArn': ARN})
         stub.add_response('list_blueprints', {'blueprints': [summary(version='2'), summary(version='7')]},
-                          {'blueprintArn': ARN, 'resourceOwner': 'ACCOUNT', 'blueprintStageFilter': 'ALL', 'nextToken': 'next'})
+                          {'blueprintArn': ARN, 'nextToken': 'next'})
         for stage in ['DEVELOPMENT', 'LIVE']:
             stub.add_response('get_blueprint', {'blueprint': blueprint(stage)}, {'blueprintArn': ARN, 'blueprintStage': stage})
         for version, schema in [('2', raw), ('7', '{}')]:
@@ -78,9 +78,9 @@ def test_failed_saved_blueprint_detail_prevents_partial_collector_sample():
     ctx = context()
     with Stubber(ctx.client(bda.SERVICE)) as stub:
         stub.add_response('list_blueprints', {'blueprints': [summary()]},
-                          {'resourceOwner': 'ACCOUNT', 'blueprintStageFilter': 'ALL'})
+                          {'blueprintStageFilter': 'ALL'})
         stub.add_response('list_blueprints', {'blueprints': [summary(version='1')]},
-                          {'blueprintArn': ARN, 'resourceOwner': 'ACCOUNT', 'blueprintStageFilter': 'ALL'})
+                          {'blueprintArn': ARN})
         stub.add_response('get_blueprint', {'blueprint': blueprint()}, {'blueprintArn': ARN, 'blueprintStage': 'LIVE'})
         stub.add_client_error('get_blueprint', 'AccessDeniedException', expected_params={'blueprintArn': ARN, 'blueprintVersion': '1'})
         row, = get_current_quotastatus_bedrock(ctx=ctx, skip={('bedrock', code) for code, _, _ in CHECKS})

@@ -103,15 +103,21 @@ def test_access_entries_skip_configmap_only_clusters():
         assert access_entries(ctx)['usage'] == 2
 
 
-def test_subscription_inventory_requests_all_resource_states():
+def test_subscription_inventory_requests_each_resource_state_on_its_own():
+    """EKS rejects a repeated includeStatus key, so one state goes per call."""
     ctx = context([{'ServiceCode': 'eks', 'QuotaCode': 'L-EA277FDC', 'Value': 10}])
+    listed = {'ACTIVE': [{'id': 'one', 'status': 'ACTIVE'}, {'id': 'moving', 'status': 'ACTIVE'}],
+              # Changed state between two calls: still one subscription.
+              'EXPIRING': [{'id': 'moving', 'status': 'EXPIRING'}],
+              'EXPIRED': [{'id': 'two', 'status': 'EXPIRED'}]}
     with Stubber(ctx.client('eks')) as stub:
-        stub.add_response('list_eks_anywhere_subscriptions', {'subscriptions': [
-            {'id': 'one', 'status': 'ACTIVE'}, {'id': 'two', 'status': 'EXPIRED'}]},
-                          {'includeStatus': ['CREATING', 'ACTIVE', 'UPDATING', 'EXPIRING', 'EXPIRED', 'DELETING']})
+        for state in ('CREATING', 'ACTIVE', 'UPDATING', 'EXPIRING', 'EXPIRED', 'DELETING'):
+            stub.add_response('list_eks_anywhere_subscriptions',
+                              {'subscriptions': listed.get(state, [])}, {'includeStatus': [state]})
         row, = get_current_quotastatus_eks(ctx=ctx, skip={('eks', code) for code, _, _ in CHECKS})
-        assert row['qualityStatus'] == 'OK'
-        assert row['usageValue'] == 2
+        stub.assert_no_pending_responses()
+    assert row['qualityStatus'] == 'OK'
+    assert row['usageValue'] == 3
 
 
 def test_optional_config_checks_are_only_selected_for_present_catalog_quotas():
