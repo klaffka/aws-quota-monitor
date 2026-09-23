@@ -92,3 +92,30 @@ def test_tables_are_listed_for_every_keyspace():
             {'keyspaceName': 'logs'})
         assert check('L-BF48748A')(ctx)['usage'] == 3
         stub.assert_no_pending_responses()
+
+
+SYSTEM_KEYSPACES = ('system', 'system_schema', 'system_schema_mcs', 'system_multiregion_info')
+
+
+def test_system_keyspaces_are_not_the_accounts_own():
+    """ListKeyspaces returns AWS's system keyspaces once the role may read them;
+    they count towards no quota, and GetTable on them fails."""
+    ctx = context('L-677FFD22')
+    with Stubber(ctx.client('keyspaces')) as stub:
+        stub.add_response('list_keyspaces', {'keyspaces': [
+            {'keyspaceName': name, 'replicationStrategy': 'SINGLE_REGION',
+             'resourceArn': f'arn:aws:cassandra:eu-central-1:123456789012:/keyspace/{name}/'}
+            for name in (*SYSTEM_KEYSPACES, 'shop')]}, {})
+        stub.add_response('list_tables', {'tables': [
+            {'keyspaceName': 'shop', 'tableName': 'orders',
+             'resourceArn': 'arn:aws:cassandra:eu-central-1:123456789012:/keyspace/shop/table/orders'}]},
+            {'keyspaceName': 'shop'})
+        stub.add_response('get_table', {
+            'keyspaceName': 'shop', 'tableName': 'orders',
+            'resourceArn': 'arn:aws:cassandra:eu-central-1:123456789012:/keyspace/shop/table/orders',
+            'capacitySpecification': {'throughputMode': 'PROVISIONED',
+                                      'readCapacityUnits': 40, 'writeCapacityUnits': 10}},
+            {'keyspaceName': 'shop', 'tableName': 'orders'})
+        assert check('L-677FFD22')(ctx)['usage'] == 1
+        assert check('L-17766544')(ctx)['usage'] == 40
+        stub.assert_no_pending_responses()

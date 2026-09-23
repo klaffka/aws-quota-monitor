@@ -12,6 +12,9 @@ from collections import Counter
 from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
 
 KEYSPACES = 'keyspaces'
+# AWS's own keyspaces, listed beside the account's. Nobody can create or drop
+# them, they count towards no quota, and GetTable does not answer for them.
+SYSTEM_KEYSPACES = {'system', 'system_schema', 'system_schema_mcs', 'system_multiregion_info'}
 
 
 def keyspaces(ctx):
@@ -20,7 +23,8 @@ def keyspaces(ctx):
         name = keyspace.get('keyspaceName')
         if not isinstance(name, str) or not name:
             raise NoData('Keyspaces keyspace is missing its name')
-        found.append(name)
+        if name not in SYSTEM_KEYSPACES:
+            found.append(name)
     return found
 
 
