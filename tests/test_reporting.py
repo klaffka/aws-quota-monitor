@@ -67,6 +67,20 @@ def test_history_scoping_exclusive_end_legacy_and_csv(aws_db):
     assert exported['Period End Exclusive (UTC)'] == '2026-03-01T00:00:00Z'
 
 
+@pytest.mark.parametrize('gap_hours, status', [(24, 'OK'), (26, 'OK'), (27, 'NO_DATA')])
+def test_daily_collection_counts_as_complete_history(aws_db, gap_hours, status):
+    session, db = aws_db
+    start = NOW-timedelta(hours=gap_hours*2)
+    for at in (start, start+timedelta(hours=gap_hours)):
+        db.put_quota_entry(measurement('a', 'eu-central-1', 'ec2', CODE, 'VPN endpoints', 10, 3, now=at))
+    ctx = CheckContext(session, account='a', now=NOW)
+    rows, _ = build_report(ctx, db, [dict(ServiceCode='ec2', QuotaCode=CODE, QuotaName='VPN endpoints', Value=10, Unit='Count')], start, NOW)
+    row, = rows
+    assert row['qualityStatus'] == status
+    if status == 'NO_DATA':
+        assert row['qualityReason'] == 'Partial history: collection gaps exceed 26 hours'
+
+
 def test_history_scan_pagination_and_error(aws_db):
     db = Mock()
     db.table.scan.side_effect = [{'Items': [], 'LastEvaluatedKey': {'PK': 'p', 'SK': 's'}}, {'Items': [{'x': 1}]}]
