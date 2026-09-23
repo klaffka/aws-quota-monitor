@@ -722,6 +722,9 @@ for the complete procedure. The workflow does not deploy infrastructure or invok
 
 ## Terraform operations
 
+The [deployment runbook](docs/deploying.md) covers cost checks, plan review,
+validation runs and the traps of an existing installation.
+
 `deployment/variables.tf` defines `aws_region` (default `eu-central-1`), `aws_account_id`,
 tags, alert email, threshold, report bucket, S3 retention (90 days) and manual report
 interval (30 days). Use your existing `terraform.tfvars`; optional values can be copied

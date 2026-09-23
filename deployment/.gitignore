@@ -5,3 +5,4 @@ lambda/function.zip
 terraform.tfstate*
 *.tfvars
 !terraform.tfvars.example
+*.tfplan
