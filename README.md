@@ -570,12 +570,16 @@ Measurements carry `calculationVersion: 2`, `qualityStatus` and `qualityReason`:
 | Status | Meaning |
 | --- | --- |
 | `OK` | Complete query/inventory and valid, compatible usage/limit |
-| `NO_DATA` | No samples, invalid/zero limit, missing required data, or partial report history |
-| `UNSUPPORTED` | No verified measurement method for the quota/context |
+| `NO_DATA` | No samples, invalid/zero limit, missing required data, partial report history, or a service the account has not set up |
+| `UNSUPPORTED` | No verified measurement method for the quota/context, or a feature AWS has retired or closed to this account |
 | `ERROR` | API, permission, throttling, pagination or other operational failure |
 
 `utilizationPct = usageValue / limitValue * 100`. Unknown utilization is null.
 A complete empty resource inventory is a valid zero; an incomplete inventory is not.
+An answer that the service is not set up (Macie not enabled, no Firewall Manager
+administrator, an uninitialized MGN account, …) is recognised by its error code
+and message, listed in `NOT_SET_UP` in `qmcore/aws.py`; every other denial,
+including a missing IAM grant, stays `ERROR`.
 Lambda byte counts remain precise; no magnitude-based unit guessing is used.
 
 Existing measurement keys remain `QUOTA#<account>#<region>#quota#<code>` and

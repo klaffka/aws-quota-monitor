@@ -1,4 +1,5 @@
 from datetime import UTC
+import pytest
 
 
 def test_the_call_cache_accepts_datetime_arguments():
@@ -58,3 +59,107 @@ def test_paginate_follows_the_lightsail_next_page_token():
     assert paginate(client, 'get_distributions', 'distributions') == [
         {'name': 'one'}, {'name': 'two'}]
     assert client.get_distributions.call_args.kwargs == {'pageToken': 'next'}
+
+
+# Answers recorded from the first live run on 2026-09-23.
+NOT_SET_UP = [
+    ('AccessDeniedException', 'ListPolicies',
+     'No default admin could be found for account 123456789012 in Region eu-central-1', 'NO_DATA'),
+    ('AccessDeniedException', 'ListLicenses',
+     ('Service role not found. Consult setup procedures in License Manager User Guide and '
+     'create the required role for the service.'), 'NO_DATA'),
+    ('AccessDeniedException', 'ListClassificationJobs', 'Macie is not enabled.', 'NO_DATA'),
+    ('AccessDeniedException', 'ListAssessments', ('Please complete AWS Audit Manager setup from '
+     'home page to enable this action in this account.'), 'NO_DATA'),
+    ('UninitializedAccountException', 'DescribeSourceServers', 'Account not initialized', 'NO_DATA'),
+    ('UnsupportedUserEditionException', 'ListAnalyses',
+     'Account 123456789012 is not subscribed for QuickSight', 'NO_DATA'),
+    ('ValidationException', 'ListRotations',
+     'Invalid value provided - Account not found for the request', 'NO_DATA'),
+    ('OptInRequiredException', 'ListAutomationEvents',
+     'Aws account is not registered for recommendation.', 'NO_DATA'),
+    ('TagOptionNotMigratedException', 'ListTagOptions', 'TagOption Migration not complete', 'NO_DATA'),
+    ('InvalidOperationException', 'ListAdminAccountsForOrganization',
+     ('123456789012 is not the management account of the Organization but is attempting to '
+     'perform an action that only the Organization management account can perform.'), 'NO_DATA'),
+    ('AccessDeniedException', 'ListAutomationRules',
+     'Account 123456789012 is not authorized to perform this operation', 'NO_DATA'),
+    ('403', 'ListSolNetworkPackages',
+     'AWS Telco Network Builder is deprecated. All API operations are blocked.', 'UNSUPPORTED'),
+    ('UnauthorizedException', 'ListSecurityProfiles',
+     ('This feature is no longer available to new customers. For more information, see '
+     'https://docs.aws.amazon.com/iot-device-defender/latest/devguide/dd-detect-availability-change.html'),
+     'UNSUPPORTED'),
+    ('AccessDeniedException', 'GetDevEndpoints',
+     'GetDevEndpoints operation is currently disabled.', 'UNSUPPORTED'),
+    ('AccessDeniedException', 'ListStateTemplates',
+     'Account is not authorized to use this feature.', 'UNSUPPORTED'),    ('InvalidParameterValueException', 'DescribeFleetAdvisorCollectors', 'Access Denied to API',
+     'UNSUPPORTED'),
+    ('AccessDeniedException', 'ListRoots', "You don't have permissions to access this resource.",
+     'NO_DATA'),
+    ('UnauthorizedException', 'ListCentralizationRulesForOrganization', 'Unauthorized', 'NO_DATA'),
+    ('AccessDeniedException', 'ListPermissionSets', (
+        'User: arn:aws:sts::123456789012:assumed-role/qm-quotacontroller-exec/qm-quota-collector '
+        'is not authorized to perform: sso:ListPermissionSets on resource: '
+        'arn:aws:sso:::instance/ssoins-1 because the resource does not exist in this Region, no '
+        'resource-based policies allow access, or a resource-based policy explicitly denies '
+        'access'), 'NO_DATA'),
+]
+
+
+def _run_failing(code, operation, message, service='svc'):
+    from unittest.mock import Mock
+
+    from botocore.exceptions import ClientError
+
+    from modules.qmcore.aws import CheckContext
+
+    ctx = CheckContext(Mock(region_name='eu-central-1'), account='123456789012',
+                       quotas=[{'ServiceCode': service, 'QuotaCode': 'L-1', 'Value': 10}])
+
+    def check(_):
+        raise ClientError({'Error': {'Code': code, 'Message': message}}, operation)
+
+    result, = ctx.run(service, [('L-1', 'quota', check)])
+    return result
+
+
+@pytest.mark.parametrize('code, operation, message, status', NOT_SET_UP)
+def test_a_service_the_account_has_not_set_up_is_not_an_error(code, operation, message, status):
+    """These answers carry no usage, but they are not failures of the check either."""
+    result = _run_failing(code, operation, message)
+    assert result['qualityStatus'] == status
+    assert message in result['qualityReason']
+
+
+@pytest.mark.parametrize('code, operation, message', [
+    # A missing IAM grant must stay visible.
+    ('AccessDeniedException', 'ListKeyspaces',
+     ('User: arn:aws:sts::123456789012:assumed-role/qm-quotacontroller-exec/qm-quota-collector '
+     'is not authorized to perform: cassandra:Select on resource: arn:aws:cassandra:eu-central-1:'
+     '123456789012:/keyspace/*')),
+    # An empty denial only means a closed feature for the services measured to do so.
+    ('AccessDeniedException', 'ListStreamProcessors', ''),
+    # The Security Hub wording is only known to mean "not the administrator" here.
+    ('AccessDeniedException', 'ListFindings',
+     'Account 123456789012 is not authorized to perform this operation'),
+    ('ValidationException', 'ListRotations', 'Invalid value provided'),
+])
+def test_other_denials_stay_errors(code, operation, message):
+    assert _run_failing(code, operation, message)['qualityStatus'] == 'ERROR'
+
+
+@pytest.mark.parametrize('service, operation', [
+    ('rekognition', 'ListStreamProcessors'), ('rekognition', 'ListMediaAnalysisJobs'),
+    ('iotfleetwise', 'ListFleets'), ('iotfleetwise', 'ListCampaigns'),
+])
+def test_an_empty_denial_is_a_feature_closed_to_the_account(service, operation):
+    """AWS answers these with no message at all, even to an administrator."""
+    assert _run_failing('AccessDeniedException', operation, '', service)['qualityStatus'] == 'UNSUPPORTED'
+
+
+def test_an_iam_denial_on_a_closed_feature_service_stays_an_error():
+    message = ('User: arn:aws:sts::123456789012:assumed-role/r/s is not authorized to perform: '
+               'rekognition:ListCollections')
+    result = _run_failing('AccessDeniedException', 'ListCollections', message, 'rekognition')
+    assert result['qualityStatus'] == 'ERROR'
