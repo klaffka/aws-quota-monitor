@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/python-3.14-24455C" alt="Python 3.14">
 </p>
 
-Collect AWS quota usage every ten minutes, keep versioned measurements in DynamoDB,
+Collect AWS quota usage once a day, keep versioned measurements in DynamoDB,
 send SNS notifications for sustained breaches, and export monthly CSV reports to S3.
 Each deployment monitors its execution account and configured Region.
 
@@ -21,9 +21,9 @@ answer never becomes a zero that would read as headroom.
 
 ## Runtime behavior
 
-- **Collector:** runs every ten minutes. Service Quotas catalog snapshots are cached
+- **Collector:** runs once a day. Service Quotas catalog snapshots are cached
   for 24 hours. Compatible `UsageMetric` definitions are queried in batches of up to
-  500 over an overlapping 20-minute window. The recommended statistic is used.
+  500 over the 20 minutes before each run. The recommended statistic is used.
 - **Source selection:** one source per service/quota. A compatible official metric
   takes precedence over a resource check. Missing official data does not trigger a
   switch to a different source or a fabricated zero.
@@ -604,7 +604,7 @@ separate historical field: for official metrics it is populated only when a veri
 stored sample matches the returned peak timestamp and unit without conflicting limits.
 A blank historical limit means unknown, not the current limit.
 
-Reports with missing data, historical gaps greater than 30 minutes, excluded legacy
+Reports with missing data, historical gaps greater than 26 hours, excluded legacy
 samples, or operational failures are marked `PARTIAL`. Maxima retained in partial rows
 are maxima of the verified available samples. Every CSV has a `.csv.json` sidecar with
 overall status and operational errors, including errors that prevented quota discovery.
@@ -730,7 +730,7 @@ the account named, the provider refuses before anything is planned. Region chang
 review a plan before applying them.
 
 The deployment provides Lambda error/throttle alarms for both functions and an alarm
-when no successful collector heartbeat arrives within a 30-minute evaluation period.
+when no successful collector heartbeat arrives for 25 consecutive hours.
 CloudWatch logs are retained for 30 days. The heartbeat is emitted only after collection,
 storage and alert processing succeed. SNS subscriptions still need email confirmation.
 The existing optional JSON-defined CloudWatch alarms remain opt-in and independent;

@@ -737,11 +737,13 @@ resource "aws_dynamodb_table" "qm_quotalog" {
   tags = var.tags
 }
 
-# EventBridge Rule for Quota Collector (every 10 minutes)
+# EventBridge Rule for Quota Collector (once a day)
+# Each run requests every compatible usage metric through GetMetricData, which
+# has no free tier; a daily run keeps that at roughly 2,500 metrics a day.
 resource "aws_cloudwatch_event_rule" "quota_collector_schedule" {
   name                = "qm-collector-schedule"
-  description         = "Trigger quota collector every 10 minutes"
-  schedule_expression = "rate(10 minutes)"
+  description         = "Trigger quota collector once a day"
+  schedule_expression = "rate(1 day)"
   tags                = var.tags
 }
 
@@ -843,14 +845,16 @@ resource "aws_cloudwatch_metric_alarm" "operational" {
   tags                = var.tags
 }
 
+# Every hour without a success breaches; a daily run leaves 23 of them, so 25
+# in a row means one run was missed or failed.
 resource "aws_cloudwatch_metric_alarm" "collector_missing" {
   alarm_name          = "qm-collector-no-success"
   namespace           = "QuotaMonitor"
   metric_name         = "CollectorSuccess"
   dimensions          = { Account = data.aws_caller_identity.current.account_id, Region = var.aws_region }
   statistic           = "Sum"
-  period              = 1800
-  evaluation_periods  = 1
+  period              = 3600
+  evaluation_periods  = 25
   threshold           = 1
   comparison_operator = "LessThanThreshold"
   treat_missing_data  = "breaching"

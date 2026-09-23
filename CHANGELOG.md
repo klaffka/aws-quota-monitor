@@ -5,7 +5,13 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
-<!-- Add release notes here. -->
+### Changed
+
+- The collector runs once a day instead of every ten minutes. Every run
+  requests each compatible usage metric through `GetMetricData`, which has no
+  free tier; at ten minutes that came to roughly $110 a month.
+- The missing-heartbeat alarm fires after 25 hours without a successful run,
+  and reports accept collection gaps of up to 26 hours as complete history.
 
 ## [0.1.0] - 2026-09-23
 

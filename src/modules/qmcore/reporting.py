@@ -95,12 +95,17 @@ def aggregate_history(items, start, end, metric_peaks=None):
     return groups
 
 
+# The collector runs once a day; two hours of slack absorb EventBridge jitter
+# and Lambda's asynchronous retries.
+MAX_COLLECTION_GAP = timedelta(hours=26)
+
+
 def _coverage(times, start, end):
     times = sorted(datetime.fromisoformat(t.replace('Z', '+00:00')) for t in times)
     if not times:
         return False
     edges = [start, *times, end]
-    return all(b - a <= timedelta(minutes=30) for a, b in pairwise(edges))
+    return all(b - a <= MAX_COLLECTION_GAP for a, b in pairwise(edges))
 
 
 def build_report(ctx, db, quotas, start, end):
@@ -158,7 +163,7 @@ def build_report(ctx, db, quotas, start, end):
                     else:
                         row.update(currentLimit=None, qualityStatus='ERROR', qualityReason='Current/historical limit units differ')
                 if row['qualityStatus'] == 'OK' and not _coverage(group['times'], start, end):
-                    row.update(qualityStatus='NO_DATA', qualityReason='Partial history: collection gaps exceed 30 minutes')
+                    row.update(qualityStatus='NO_DATA', qualityReason='Partial history: collection gaps exceed 26 hours')
             elif group['statuses'] == {'UNSUPPORTED'}:
                 row.update(qualityStatus='UNSUPPORTED', qualityReason=group['latest'].get('qualityReason', 'Unsupported check'))
             if group['excluded'] and row['qualityStatus'] == 'OK':
