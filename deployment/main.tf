@@ -254,7 +254,10 @@ resource "aws_lambda_function" "quota_collector" {
   runtime       = "python3.14"
   filename      = data.archive_file.quota_collector_zip.output_path
   timeout       = 900
-  memory_size   = 512
+  # One run holds a client for every service it reads (~114) and caches every
+  # response until it ends; that peaks above 512 MB, where the run stalls and
+  # times out. Memory also sets the CPU share.
+  memory_size   = 1024
   architectures = ["x86_64"]
 
   source_code_hash = filebase64sha256(data.archive_file.quota_collector_zip.output_path)
