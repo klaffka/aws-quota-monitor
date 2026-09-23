@@ -64,6 +64,14 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Changed
 
+- Line coverage is measured and defended. The suite had 3,202 tests and no idea
+  what they reached; it turns out to be 91.50% of 13,447 statements.
+  `scripts/coverage_gate.py` holds each package to its own floor, recorded in
+  `tests/fixtures/pytest-coverage-baseline.json` as the measured figure rounded
+  down. One figure over `src` would have said little: `src/modules/qmchecks`
+  holds 12,240 of those statements, so `qmcore` could fall from 92% to 60% and
+  move the total by a point and a half.
+
 - The lint gate covers likely bugs rather than syntax errors alone. `ruff.toml`
   selected four correctness groups and the comment beside them had promised a
   staged widening since the file was written. It now also runs `F`, `W`, `B`,
