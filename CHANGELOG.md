@@ -5,6 +5,10 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
+<!-- Add release notes here. -->
+
+## [0.2.0] - 2026-09-23
+
 ### Added
 
 - A deployment runbook in `docs/deploying.md`: cost check, plan review,
@@ -20,8 +24,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
-- Keyspaces checks leave out AWS's system keyspaces, which counted towards
-  the keyspace and table quotas and failed the table throughput checks.
+- The collector has 1,024 MB of memory instead of 512 MB. A full run peaks
+  above 512 MB and timed out after 900 seconds without storing anything.
 - A check against a service the account has not set up (Macie not enabled,
   no Firewall Manager administrator, uninitialized MGN or DRS, no QuickSight
   subscription, …) reports `NO_DATA`, and one against a retired feature
@@ -42,8 +46,8 @@ All notable changes to this project are recorded here. Versions follow
 - The collector role may read Keyspaces system tables (`cassandra:Select`,
   limited to `system*` keyspaces) and call `dms:List*`, which Keyspaces and DMS
   require for listing operations whose names do not say so.
-- The collector has 1,024 MB of memory instead of 512 MB. A full run peaks
-  above 512 MB and timed out after 900 seconds without storing anything.
+- Keyspaces checks leave out AWS's system keyspaces, which counted towards
+  the keyspace and table quotas and failed the table throughput checks.
 
 ## [0.1.0] - 2026-09-23
 
