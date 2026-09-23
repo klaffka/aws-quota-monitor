@@ -13,6 +13,11 @@ All notable changes to this project are recorded here. Versions follow
 - The missing-heartbeat alarm fires after 25 hours without a successful run,
   and reports accept collection gaps of up to 26 hours as complete history.
 
+### Fixed
+
+- The collector has 1,024 MB of memory instead of 512 MB. A full run peaks
+  above 512 MB and timed out after 900 seconds without storing anything.
+
 ## [0.1.0] - 2026-09-23
 
 ### Added
