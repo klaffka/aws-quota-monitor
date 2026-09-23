@@ -11,6 +11,9 @@ LIGHTSAIL = 'lightsail'
 CERTIFICATE_STATES = {'PENDING_VALIDATION', 'ISSUED', 'INACTIVE', 'EXPIRED',
                       'VALIDATION_TIMED_OUT', 'REVOKED', 'FAILED'}
 ACTIVE_CERTIFICATE_STATES = {'ISSUED'}
+# Distributions are account-global and their APIs answer only in us-east-1, so
+# every Region's collector reads the one account-wide inventory there.
+DISTRIBUTION_REGION = 'us-east-1'
 
 
 def count(ctx, method, key):
@@ -27,8 +30,8 @@ def _named(items, field, subject):
 
 
 def distributions(ctx):
-    return dict(_named(ctx.call(LIGHTSAIL, 'get_distributions', 'distributions'),
-                       'name', 'distribution'))
+    return dict(_named(ctx.in_region(DISTRIBUTION_REGION).call(
+        LIGHTSAIL, 'get_distributions', 'distributions'), 'name', 'distribution'))
 
 
 def container_services(ctx):
@@ -145,7 +148,8 @@ CHECKS = [
     ('L-BB561519', 'Container services',
      lambda ctx: count(ctx, 'get_container_services', 'containerServices')),
     ('L-1DB37119', 'Distributions',
-     lambda ctx: count(ctx, 'get_distributions', 'distributions')),
+     lambda ctx: dict(usage=len(distributions(ctx)), source='lightsail:GetDistributions',
+                      method='ACCOUNT_COUNT')),
     ('L-C512E6B9', 'Load balancers',
      lambda ctx: count(ctx, 'get_load_balancers', 'loadBalancers')),
     ('L-CF67FCDA', 'Maximum buckets per account',

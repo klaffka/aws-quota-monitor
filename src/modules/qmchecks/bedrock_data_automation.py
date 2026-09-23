@@ -14,14 +14,17 @@ def required_id(item, field):
     return value
 
 
+# The list APIs accept one filter per request: resourceOwner, the stage filter
+# and blueprintArn are mutually exclusive ("Invalid List filter combination").
+# Without resourceOwner only account-owned resources are listed, so the stage
+# filter alone yields the complete account inventory across both stages.
 def blueprint_inventory(ctx):
-    return ctx.call(SERVICE, 'list_blueprints', 'blueprints', resourceOwner='ACCOUNT', blueprintStageFilter='ALL')
+    return ctx.call(SERVICE, 'list_blueprints', 'blueprints', blueprintStageFilter='ALL')
 
 
 def versions(ctx, arn):
     result = set()
-    for item in ctx.call(SERVICE, 'list_blueprints', 'blueprints', blueprintArn=arn,
-                         resourceOwner='ACCOUNT', blueprintStageFilter='ALL'):
+    for item in ctx.call(SERVICE, 'list_blueprints', 'blueprints', blueprintArn=arn):
         if item.get('blueprintArn') != arn:
             raise NoData('Blueprint version inventory contains a different parent')
         version = required_id(item, 'blueprintVersion')
@@ -73,8 +76,10 @@ SOURCE_PROJECTS = (SERVICE + ':ListDataAutomationProjects'
 def project_blueprint_types(ctx):
     """Return {project stage: {modality: blueprint count}} for every project."""
     counts = {}
+    # One filter only, as for blueprints; the stage filter keeps service
+    # projects out and both stages in.
     for summary in ctx.call(SERVICE, 'list_data_automation_projects', 'projects',
-                            resourceOwner='ACCOUNT', projectStageFilter='ALL'):
+                            projectStageFilter='ALL'):
         arn = required_id(summary, 'projectArn')
         stage = summary.get('projectStage')
         if stage not in {'LIVE', 'DEVELOPMENT'}:

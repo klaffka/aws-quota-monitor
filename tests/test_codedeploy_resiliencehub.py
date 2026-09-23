@@ -171,3 +171,27 @@ def test_every_check_is_registered_for_reporting():
                             (resiliencehub, 'resiliencehub')):
         registered = {code for name, code in custom_keys() if name == service}
         assert {code for code, _, _ in module.CHECKS} <= registered, service
+
+
+def template(arn, status, assessment_arn, app=APP):
+    return {'appArn': app, 'assessmentArn': assessment_arn, 'format': 'CfnYaml',
+            'name': arn.rsplit('/', 1)[-1], 'recommendationTemplateArn': arn,
+            'recommendationTypes': ['Alarm'], 'status': status}
+
+
+def test_recommendation_templates_are_listed_per_assessment():
+    """The API answers only for one assessment; unscoped it reports an explicit deny."""
+    first, second = 'arn:aws:resiliencehub:::assessment/1', 'arn:aws:resiliencehub:::assessment/2'
+    assessments = [assessment(first, 'Success'), assessment(second, 'Success', OTHER_APP)]
+    ctx = context('resiliencehub', 'L-CB12CFEB')
+    with Stubber(ctx.client('resiliencehub')) as stub:
+        stub.add_response('list_app_assessments', {'assessmentSummaries': assessments}, {})
+        stub.add_response('list_recommendation_templates', {'recommendationTemplates': [
+            template('arn:aws:resiliencehub:::template/a', 'InProgress', first),
+            template('arn:aws:resiliencehub:::template/b', 'Success', first)]},
+            {'assessmentArn': first})
+        stub.add_response('list_recommendation_templates', {'recommendationTemplates': [
+            template('arn:aws:resiliencehub:::template/c', 'Pending', second, OTHER_APP)]},
+            {'assessmentArn': second})
+        assert check(resiliencehub, 'L-CB12CFEB')(ctx)['usage'] == 2
+        stub.assert_no_pending_responses()

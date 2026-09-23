@@ -55,8 +55,25 @@ def _per_app_version(method, key, resource_type, source):
     return check
 
 
+def recommendation_templates(ctx):
+    """Every recommendation template, listed per assessment.
+
+    Called without an assessment the API answers with an explicit deny, even
+    for an administrator, so the account-wide list is assembled here.
+    """
+    templates = []
+    for item in ctx.call(RESILIENCEHUB, 'list_app_assessments', 'assessmentSummaries'):
+        arn = item.get('assessmentArn')
+        if not isinstance(arn, str) or not arn:
+            raise NoData('Resilience Hub assessment is missing its ARN')
+        templates.extend(ctx.call(RESILIENCEHUB, 'list_recommendation_templates',
+                                  'recommendationTemplates', assessmentArn=arn))
+    return templates
+
+
 def _running(ctx, method, key, status_field):
-    for item in ctx.call(RESILIENCEHUB, method, key):
+    items = method(ctx) if callable(method) else ctx.call(RESILIENCEHUB, method, key)
+    for item in items:
         status = item.get(status_field)
         if status not in JOB_STATES:
             raise NoData('Resilience Hub job has an unknown status')
@@ -251,10 +268,10 @@ CHECKS = [
      _running_per_app('list_app_assessments', 'assessmentSummaries',
                       'assessmentStatus', 'resiliencehub:ListAppAssessments')),
     ('L-CB12CFEB', 'Number of concurrent recommendation templates per account',
-     _running_count('list_recommendation_templates', 'recommendationTemplates',
+     _running_count(recommendation_templates, None,
                     'status', 'resiliencehub:ListRecommendationTemplates')),
     ('L-64AA3F12', 'Number of concurrent recommendation templates per application',
-     _running_per_app('list_recommendation_templates', 'recommendationTemplates',
+     _running_per_app(recommendation_templates, None,
                       'status', 'resiliencehub:ListRecommendationTemplates')),
     ('L-FC254984', 'Number of ResilienceHubV2 services per account',
      _v2_count(v2_services, 'resiliencehubv2:ListServices')),

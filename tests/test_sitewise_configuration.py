@@ -76,11 +76,9 @@ class Context:
             value = {'assetSummaries': [
                 {'id': f'{model_id}-asset-{number}', 'assetModelId': model_id}
                 for number in range(counts[model_id])]}
-        elif method == 'list_assets':
-            value = {'assetSummaries': [{'id': 'parent'}, {'id': 'other'}]}
         elif method == 'list_associated_assets':
             children = ([{'id': 'child-a'}, {'id': 'child-b'}]
-                        if kwargs['assetId'] == 'parent' else [])
+                        if kwargs['assetId'] == 'root-asset-1' else [])
             value = {'assetSummaries': children}
         elif method == 'list_bulk_import_jobs':
             assert kwargs == {'filter': 'RUNNING'}

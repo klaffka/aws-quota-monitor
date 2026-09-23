@@ -3,6 +3,13 @@
 One GetEventSelectors call per trail answers all three selector quotas, so the
 trails are walked once however many of them are asked for.
 
+The selector quotas are per trail, and a trail is charged to the account and
+Region in its ARN. DescribeTrails also returns shadow copies: an organization
+trail the management account owns, and a multi-Region trail homed elsewhere.
+Their selectors belong to the owner's home Region, where they are measured, and
+GetEventSelectors by name fails for a trail another account owns, so only this
+account's trails homed here are read.
+
 A dashboard's widgets are not in the listing, so each dashboard is fetched; one
 holding none still counts as zero rather than dropping out of the maximum.
 """
@@ -15,11 +22,19 @@ def resource_count(ctx, method, key):
 
 
 def _selectors(ctx):
-    """Yield (trail, its selector answer) for every trail in the Region."""
+    """Yield (trail, its selector answer) for every trail this account owns
+    with its home in this Region."""
     for trail in ctx.call('cloudtrail', 'describe_trails', 'trailList'):
         name = trail.get('Name')
         if not isinstance(name, str) or not name:
             raise NoData('CloudTrail trail is missing its name')
+        arn = trail.get('TrailARN')
+        parts = arn.split(':', 5) if isinstance(arn, str) else []
+        if len(parts) != 6 or parts[2] != 'cloudtrail' or not parts[3] or not parts[4]:
+            raise NoData('CloudTrail trail has no valid ARN')
+        # The ARN names the home Region and the owning account.
+        if (parts[3], parts[4]) != (ctx.region, ctx.account):
+            continue
         yield name, ctx.call('cloudtrail', 'get_event_selectors', TrailName=name)
 
 

@@ -1,18 +1,31 @@
 from unittest.mock import Mock
 
+import boto3
 import pytest
+from botocore.stub import Stubber
 
 from modules.qmchecks.auditmanager import CHECKS, accounts_in_scope, controls_per_framework
-from modules.qmcore.aws import NoData
+from modules.qmcore.aws import CheckContext, NoData
 from tests.iam_policy import grants
 
 
 def test_auditmanager_counts_custom_resources_and_running_assessments():
-    ctx = Mock()
-    ctx.call.return_value = [{'id': 'one'}, {'id': 'two'}]
-    assert CHECKS[0][2](ctx)['usage'] == 2
-    assert CHECKS[1][2](ctx)['usage'] == 2
-    assert CHECKS[2][2](ctx)['usage'] == 2
+    # A Stubber pins the request parameters; a Mock accepted frameworkType='CUSTOM',
+    # which the service rejects (the enum is 'Custom').
+    ctx = CheckContext(boto3.Session(region_name='eu-central-1'),
+                       [{'ServiceCode': 'auditmanager', 'QuotaCode': 'L-8935A6F1', 'Value': 100}],
+                       account='123456789012')
+    items = [{'id': '11111111-1111-1111-1111-111111111111'},
+             {'id': '22222222-2222-2222-2222-222222222222'}]
+    with Stubber(ctx.client('auditmanager')) as stub:
+        stub.add_response('list_assessment_frameworks', {'frameworkMetadataList': items},
+                          {'frameworkType': 'Custom'})
+        stub.add_response('list_controls', {'controlMetadataList': items}, {'controlType': 'Custom'})
+        stub.add_response('list_assessments', {'assessmentMetadata': items}, {'status': 'ACTIVE'})
+        assert CHECKS[0][2](ctx)['usage'] == 2
+        assert CHECKS[1][2](ctx)['usage'] == 2
+        assert CHECKS[2][2](ctx)['usage'] == 2
+        stub.assert_no_pending_responses()
 
 
 def test_auditmanager_controls_use_maximum_per_framework():

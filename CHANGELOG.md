@@ -21,6 +21,17 @@ All notable changes to this project are recorded here. Versions follow
   `UNSUPPORTED`, instead of `ERROR`. Organization-wide listings that only the
   management account can answer report `NO_DATA`. The first live run had
   114 such errors, each of which withheld the collector heartbeat.
+- Checks that sent parameters the live APIs reject now measure: EKS Anywhere
+  subscriptions, VPC Block Public Access exclusions, IoT command executions,
+  Audit Manager custom frameworks and controls, Bedrock Data Automation
+  blueprints and projects, IoT SiteWise asset models and assets, and Resilience
+  Hub recommendation templates.
+- Lightsail distributions are read in us-east-1 and Multi-Region Access Points
+  in us-west-2, the only Regions whose endpoints answer for them.
+- CloudTrail selector quotas skip trails another account owns or that are
+  homed in another Region; an S3 bucket without replication counts zero rules;
+  IoT logging levels count zero before logging was ever configured; IoT
+  SiteWise workspaces report `UNSUPPORTED` where the Region does not offer them.
 - The collector has 1,024 MB of memory instead of 512 MB. A full run peaks
   above 512 MB and timed out after 900 seconds without storing anything.
 

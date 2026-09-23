@@ -12,6 +12,8 @@ def test_app_runner_amplify_and_lightsail_resource_counts():
     assert AMPLIFY[0][2](ctx)['usage'] == 1
     ctx.call.return_value = [{'name': 'resource'}]
     ctx.call.side_effect = None
+    # Distributions are read through the us-east-1 context.
+    ctx.in_region.return_value = ctx
     # The plain regional inventories; tests/test_lightsail.py covers the
     # per-resource checks, which read sizes and nested lists instead.
     counted = {'L-4259AF9B', 'L-3B2B13A1', 'L-BB561519', 'L-1DB37119', 'L-C512E6B9',

@@ -99,8 +99,10 @@ def versions_per_flow(ctx):
 
 def blueprint_count(ctx):
     arns = set()
+    # One list filter per request; without resourceOwner only account-owned
+    # blueprints are returned.
     for item in ctx.call('bedrock-data-automation', 'list_blueprints', 'blueprints',
-                         resourceOwner='ACCOUNT', blueprintStageFilter='ALL'):
+                         blueprintStageFilter='ALL'):
         arn = item.get('blueprintArn')
         if not isinstance(arn, str) or not arn:
             raise NoData('Bedrock blueprint inventory has no ARN')

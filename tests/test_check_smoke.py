@@ -177,6 +177,9 @@ UNEXERCISED = {
         ('cloudformation', 'L-091DF7D9'), ('cloudformation', 'L-24E9F9ED'),
         ('cloudformation', 'L-7E146E2E'), ('cloudformation', 'L-DCC58E6D'),
     },
+    'CloudTrail trail has no valid ARN': {
+        ('cloudtrail', 'L-203ED99D'), ('cloudtrail', 'L-71DEA5C6'), ('cloudtrail', 'L-9387CED7'),
+    },
     'CodeBuild project disappeared while being read': {
         ('codebuild', 'L-33638FE6'), ('codebuild', 'L-4167E76F'),
         ('codebuild', 'L-BECF4531'), ('codebuild', 'L-EDB7A61A'),

@@ -126,17 +126,37 @@ def test_the_command_with_the_most_mandatory_parameters_decides_the_count():
 
 
 def test_only_unfinished_command_executions_count_towards_concurrency():
-    """The listing filters by status server side, so each state is asked for."""
+    """IoT lists executions only per command, and then without a status filter."""
     ctx = context('L-631C84B3')
+    since = {'after': '1970-01-01T00:00'}
     with Stubber(ctx.client('iot')) as stub:
+        stub.add_response('list_commands', {'commands': [
+            {'commandId': 'one', 'commandArn': 'arn:cmd/one'},
+            {'commandId': 'two', 'commandArn': 'arn:cmd/two'}]}, {})
         stub.add_response('list_command_executions', {'commandExecutions': [
-            {'executionId': 'e1', 'status': 'CREATED'}]}, {'status': 'CREATED'})
+            {'executionId': 'e1', 'status': 'CREATED'},
+            {'executionId': 'e2', 'status': 'SUCCEEDED'}]},
+            {'commandArn': 'arn:cmd/one', 'startedTimeFilter': since})
         stub.add_response('list_command_executions', {'commandExecutions': [
-            {'executionId': 'e2', 'status': 'IN_PROGRESS'},
-            {'executionId': 'e3', 'status': 'IN_PROGRESS'}]}, {'status': 'IN_PROGRESS'})
+            {'executionId': 'e3', 'status': 'IN_PROGRESS'},
+            {'executionId': 'e4', 'status': 'IN_PROGRESS'},
+            {'executionId': 'e5', 'status': 'TIMED_OUT'}]},
+            {'commandArn': 'arn:cmd/two', 'startedTimeFilter': since})
         result = check('L-631C84B3', iot.CHECKS)(ctx)
         assert (result['usage'], result['method']) == (3, 'ACCOUNT_COUNT')
         stub.assert_no_pending_responses()
+
+
+def test_a_command_execution_without_status_is_no_data():
+    ctx = context('L-631C84B3')
+    with Stubber(ctx.client('iot')) as stub:
+        stub.add_response('list_commands', {'commands': [
+            {'commandId': 'one', 'commandArn': 'arn:cmd/one'}]}, {})
+        stub.add_response('list_command_executions', {'commandExecutions': [
+            {'executionId': 'e1'}]},
+            {'commandArn': 'arn:cmd/one', 'startedTimeFilter': {'after': '1970-01-01T00:00'}})
+        with pytest.raises(NoData):
+            check('L-631C84B3', iot.CHECKS)(ctx)
 
 
 def test_the_iot_core_dynamic_group_code_reuses_the_same_measurement():

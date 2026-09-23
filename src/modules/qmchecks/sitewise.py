@@ -8,7 +8,9 @@ sources inside one would mean parsing a format the model does not describe. The
 property dependency quotas need the formula expressions of an asset model
 resolved against each other, which no operation reports.
 """
-from modules.qmcore.aws import CheckContext, NoData, maximum, session_from_env
+from botocore.exceptions import ClientError
+
+from modules.qmcore.aws import CheckContext, NoData, Unsupported, maximum, session_from_env
 
 
 def required(item, field, subject):
@@ -64,8 +66,11 @@ def per_project(ctx, method, key):
 
 
 def models(ctx, model_types):
-    items = unique(ctx.call('iotsitewise', 'list_asset_models', 'assetModelSummaries',
-                            assetModelTypes=sorted(model_types)), 'id', 'model')
+    # ListAssetModels rejects INTERFACE combined with another type ("The given
+    # filter is not supported"), so each type is listed on its own.
+    items = unique([item for model_type in sorted(model_types)
+                    for item in ctx.call('iotsitewise', 'list_asset_models', 'assetModelSummaries',
+                                         assetModelTypes=[model_type])], 'id', 'model')
     for item in items:
         if item.get('assetModelType') not in model_types:
             raise NoData('IoT SiteWise returned a model of an unexpected type')
@@ -312,19 +317,30 @@ def interface_users(ctx):
                    'iotsitewise:ListAssetModels+ListInterfaceRelationships')
 
 
-def assets_per_model(ctx):
-    values = []
+def assets_by_model(ctx):
+    """Return (model id, its assets) for every asset model. ListAssets lists all
+    assets only per model, and assets are created from ASSET_MODEL models only,
+    so walking those models is the complete inventory."""
+    result = []
     for model in models(ctx, {'ASSET_MODEL'}):
         assets = unique(ctx.call('iotsitewise', 'list_assets', 'assetSummaries',
                                  assetModelId=model['id']), 'id', 'asset')
         if any(asset.get('assetModelId') != model['id'] for asset in assets):
             raise NoData('IoT SiteWise asset belongs to a different model')
-        values.append((model['id'], len(assets), None))
-    return maximum(values, 'IoTSiteWiseAssetModel', 'iotsitewise:ListAssetModels+ListAssets')
+        result.append((model['id'], assets))
+    return result
+
+
+def assets_per_model(ctx):
+    return maximum([(model, len(assets), None) for model, assets in assets_by_model(ctx)],
+                   'IoTSiteWiseAssetModel', 'iotsitewise:ListAssetModels+ListAssets')
 
 
 def children_per_asset(ctx):
-    assets = unique(ctx.call('iotsitewise', 'list_assets', 'assetSummaries'), 'id', 'asset')
+    # A parent can sit anywhere in a hierarchy, so every asset is a candidate,
+    # not just the TOP_LEVEL ones.
+    assets = unique([asset for _model, items in assets_by_model(ctx) for asset in items],
+                    'id', 'asset')
     values = []
     for asset in assets:
         children = unique(ctx.call('iotsitewise', 'list_associated_assets', 'assetSummaries',
@@ -332,7 +348,7 @@ def children_per_asset(ctx):
                           'id', 'child asset')
         values.append((asset['id'], len(children), None))
     return maximum(values, 'IoTSiteWiseAsset',
-                   'iotsitewise:ListAssets+ListAssociatedAssets')
+                   'iotsitewise:ListAssetModels+ListAssets+ListAssociatedAssets')
 
 
 def running_bulk_imports(ctx):
@@ -343,9 +359,21 @@ def running_bulk_imports(ctx):
     return dict(usage=len(jobs), source='iotsitewise:ListBulkImportJobs', method='ACCOUNT_COUNT')
 
 
+def workspace_inventory(ctx):
+    try:
+        items = ctx.call('iotsitewise', 'list_workspaces', 'workspaceSummaries')
+    except ClientError as exc:
+        # Regions where workspaces have not launched answer every call this way.
+        error = exc.response.get('Error', {})
+        if error.get('Code') == 'InvalidRequestException' \
+                and 'This feature is not supported yet' in (error.get('Message') or ''):
+            raise Unsupported('IoT SiteWise workspaces are not available in this Region') from None
+        raise
+    return unique(items, 'name', 'workspace')
+
+
 def enrichment_jobs(ctx, per_workspace=False):
-    workspaces = unique(ctx.call('iotsitewise', 'list_workspaces', 'workspaceSummaries'),
-                        'name', 'workspace')
+    workspaces = workspace_inventory(ctx)
     seen = set()
     values = []
     for workspace in workspaces:

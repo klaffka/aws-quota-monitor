@@ -1,4 +1,5 @@
 """AWS context and all-or-error paginated inventories, cached within one run."""
+import copy
 import os
 import json
 import boto3
@@ -140,11 +141,28 @@ class CheckContext:
         self.quotas = {(q['ServiceCode'], q['QuotaCode']): q for q in quotas}
         self.cache = {}
         self.clients = {}
+        self.pinned = {}
 
     def client(self, service):
         if service not in self.clients:
             self.clients[service] = self.session.client(service, config=CONFIG)
         return self.clients[service]
+
+    def in_region(self, region):
+        """This context with its clients bound to one Region, for account-global
+        resources whose API answers from a single endpoint only.
+
+        A copy, so a replaced ``call`` carries over; its own clients and cache
+        keep the two endpoints' answers apart, since cache keys hold no Region.
+        """
+        if region == self.region:
+            return self
+        if region not in self.pinned:
+            pinned = copy.copy(self)
+            pinned.__class__ = PinnedContext
+            pinned.region, pinned.clients, pinned.cache, pinned.pinned = region, {}, {}, {}
+            self.pinned[region] = pinned
+        return self.pinned[region]
 
     def call(self, service, method, key=None, **kwargs):
         # default=str keeps datetimes usable as arguments; several APIs take a
@@ -199,6 +217,16 @@ class CheckContext:
                                      unit=quota.get('Unit', 'Count'))
             results.append(result)
         return results
+
+
+class PinnedContext(CheckContext):
+    """A CheckContext from ``in_region``: clients target its Region, not the session's."""
+
+    def client(self, service):
+        if service not in self.clients:
+            self.clients[service] = self.session.client(service, region_name=self.region,
+                                                        config=CONFIG)
+        return self.clients[service]
 
 
 def maximum(values, resource_type, source='resource_check'):
