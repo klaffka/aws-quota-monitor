@@ -18,6 +18,45 @@ class NoData(ValueError):
     pass
 
 
+# Answers that say a service is not set up, not offered to this account, or
+# retired. They carry no usage, but the check did not fail either. Matching is
+# on the error code and a fragment of AWS's message, and optionally the
+# operation, because AccessDenied also reports a missing IAM grant: anything
+# not listed here stays an ERROR.
+NOT_SET_UP = (
+    # (error code, operation or None, message fragment, status)
+    ('AccessDeniedException', None, 'No default admin could be found', 'NO_DATA'),
+    ('AccessDeniedException', None, ('Service role not found. Consult setup procedures in '
+     'License Manager'), 'NO_DATA'),
+    ('AccessDeniedException', None, 'Macie is not enabled', 'NO_DATA'),
+    ('AccessDeniedException', None, 'Please complete AWS Audit Manager setup', 'NO_DATA'),
+    ('UninitializedAccountException', None, 'Account not initialized', 'NO_DATA'),
+    ('UnsupportedUserEditionException', None, 'is not subscribed for QuickSight', 'NO_DATA'),
+    ('ValidationException', 'ListRotations', 'Account not found for the request', 'NO_DATA'),
+    ('OptInRequiredException', None, '', 'NO_DATA'),
+    ('TagOptionNotMigratedException', None, '', 'NO_DATA'),
+    ('InvalidOperationException', None, 'is not the management account of the Organization',
+     'NO_DATA'),
+    # Automation rules belong to the Security Hub administrator account.
+    ('AccessDeniedException', 'ListAutomationRules', 'is not authorized to perform this operation',
+     'NO_DATA'),
+    ('403', None, 'Telco Network Builder is deprecated', 'UNSUPPORTED'),
+    ('UnauthorizedException', None, 'no longer available to new customers', 'UNSUPPORTED'),
+    ('AccessDeniedException', 'GetDevEndpoints', 'operation is currently disabled', 'UNSUPPORTED'),
+    ('AccessDeniedException', None, 'Account is not authorized to use this feature', 'UNSUPPORTED'),
+)
+
+
+def not_set_up(exc):
+    """The status for a ClientError that NOT_SET_UP explains, else None."""
+    error = exc.response.get('Error', {})
+    code, message = error.get('Code'), error.get('Message') or ''
+    for known, operation, fragment, status in NOT_SET_UP:
+        if code == known and operation in {None, exc.operation_name} and fragment in message:
+            return status
+    return None
+
+
 def session_from_env():
     return boto3.Session(profile_name=os.getenv('QM_AWS_PROFILE') or os.getenv('AWS_PROFILE'),
                          region_name=os.getenv('AWS_REGION') or os.getenv('AWS_DEFAULT_REGION'))
@@ -132,8 +171,9 @@ class CheckContext:
                                      reason=str(exc), unit=quota.get('Unit', 'Count'))
             except ClientError as exc:
                 unavailable = exc.response['Error']['Code'] in {'NoSuchResourceException', 'NoSuchResource'}
+                status = 'UNSUPPORTED' if unavailable else not_set_up(exc) or 'ERROR'
                 result = measurement(self.account, self.region, service, code, name, limit,
-                                     now=self.now, status='UNSUPPORTED' if unavailable else 'ERROR',
+                                     now=self.now, status=status,
                                      reason=str(exc), unit=quota.get('Unit', 'Count'))
             except Exception as exc:
                 result = measurement(self.account, self.region, service, code, name, limit,

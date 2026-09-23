@@ -15,6 +15,11 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
+- A check against a service the account has not set up (Macie not enabled,
+  no Firewall Manager administrator, uninitialized MGN or DRS, no QuickSight
+  subscription, …) reports `NO_DATA`, and one against a retired feature
+  `UNSUPPORTED`, instead of `ERROR`. The first live run had about 95 such
+  errors, each of which withheld the collector heartbeat.
 - The collector has 1,024 MB of memory instead of 512 MB. A full run peaks
   above 512 MB and timed out after 900 seconds without storing anything.
 
