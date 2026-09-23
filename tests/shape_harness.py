@@ -9,7 +9,7 @@ shape, and the payload handed back is generated from that shape.
 
 It is not a test module; ``test_check_smoke.py`` parametrizes over it.
 """
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from importlib import import_module
 
 import boto3
@@ -22,7 +22,7 @@ from modules.qmcore.registry import _CHECK_MODULES
 
 ACCOUNT = '123456789012'
 REGION = 'eu-central-1'
-MOMENT = datetime(2026, 9, 15, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 15, tzinfo=UTC)
 # Deep shapes recurse; eight levels reaches the prefix lists nested inside a
 # security group rule, which is the deepest structure any check walks.
 MAX_DEPTH = 8

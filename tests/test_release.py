@@ -1,3 +1,4 @@
+import re
 from datetime import date
 import importlib.util
 from pathlib import Path
@@ -50,7 +51,7 @@ def test_prepare_release_updates_version_and_moves_notes(tmp_path):
 
 def test_check_tag_rejects_a_mismatched_tag(tmp_path):
     write_metadata(tmp_path, version="1.2.3")
-    with pytest.raises(release.ReleaseError, match="expected 'v1.2.3'"):
+    with pytest.raises(release.ReleaseError, match=re.escape("expected 'v1.2.3'")):
         release.check_tag(tmp_path, "v1.2.4")
 
 

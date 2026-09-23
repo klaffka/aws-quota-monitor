@@ -1,5 +1,5 @@
 """DataBrew ruleset scopes and Well-Architected share counts."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import databrew, wellarchitected
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 17, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 17, tzinfo=UTC)
 # These shapes validate their identifiers by length, so the fixtures use real ones.
 DATASET_ONE = 'arn:aws:databrew:eu-central-1:123456789012:dataset/one'
 DATASET_TWO = 'arn:aws:databrew:eu-central-1:123456789012:dataset/two'

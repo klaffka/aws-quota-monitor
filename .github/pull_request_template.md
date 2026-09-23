@@ -12,7 +12,8 @@ Listed in the order CI runs them, so working down this list reproduces
 - [ ] `python scripts/release.py check`
 - [ ] `ruff check src tests scripts`
 - [ ] `python -m compileall -q src tests scripts`
-- [ ] `python -m pytest -q`
+- [ ] `python -m pytest -q --cov=src/modules --cov=src/functions --cov-report=json:test-results/coverage.json`
+- [ ] `python scripts/coverage_gate.py test-results/coverage.json --baseline tests/fixtures/pytest-coverage-baseline.json`
 - [ ] `python scripts/quota_coverage.py tests/fixtures/quota-catalog-union.json --baseline tests/fixtures/coverage-baseline.json`
 - [ ] `bash deployment/build_layer.sh && python scripts/verify_package.py`
 - [ ] `terraform -chdir=deployment init -backend=false -lockfile=readonly`, then:

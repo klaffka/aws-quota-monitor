@@ -57,7 +57,7 @@ SERVICE_BATCH = 10
 CLUSTER_BATCH = 100
 TASK_BATCH = 100
 # A task is still being placed while it provisions; the quota counts those.
-PROVISIONING = 'PROVISIONING' 
+PROVISIONING = 'PROVISIONING'
 
 
 def _batched(items, size):

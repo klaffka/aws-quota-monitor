@@ -1,5 +1,5 @@
 """Amazon Q in Connect message templates and assistant associations."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks.misc_counts import CHECKS
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 16, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 16, tzinfo=UTC)
 BASES = ['kb-one', 'kb-two']
 TEMPLATES = {'kb-one': ['mt-a', 'mt-b'], 'kb-two': ['mt-c']}
 

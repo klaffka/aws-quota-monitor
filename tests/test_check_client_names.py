@@ -60,7 +60,7 @@ def _call_sites(path, attributes, arity=1, keywords=False):
             # test_check_smoke.py validates the merged kwargs instead.
             named = None if any(kw.arg is None for kw in node.keywords) else {
                 kw.arg for kw in node.keywords}
-            yield values + (named,)
+            yield (*values, named)
 
 
 def _operation(session, service, method):

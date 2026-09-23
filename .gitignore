@@ -17,3 +17,4 @@ node_modules/
 *.pdf
 *.zip
 .venv/
+.coverage

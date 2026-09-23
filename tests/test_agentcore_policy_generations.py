@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from unittest.mock import Mock
 
 import pytest
@@ -6,7 +6,7 @@ import pytest
 from modules.qmchecks.bedrock_agentcore import generated_policies
 from modules.qmcore.aws import NoData
 
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 
 
 def generation(days_ago):

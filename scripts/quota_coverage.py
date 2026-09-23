@@ -367,14 +367,14 @@ def totals(rows: list[dict]) -> dict:
 
 GAP_SHAPES = (
     ('countable', 'the name describes a count; whether an API exposes that inventory has to be checked quota by quota'),
-    ('size_or_period', 'the bound applies to one payload or document, or states a '
-                       'period in time units, so there is no inventory to count'),
-    ('rate_shaped', 'a rate no exclusion rule matches, because the name states '
-                    'neither a window nor an operation'),
-    ('no_sdk_client', 'botocore ships no client for the service any more, so no '
-                      'inventory can be read until AWS restores one'),
-    ('cross_account', 'the quota is counted over every account in the organization, '
-                      'which one account\'s credentials cannot see'),
+    ('size_or_period', ('the bound applies to one payload or document, or states a '
+                       'period in time units, so there is no inventory to count')),
+    ('rate_shaped', ('a rate no exclusion rule matches, because the name states '
+                    'neither a window nor an operation')),
+    ('no_sdk_client', ('botocore ships no client for the service any more, so no '
+                      'inventory can be read until AWS restores one')),
+    ('cross_account', ('the quota is counted over every account in the organization, '
+                      'which one account\'s credentials cannot see')),
 )
 GAP_LABELS = {'countable': 'countable', 'size_or_period': 'size or period',
               'rate_shaped': 'rate-shaped', 'no_sdk_client': 'no SDK client',
@@ -390,8 +390,8 @@ def render_gaps(rows: list[dict], limit: int = 12) -> str:
     current = totals(rows)
     shapes = {shape: sum(row[shape] for row in rows) for shape, _note in GAP_SHAPES}
     open_measurable = current['uncovered'] - current['unmeasurable']
-    lines = [f'{open_measurable:,} quotas are measurable and still uncovered. Sorting them by '
-             'what their', 'names describe shows what the remaining work actually is:', '',
+    lines = [(f'{open_measurable:,} quotas are measurable and still uncovered. Sorting them by '
+             'what their'), 'names describe shows what the remaining work actually is:', '',
              '| Shape | Quotas | What it would take |', '| --- | ---: | --- |']
     for shape, note in GAP_SHAPES:
         lines.append(f'| {GAP_LABELS[shape]} | {shapes[shape]:,} | {note} |')

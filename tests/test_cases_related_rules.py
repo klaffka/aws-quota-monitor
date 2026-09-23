@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import boto3
@@ -11,7 +11,7 @@ from modules.qmcore.registry import custom_keys
 from tests.iam_policy import grants
 
 
-NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 12, tzinfo=UTC)
 DOMAIN = 'domain-1'
 
 

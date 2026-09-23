@@ -9,8 +9,7 @@ import json
 import sys
 import os
 import time
-from datetime import datetime, timedelta
-import tempfile
+from datetime import datetime
 
 # Get AWS profile from environment or use default
 PROFILE = os.environ.get('QM_AWS_PROFILE') or os.environ.get('AWS_PROFILE')

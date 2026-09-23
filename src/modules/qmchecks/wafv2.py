@@ -262,14 +262,14 @@ CHECKS = [
      'Maximum number of custom response bodies per web ACL or rule group for regional',
      _per_container(lambda container: len(_bodies(container)), 'WAFv2Resource')),
     ('L-6F32B880',
-     'Maximum combined size in kilobytes of all response body content for a single '
-     'rule group or a single web ACL for regional',
+     ('Maximum combined size in kilobytes of all response body content for a single '
+     'rule group or a single web ACL for regional'),
      _per_container(lambda container: sum(_content_length(body) for body
                                           in _bodies(container).values()),
                     'WAFv2Resource')),
     ('L-0A8A309C',
-     'Maximum size in kilobytes of the custom response body content for a single '
-     'custom response definition for regional', largest_response_body),
+     ('Maximum size in kilobytes of the custom response body content for a single '
+     'custom response definition for regional'), largest_response_body),
     ('L-2D9CB303',
      'Maximum number of custom request headers per web ACL or rule group for regional',
      _per_container(lambda container: len(_request_headers(container)),

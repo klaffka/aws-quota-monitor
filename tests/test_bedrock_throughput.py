@@ -1,5 +1,5 @@
 """Provisioned throughput units and Bedrock's concurrent job inventories."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import bedrock_throughput as throughput
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 15, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 15, tzinfo=UTC)
 BASE = 'arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-lite-v1:0'
 CUSTOM = 'arn:aws:bedrock:eu-central-1:123456789012:custom-model/mine'
 

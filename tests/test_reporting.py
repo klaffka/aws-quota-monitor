@@ -1,7 +1,7 @@
 import csv
 import importlib
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from io import StringIO
 from unittest.mock import Mock
 import pytest
@@ -9,14 +9,14 @@ from modules.qmcore.aws import CheckContext
 from modules.qmcore.model import measurement
 from modules.qmcore.reporting import report_period, load_history, build_report, generate_csv_report
 
-NOW = datetime(2026, 3, 1, tzinfo=timezone.utc)
+NOW = datetime(2026, 3, 1, tzinfo=UTC)
 CODE = 'L-8EA77D34'
 
 
 def test_months_february_leap_year_and_year_rollover():
     for now, expected_start, days in [(NOW, '2026-02-01', 28),
-        (datetime(2024,3,1,tzinfo=timezone.utc), '2024-02-01', 29),
-        (datetime(2026,1,1,tzinfo=timezone.utc), '2025-12-01', 31)]:
+        (datetime(2024,3,1,tzinfo=UTC), '2024-02-01', 29),
+        (datetime(2026,1,1,tzinfo=UTC), '2025-12-01', 31)]:
         start, end = report_period({'period': 'previous_month'}, now)
         assert start.strftime('%Y-%m-%d') == expected_start
         assert (end-start).days == days
@@ -79,7 +79,7 @@ def test_history_scan_pagination_and_error(aws_db):
 
 def test_partial_report_saved_then_lambda_raises(aws_db, monkeypatch):
     main = importlib.import_module('functions.reporting.main')
-    session, db = aws_db
+    session, _db = aws_db
     session.client('s3').create_bucket(Bucket='report-test-bucket', CreateBucketConfiguration={'LocationConstraint': 'eu-central-1'})
     monkeypatch.setenv('QM_REPORT_BUCKET', 'report-test-bucket')
     monkeypatch.setattr(main, 'session_from_env', lambda: session)

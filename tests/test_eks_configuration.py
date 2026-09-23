@@ -9,6 +9,7 @@ from modules.qmchecks.eks import (
     fargate_configuration, get_current_quotastatus_eks, managed_nodes,
 )
 from modules.qmcore.aws import CheckContext, NoData
+from datetime import UTC
 
 
 def context(quotas=()):
@@ -67,12 +68,12 @@ def test_managed_nodes_use_asg_membership_across_all_backing_groups():
             'scalingConfig': {'minSize': 0, 'desiredSize': 50, 'maxSize': 100},
             'resources': {'autoScalingGroups': [{'name': 'first'}, {'name': 'second'}]}}},
                          {'clusterName': 'cluster', 'nodegroupName': 'nodegroup'})
-        from datetime import datetime, timezone
+        from datetime import datetime
         for name, members in [('first', [('i-one', 'InService'), ('i-two', 'Pending')]),
                               ('second', [('i-three', 'Terminating')])]:
             group = dict(AutoScalingGroupName=name, MinSize=0, MaxSize=100, DesiredCapacity=50,
                          DefaultCooldown=300, AvailabilityZones=['eu-central-1a'],
-                         HealthCheckType='EC2', CreatedTime=datetime.now(timezone.utc),
+                         HealthCheckType='EC2', CreatedTime=datetime.now(UTC),
                          Instances=[{'InstanceId': identity, 'AvailabilityZone': 'eu-central-1a',
                                      'LifecycleState': state, 'HealthStatus': 'Healthy',
                                      'ProtectedFromScaleIn': False} for identity, state in members])

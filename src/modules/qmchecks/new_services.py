@@ -32,10 +32,10 @@ def _validate_arn(arn, ctx, prefix, subject, *, owned=None):
             or len(parts[4]) != 12 or not parts[5].startswith(prefix)
             or len(parts[5]) <= len(prefix)):
         raise NoData(f'VPC Lattice {subject} has an inconsistent ARN')
-    if owned is True and parts[4] != ctx.account:
-        return False
-    if owned is False and parts[4] == ctx.account:
-        return False
+    if owned is True:
+        return parts[4] == ctx.account
+    if owned is False:
+        return parts[4] != ctx.account
     return True
 
 

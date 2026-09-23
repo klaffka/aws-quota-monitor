@@ -94,7 +94,7 @@ def training_jobs(ctx, per_membership=False):
 
 def active_versions(ctx):
     counts = defaultdict(int)
-    for mid, arn, _, item in model_versions(ctx):
+    for _mid, arn, _, item in model_versions(ctx):
         state = item.get('status')
         if state in PENDING | {'ACTIVE'}:
             counts[arn] += 1

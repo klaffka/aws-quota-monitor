@@ -1,5 +1,5 @@
 """MediaConvert queue occupancy and Transfer per-parent inventories."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import mediaconvert, transfer
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 16, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 16, tzinfo=UTC)
 # Transfer validates these identifiers by length, so the fixtures use real shapes.
 P_ONE, P_TWO = 'p-11111111111111111', 'p-22222222222222222'
 S_MANAGED, S_DIRECTORY = 's-11111111111111111', 's-22222222222222222'

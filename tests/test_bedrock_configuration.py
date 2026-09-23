@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import boto3
@@ -12,7 +12,7 @@ from modules.qmchecks.bedrock import CHECKS as ORIGINAL, get_current_quotastatus
 from modules.qmcore.aws import CheckContext, NoData
 from tests.iam_policy import granted_prefixes, grants
 
-NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 11, tzinfo=UTC)
 FID = 'FLOW123456'
 GID = 'guardrail1'
 

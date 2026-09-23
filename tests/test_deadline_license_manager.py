@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -14,7 +14,7 @@ QUEUE = 'queue-11111111111111111111111111111111'
 OTHER_QUEUE = 'queue-22222222222222222222222222222222'
 LICENSE = 'arn:aws:license-manager::123456789012:license:l-1111'
 OTHER_LICENSE = 'arn:aws:license-manager::123456789012:license:l-2222'
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 STAMP = {'createdAt': NOW, 'createdBy': 'arn:aws:iam::123456789012:user/build'}
 FLEET_TWO = 'fleet-22222222222222222222222222222222'
 

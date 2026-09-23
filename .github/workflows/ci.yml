@@ -54,7 +54,18 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q src tests scripts
       - name: Run unit tests
-        run: python -m pytest -q --junitxml=test-results/pytest.xml
+        env:
+          # sys.monitoring rather than sys.settrace; the suite runs for minutes.
+          COVERAGE_CORE: sysmon
+        run: >-
+          python -m pytest -q --junitxml=test-results/pytest.xml
+          --cov=src/modules --cov=src/functions
+          --cov-report=json:test-results/coverage.json
+          --cov-report=term-missing:skip-covered
+      - name: Check test coverage baseline
+        run: >-
+          python scripts/coverage_gate.py test-results/coverage.json
+          --baseline tests/fixtures/pytest-coverage-baseline.json
       - name: Check quota coverage baseline
         run: >-
           python scripts/quota_coverage.py
@@ -65,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pytest-results
-          path: test-results/pytest.xml
+          path: test-results/
           if-no-files-found: warn
           retention-days: 14
 

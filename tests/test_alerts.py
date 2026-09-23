@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from unittest.mock import Mock
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event
@@ -6,7 +6,7 @@ import pytest
 from modules.qmalerting.alerting import QuotaAlert, AlertBusy
 from modules.qmcore.model import measurement
 
-NOW = datetime(2026, 3, 1, tzinfo=timezone.utc)
+NOW = datetime(2026, 3, 1, tzinfo=UTC)
 
 
 def entry(usage=90, seconds=0, **kwargs):

@@ -1,5 +1,5 @@
 import importlib
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from unittest.mock import Mock
 import pytest
 from modules.qmcore.aws import CheckContext
@@ -7,7 +7,7 @@ from modules.qmcore.catalog import get_catalog
 from modules.qmcore.model import measurement
 from test_metrics import quota
 
-NOW = datetime(2026, 3, 1, tzinfo=timezone.utc)
+NOW = datetime(2026, 3, 1, tzinfo=UTC)
 
 
 def test_catalog_cache_daily_expiry_and_namespace(aws_db, monkeypatch):
@@ -73,7 +73,7 @@ def test_partial_cached_generation_refreshes_instead_of_returning_partial(aws_db
 
 def collector_setup(aws_db, monkeypatch, entries, metric_quotas=()):
     main = importlib.import_module('functions.quota-collector.main')
-    session, db = aws_db
+    session, _db = aws_db
     monkeypatch.setattr(main, 'session_from_env', lambda: session)
     monkeypatch.setattr(main, 'get_catalog', lambda *a: (list(metric_quotas), []))
     monkeypatch.setattr(main, 'get_current_quotastatus_ec2', lambda **kw: entries)

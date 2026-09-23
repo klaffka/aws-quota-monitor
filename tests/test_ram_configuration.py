@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 import pytest
 
@@ -13,17 +14,17 @@ from tests.iam_policy import grants
 
 
 class RAMContext:
-    resources = [
+    resources: ClassVar = [
         {'arn': 'arn:resource:one', 'resourceShareArn': 'arn:share:a'},
         {'arn': 'arn:resource:two', 'resourceShareArn': 'arn:share:a'},
         {'arn': 'arn:resource:one', 'resourceShareArn': 'arn:share:b'},
     ]
-    principals = [
+    principals: ClassVar = [
         {'id': '111111111111', 'resourceShareArn': 'arn:share:a'},
         {'id': '222222222222', 'resourceShareArn': 'arn:share:a'},
         {'id': '111111111111', 'resourceShareArn': 'arn:share:b'},
     ]
-    permissions = [
+    permissions: ClassVar = [
         {'arn': 'arn:permission:one', 'resourceType': 'ec2:Subnet',
          'permissionType': 'CUSTOMER_MANAGED', 'version': '2'},
         {'arn': 'arn:permission:two', 'resourceType': 'ec2:Subnet',

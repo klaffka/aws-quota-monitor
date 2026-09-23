@@ -1,5 +1,5 @@
 """DMS serverless, subnet-group and data-migration scopes."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import dms_resources as dms
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 15, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 15, tzinfo=UTC)
 
 
 def context(code):

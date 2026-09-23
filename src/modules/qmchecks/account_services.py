@@ -6,7 +6,6 @@ resource listings and makes permission failures visible per quota.
 """
 import re
 
-from modules.qmcore.aws import CheckContext
 from modules.qmcore.model import measurement, number
 
 

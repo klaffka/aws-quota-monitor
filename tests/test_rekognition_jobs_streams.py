@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import boto3
@@ -13,7 +13,7 @@ from tests.iam_policy import grants
 PROJECT = 'arn:aws:rekognition:eu-central-1:123456789012:project/example/1234567890'
 VIDEO = 'arn:aws:kinesisvideo:eu-central-1:123456789012:stream/video/1234567890'
 OUTPUT = 'arn:aws:kinesis:eu-central-1:123456789012:stream/output'
-NOW = datetime(2026, 9, 12, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 12, tzinfo=UTC)
 
 
 def context(code='L-5E225387'):

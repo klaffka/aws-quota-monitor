@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import boto3
@@ -13,7 +13,7 @@ from modules.qmcore.registry import custom_keys
 MODEL = 'amazon.titan-embed-image-v1'
 OTHER = 'amazon.nova-lite-v1:0'
 BASE_CODE, CUSTOM_CODE = 'L-7F2C6F33', 'L-652C224A'
-NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 11, tzinfo=UTC)
 CUSTOM_ARN = 'arn:aws:bedrock:eu-central-1:123456789012:custom-model/custom/123456789012'
 
 

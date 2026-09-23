@@ -1,8 +1,9 @@
 """UTC reporting with exclusive endpoints, scoped history and explicit quality."""
 import csv
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from io import StringIO
+from itertools import pairwise
 from modules.qmcore.model import iso, utcnow, valid_measurement, number
 from modules.qmcore.metrics import compatible, fetch_metrics
 from modules.qmcore.catalog import account_catalog
@@ -25,7 +26,7 @@ def report_period(event=None, now=None):
             now = datetime.fromisoformat(event['time'].replace('Z', '+00:00'))
             if now.tzinfo is None:
                 raise ValueError('Event time must include a timezone')
-        end = now.astimezone(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end = now.astimezone(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         start = (end - timedelta(days=1)).replace(day=1)
     else:
         raw = event.get('days_back', os.getenv('QM_REPORT_DAYS', '30'))
@@ -37,7 +38,7 @@ def report_period(event=None, now=None):
             raise ValueError('days_back must be an integer') from exc
         if not 1 <= days <= 455:
             raise ValueError('days_back must be between 1 and 455')
-        end = now.astimezone(timezone.utc).replace(microsecond=0)
+        end = now.astimezone(UTC).replace(microsecond=0)
         start = end - timedelta(days=days)
     return start, end
 
@@ -98,8 +99,8 @@ def _coverage(times, start, end):
     times = sorted(datetime.fromisoformat(t.replace('Z', '+00:00')) for t in times)
     if not times:
         return False
-    edges = [start] + times + [end]
-    return all(b - a <= timedelta(minutes=30) for a, b in zip(edges, edges[1:]))
+    edges = [start, *times, end]
+    return all(b - a <= timedelta(minutes=30) for a, b in pairwise(edges))
 
 
 def build_report(ctx, db, quotas, start, end):

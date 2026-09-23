@@ -16,12 +16,12 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Iterable
+from collections.abc import Iterable
 
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from modules.qmcore.coverage import reason_group  # noqa: E402
+from modules.qmcore.coverage import reason_group
 
 
 def load_items(path: str) -> list[dict]:

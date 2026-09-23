@@ -1,5 +1,5 @@
 """Data Automation project blueprints, agent schemas and optimization jobs."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -9,7 +9,7 @@ from modules.qmchecks import bedrock, bedrock_data_automation as automation
 from modules.qmchecks import bedrock_optimization as optimization
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 16, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 16, tzinfo=UTC)
 PROJECT = 'arn:aws:bedrock:eu-central-1:123456789012:data-automation-project/one'
 OTHER = 'arn:aws:bedrock:eu-central-1:123456789012:data-automation-project/two'
 

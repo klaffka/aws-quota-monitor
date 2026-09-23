@@ -124,7 +124,7 @@ def test_policy_size_counts_utf8_bytes():
 def test_tag_counts_and_utf8_lengths():
     tags = {'owner': 'team-a', 'kostenstelle': 'über-1234'}
     for code, expected in (('L-4BE1B2BD', 2), ('L-A01B4DF0', len('kostenstelle')),
-                           ('L-BF2A6161', len('über-1234'.encode('utf-8')))):
+                           ('L-BF2A6161', len('über-1234'.encode()))):
         ctx = context(code)
         with Stubber(ctx.client('sqs')) as stub:
             stub.add_response('list_queues', {'QueueUrls': [STANDARD]}, {})

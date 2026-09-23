@@ -4,7 +4,7 @@ A wrong key makes ``paginate`` yield an empty list, so the check reports
 ``usage=0`` with status OK: a fabricated zero that looks like a measurement.
 These tests stub the real client, so only the documented key satisfies them.
 """
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -45,7 +45,7 @@ def test_guardduty_threat_intel_sets_read_threat_intel_set_ids():
         stub.assert_no_pending_responses()
 
 
-MOMENT = datetime(2026, 9, 15, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 15, tzinfo=UTC)
 STAMPS = {'createdAt': MOMENT, 'updatedAt': MOMENT}
 
 

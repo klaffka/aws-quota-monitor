@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -168,8 +169,8 @@ def test_parallel_actions_count_only_currently_active_action_states():
 
 
 def test_fis_check_codes_match_catalog_and_target_actions_are_unique():
-    catalog = json.loads(open(
-        'tests/fixtures/selected-service-quotas.json', encoding='utf-8').read())
+    catalog = json.loads(Path('tests/fixtures/selected-service-quotas.json')
+                         .read_text(encoding='utf-8'))
     quotas = catalog['Quotas'] if isinstance(catalog, dict) else catalog
     fis_codes = {item['QuotaCode'] for item in quotas if item['ServiceCode'] == 'fis'}
     codes = [code for code, _name, _fn in CHECKS]

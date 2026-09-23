@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 import pytest
 
@@ -13,7 +14,7 @@ from tests.iam_policy import grants
 
 
 class AppRunnerContext:
-    inventories = {
+    inventories: ClassVar = {
         'list_connections': [
             {'ConnectionArn': 'arn:connection:one', 'Status': 'AVAILABLE'},
             {'ConnectionArn': 'arn:connection:deleted', 'Status': 'DELETED'},

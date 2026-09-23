@@ -123,11 +123,11 @@ def _indirect_call_sites(path):
         if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                 and node.func.id in templates):
             continue
-        bound = dict(zip(signatures[node.func.id], node.args))
+        bound = dict(zip(signatures[node.func.id], node.args, strict=False))
         bound.update({keyword.arg: keyword.value
                       for keyword in node.keywords if keyword.arg})
 
-        def resolve(source):
+        def resolve(source, bound=bound):
             if source[0] == 'const':
                 return source[1]
             argument = bound.get(source[1])

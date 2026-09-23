@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import Mock
 
 import boto3
@@ -7,13 +7,13 @@ from botocore.stub import Stubber
 
 from modules.qmchecks.cleanrooms_ml import (
     CHECKS, active_versions, audience_jobs, get_current_quotastatus_cleanrooms_ml,
-    inference_jobs, membership_inventory, model_versions, pending_count, training_instances, training_jobs,
+    inference_jobs, membership_inventory, model_versions, training_instances, training_jobs,
 )
 from modules.qmchecks.cleanrooms_ml_quotas import TRAINING_INSTANCE_QUOTAS
 from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
 
-NOW = datetime(2026, 9, 11, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 11, tzinfo=UTC)
 MID = '11111111-1111-1111-1111-111111111111'
 CID = '22222222-2222-2222-2222-222222222222'
 VERSIONS = ['00000000-0000-0000-0000-00000000000' + str(i) for i in range(1, 4)]

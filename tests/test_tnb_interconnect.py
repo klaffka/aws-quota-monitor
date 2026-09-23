@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -9,7 +9,7 @@ from modules.qmcore.aws import CheckContext, NoData
 from modules.qmcore.registry import custom_keys
 
 
-NOW = datetime(2026, 9, 15, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 15, tzinfo=UTC)
 UUID = '11111111-1111-1111-1111-11111111111'
 
 

@@ -678,7 +678,15 @@ terraform -chdir=deployment validate
 The package check imports every supported entry point from a function ZIP with only
 the built layer and Python's standard library available. `.github/workflows/ci.yml`
 runs workflow validation, correctness linting, dependency checks, compilation, tests,
-layer construction, package imports, and Terraform checks without AWS credentials. Python, packaging, and
+line-coverage and quota-coverage baselines, layer construction, package imports, and
+Terraform checks without AWS credentials.
+
+Line coverage is measured per package against
+`tests/fixtures/pytest-coverage-baseline.json` by `scripts/coverage_gate.py`. The floors
+are the measured figures rounded down, not targets: they hold what the suite already
+reaches, and raising one is a deliberate edit. A single figure over `src` would say
+little, because `src/modules/qmchecks` holds 12,240 of the 13,447 statements and would
+mask a regression anywhere else. Python, packaging, and
 Terraform run as separate jobs, and CI uploads test results and the verified layer as
 short-lived artifacts. Dependabot proposes weekly updates for Python packages, pinned
 GitHub Actions, and Terraform providers.

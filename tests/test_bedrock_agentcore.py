@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -63,7 +63,7 @@ def test_active_sessions_include_custom_and_system_tools_and_pagination(browser)
     method = 'list_browsers' if browser else 'list_code_interpreters'
     list_key = 'browserSummaries' if browser else 'codeInterpreterSummaries'
     session_method = 'list_browser_sessions' if browser else 'list_code_interpreter_sessions'
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     def tool(identifier, status='READY'):
         return {f'{noun}Id': identifier, f'{noun}Arn': 'arn:aws:bedrock-agentcore:eu-central-1:123456789012:tool/example',
                 'name': 'example', 'status': status, 'createdAt': now, 'lastUpdatedAt': now}

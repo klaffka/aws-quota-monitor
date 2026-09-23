@@ -1,5 +1,5 @@
 """DocumentDB account inventories and per-cluster scopes."""
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import boto3
 import pytest
@@ -8,7 +8,7 @@ from botocore.stub import Stubber
 from modules.qmchecks import docdb
 from modules.qmcore.aws import CheckContext, NoData
 
-MOMENT = datetime(2026, 9, 17, tzinfo=timezone.utc)
+MOMENT = datetime(2026, 9, 17, tzinfo=UTC)
 
 
 def context(code):

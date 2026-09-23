@@ -1,15 +1,16 @@
+from datetime import UTC
 
 
 def test_the_call_cache_accepts_datetime_arguments():
     """Several APIs take a time window, which the cache key must survive."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     import boto3
     from botocore.stub import Stubber
 
     from modules.qmcore.aws import CheckContext
 
-    moment = datetime(2026, 9, 15, tzinfo=timezone.utc)
+    moment = datetime(2026, 9, 15, tzinfo=UTC)
     ctx = CheckContext(boto3.Session(region_name='eu-central-1'),
                        account='123456789012', now=moment)
     with Stubber(ctx.client('iot')) as stub:
