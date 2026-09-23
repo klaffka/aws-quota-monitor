@@ -5,6 +5,11 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
+### Added
+
+- A deployment runbook in `docs/deploying.md`: cost check, plan review,
+  synchronous validation runs and reading the run record.
+
 ### Changed
 
 - The collector runs once a day instead of every ten minutes. Every run

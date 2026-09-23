@@ -40,7 +40,7 @@ changelog section. Assets include the verified Lambda dependency layer and its S
 checksum; GitHub also supplies source archives for the tagged commit.
 
 The release workflow does not apply Terraform or invoke AWS APIs. Deployment remains a
-separate, reviewed operation.
+separate, reviewed operation; see [deploying.md](deploying.md).
 
 After a release, set `VERSION` to the next intended development version, for example
 `0.2.0-dev.0`, and commit that change.
