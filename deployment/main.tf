@@ -472,6 +472,9 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           "discovery:List*",
           "dlm:Get*",
           "dms:Describe*",
+          # DMS authorises DescribeMigrationProjects, DescribeDataProviders and
+          # DescribeInstanceProfiles as dms:List* actions.
+          "dms:List*",
           "docdb-elastic:Get*",
           "docdb-elastic:List*",
           "drs:Describe*",
@@ -710,6 +713,15 @@ resource "aws_iam_role_policy" "lambda_ec2" {
           "xray:List*"
         ],
         Resource = "*"
+      },
+      {
+        # Keyspaces answers ListKeyspaces and ListTables from its system
+        # tables and authorises them as cassandra:Select. The ARN keeps every
+        # user keyspace, and so all table data, out of reach.
+        Sid      = "KeyspacesSystemTables",
+        Effect   = "Allow",
+        Action   = ["cassandra:Select"],
+        Resource = "arn:aws:cassandra:*:*:/keyspace/system*"
       }
     ]
   })

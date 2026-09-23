@@ -32,6 +32,9 @@ All notable changes to this project are recorded here. Versions follow
   homed in another Region; an S3 bucket without replication counts zero rules;
   IoT logging levels count zero before logging was ever configured; IoT
   SiteWise workspaces report `UNSUPPORTED` where the Region does not offer them.
+- The collector role may read Keyspaces system tables (`cassandra:Select`,
+  limited to `system*` keyspaces) and call `dms:List*`, which Keyspaces and DMS
+  require for listing operations whose names do not say so.
 - The collector has 1,024 MB of memory instead of 512 MB. A full run peaks
   above 512 MB and timed out after 900 seconds without storing anything.
 
