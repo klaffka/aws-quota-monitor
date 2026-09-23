@@ -44,13 +44,31 @@ NOT_SET_UP = (
     ('UnauthorizedException', None, 'no longer available to new customers', 'UNSUPPORTED'),
     ('AccessDeniedException', 'GetDevEndpoints', 'operation is currently disabled', 'UNSUPPORTED'),
     ('AccessDeniedException', None, 'Account is not authorized to use this feature', 'UNSUPPORTED'),
+    ('InvalidParameterValueException', 'DescribeFleetAdvisorCollectors', 'Access Denied to API',
+     'UNSUPPORTED'),
+    # Organization-wide answers only reach the management account.
+    ('AccessDeniedException', 'ListRoots', "You don't have permissions to access this resource",
+     'NO_DATA'),
+    ('UnauthorizedException', 'ListCentralizationRulesForOrganization', 'Unauthorized', 'NO_DATA'),
+    # The IAM Identity Center instance lives in another Region or account.
+    ('AccessDeniedException', 'ListPermissionSets', ('because the resource does not exist in this '
+     'Region'), 'NO_DATA'),
 )
 
+# These services answer the listing of a feature closed to the account with an
+# AccessDeniedException that carries no message at all, even for an
+# administrator; a missing IAM grant always names the principal and action. A
+# later call that fails after the listing succeeded is not a closed feature.
+CLOSED_FEATURES = {'iotfleetwise', 'rekognition'}
 
-def not_set_up(exc):
-    """The status for a ClientError that NOT_SET_UP explains, else None."""
+
+def not_set_up(exc, service=None):
+    """The status for a ClientError that NOT_SET_UP or CLOSED_FEATURES explains, else None."""
     error = exc.response.get('Error', {})
     code, message = error.get('Code'), error.get('Message') or ''
+    if (code == 'AccessDeniedException' and not message.strip() and service in CLOSED_FEATURES
+            and exc.operation_name.startswith('List')):
+        return 'UNSUPPORTED'
     for known, operation, fragment, status in NOT_SET_UP:
         if code == known and operation in {None, exc.operation_name} and fragment in message:
             return status
@@ -171,7 +189,7 @@ class CheckContext:
                                      reason=str(exc), unit=quota.get('Unit', 'Count'))
             except ClientError as exc:
                 unavailable = exc.response['Error']['Code'] in {'NoSuchResourceException', 'NoSuchResource'}
-                status = 'UNSUPPORTED' if unavailable else not_set_up(exc) or 'ERROR'
+                status = 'UNSUPPORTED' if unavailable else not_set_up(exc, service) or 'ERROR'
                 result = measurement(self.account, self.region, service, code, name, limit,
                                      now=self.now, status=status,
                                      reason=str(exc), unit=quota.get('Unit', 'Count'))

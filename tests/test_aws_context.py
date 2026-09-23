@@ -93,11 +93,21 @@ NOT_SET_UP = [
     ('AccessDeniedException', 'GetDevEndpoints',
      'GetDevEndpoints operation is currently disabled.', 'UNSUPPORTED'),
     ('AccessDeniedException', 'ListStateTemplates',
-     'Account is not authorized to use this feature.', 'UNSUPPORTED'),
+     'Account is not authorized to use this feature.', 'UNSUPPORTED'),    ('InvalidParameterValueException', 'DescribeFleetAdvisorCollectors', 'Access Denied to API',
+     'UNSUPPORTED'),
+    ('AccessDeniedException', 'ListRoots', "You don't have permissions to access this resource.",
+     'NO_DATA'),
+    ('UnauthorizedException', 'ListCentralizationRulesForOrganization', 'Unauthorized', 'NO_DATA'),
+    ('AccessDeniedException', 'ListPermissionSets', (
+        'User: arn:aws:sts::123456789012:assumed-role/qm-quotacontroller-exec/qm-quota-collector '
+        'is not authorized to perform: sso:ListPermissionSets on resource: '
+        'arn:aws:sso:::instance/ssoins-1 because the resource does not exist in this Region, no '
+        'resource-based policies allow access, or a resource-based policy explicitly denies '
+        'access'), 'NO_DATA'),
 ]
 
 
-def _run_failing(code, operation, message):
+def _run_failing(code, operation, message, service='svc'):
     from unittest.mock import Mock
 
     from botocore.exceptions import ClientError
@@ -105,12 +115,12 @@ def _run_failing(code, operation, message):
     from modules.qmcore.aws import CheckContext
 
     ctx = CheckContext(Mock(region_name='eu-central-1'), account='123456789012',
-                       quotas=[{'ServiceCode': 'svc', 'QuotaCode': 'L-1', 'Value': 10}])
+                       quotas=[{'ServiceCode': service, 'QuotaCode': 'L-1', 'Value': 10}])
 
     def check(_):
         raise ClientError({'Error': {'Code': code, 'Message': message}}, operation)
 
-    result, = ctx.run('svc', [('L-1', 'quota', check)])
+    result, = ctx.run(service, [('L-1', 'quota', check)])
     return result
 
 
@@ -128,6 +138,7 @@ def test_a_service_the_account_has_not_set_up_is_not_an_error(code, operation, m
      ('User: arn:aws:sts::123456789012:assumed-role/qm-quotacontroller-exec/qm-quota-collector '
      'is not authorized to perform: cassandra:Select on resource: arn:aws:cassandra:eu-central-1:'
      '123456789012:/keyspace/*')),
+    # An empty denial only means a closed feature for the services measured to do so.
     ('AccessDeniedException', 'ListStreamProcessors', ''),
     # The Security Hub wording is only known to mean "not the administrator" here.
     ('AccessDeniedException', 'ListFindings',
@@ -136,3 +147,19 @@ def test_a_service_the_account_has_not_set_up_is_not_an_error(code, operation, m
 ])
 def test_other_denials_stay_errors(code, operation, message):
     assert _run_failing(code, operation, message)['qualityStatus'] == 'ERROR'
+
+
+@pytest.mark.parametrize('service, operation', [
+    ('rekognition', 'ListStreamProcessors'), ('rekognition', 'ListMediaAnalysisJobs'),
+    ('iotfleetwise', 'ListFleets'), ('iotfleetwise', 'ListCampaigns'),
+])
+def test_an_empty_denial_is_a_feature_closed_to_the_account(service, operation):
+    """AWS answers these with no message at all, even to an administrator."""
+    assert _run_failing('AccessDeniedException', operation, '', service)['qualityStatus'] == 'UNSUPPORTED'
+
+
+def test_an_iam_denial_on_a_closed_feature_service_stays_an_error():
+    message = ('User: arn:aws:sts::123456789012:assumed-role/r/s is not authorized to perform: '
+               'rekognition:ListCollections')
+    result = _run_failing('AccessDeniedException', 'ListCollections', message, 'rekognition')
+    assert result['qualityStatus'] == 'ERROR'
