@@ -15,6 +15,8 @@ All notable changes to this project are recorded here. Versions follow
 
 ### Fixed
 
+- Keyspaces checks leave out AWS's system keyspaces, which counted towards
+  the keyspace and table quotas and failed the table throughput checks.
 - A check against a service the account has not set up (Macie not enabled,
   no Firewall Manager administrator, uninitialized MGN or DRS, no QuickSight
   subscription, …) reports `NO_DATA`, and one against a retired feature
