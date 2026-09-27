@@ -16,7 +16,7 @@ def _max_nested(ctx, parents, parent_field, method, key, kwargs=None,
     for parent in parents(ctx):
         parent_id = parent.get(parent_field)
         if not parent_id:
-            continue
+            raise NoData(f'Bedrock parent inventory has an entry without {parent_field}')
         call_kwargs = dict(kwargs or {})
         call_kwargs[request_field or parent_field] = parent_id
         items = ctx.call('bedrock-agent', method, key, **call_kwargs)

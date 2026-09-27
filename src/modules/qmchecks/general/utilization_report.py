@@ -14,7 +14,7 @@ def quota_utilization_report(service_code=None, session=None):
         raise RuntimeError(f'Catalog incomplete: {errors}')
     selected = [q for q in quotas if q.get('UsageMetric') and
                 (service_code is None or q['ServiceCode'] == service_code)]
-    return fetch_metrics(ctx, selected, ctx.now - timedelta(minutes=20), ctx.now)
+    return fetch_metrics(ctx, selected, ctx.now - timedelta(days=1), ctx.now)
 
 
 def process_quota_utilization_report(utilization_report, session=None):

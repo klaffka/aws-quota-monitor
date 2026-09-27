@@ -1,0 +1,25 @@
+# Each exception requires a reason, narrow path and expiration; see SECURITY.md.
+misconfigurations:
+  - id: AVD-AWS-0132
+    paths:
+      - deployment/main.tf
+    statement: >-
+      Report objects use S3 managed SSE-S3 encryption (AES-256), which AWS
+      applies at no additional cost. A customer-managed KMS key is not required
+      for this low-sensitivity report bucket; reassess if data classification
+      changes. AWS documents this baseline at
+      https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-encryption-faq.html.
+    expired_at: '2027-09-26T00:00:00Z'
+  - id: AVD-AWS-0095
+    paths:
+      - deployment/main.tf
+    statement: >-
+      Quota alerts contain resource identifiers and usage percentages, not
+      customer payloads or credentials. Enabling SNS KMS encryption with an
+      AWS-managed key prevents CloudWatch alarm delivery; a customer-managed
+      key adds recurring cost and key-policy operations. Reassess if alert
+      content classification changes or a shared customer-managed key is
+      provided. See https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html.
+    expired_at: '2027-09-26T00:00:00Z'
+vulnerabilities: []
+secrets: []

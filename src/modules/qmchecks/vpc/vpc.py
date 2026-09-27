@@ -1,6 +1,6 @@
 """VPC accounting follows direction, address-family and resource scope limits."""
 from collections import Counter, defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 from modules.qmcore.aws import CheckContext, maximum, Unsupported, NoData, session_from_env
 from modules.qmcore.metrics import fetch_metrics
 
@@ -148,7 +148,11 @@ def nau(ctx, metric_name):
                    UsageMetric=dict(MetricNamespace='AWS/EC2', MetricName=metric_name,
                                     MetricStatisticRecommendation='Maximum', MetricDimensions={'VpcId': v['VpcId']}))
               for v in vpcs]
-    entries = fetch_metrics(ctx, quotas, ctx.now - timedelta(minutes=20), ctx.now)
+    metric_start = getattr(ctx, 'metric_start', None)
+    metric_end = getattr(ctx, 'metric_end', None)
+    if not isinstance(metric_start, datetime) or not isinstance(metric_end, datetime):
+        metric_start, metric_end = ctx.now - timedelta(days=1), ctx.now
+    entries = fetch_metrics(ctx, quotas, metric_start, metric_end)
     if any(e['qualityStatus'] == 'ERROR' for e in entries):
         raise RuntimeError('Incomplete NAU CloudWatch inventory')
     if any(e['qualityStatus'] != 'OK' for e in entries):

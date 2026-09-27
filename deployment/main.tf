@@ -14,6 +14,15 @@ resource "aws_s3_bucket" "reports" {
   tags   = var.tags
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "reports" {
+  bucket = aws_s3_bucket.reports.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 # Enable versioning for reports bucket
 resource "aws_s3_bucket_versioning" "reports" {
   bucket = aws_s3_bucket.reports.id
@@ -70,7 +79,7 @@ resource "aws_lambda_layer_version" "qm_dependencies" {
 
   # A new dependency set publishes a new layer version and Terraform would
   # delete the old one first, leaving the functions pointing at a version that
-  # no longer exists -- and the collector runs every ten minutes. Keeping the
+  # no longer exists. Keeping the
   # old version closes that gap and leaves something to roll back to.
   # `create_before_destroy` cannot do it here: it propagates to this resource's
   # dependencies, and the data source that reads the built ZIP cannot carry a
@@ -132,22 +141,15 @@ resource "aws_iam_role_policy" "lambda_service_quotas" {
 # Inline policy to allow Lambda to access S3 for reports
 resource "aws_iam_role_policy" "lambda_s3" {
   name = "qm-quotacontroller-s3"
-  role = aws_iam_role.lambda_exec.name
+  role = aws_iam_role.reporting_exec.name
 
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow",
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:ListBucket"
-        ],
-        Resource = [
-          aws_s3_bucket.reports.arn,
-          "${aws_s3_bucket.reports.arn}/*"
-        ]
+        Effect   = "Allow",
+        Action   = ["s3:PutObject"],
+        Resource = ["${aws_s3_bucket.reports.arn}/*"]
       }
     ]
   })
@@ -254,6 +256,7 @@ resource "aws_lambda_function" "quota_collector" {
   runtime       = "python3.14"
   filename      = data.archive_file.quota_collector_zip.output_path
   timeout       = 900
+  publish       = true
   # One run holds a client for every service it reads (~114) and caches every
   # response until it ends; that peaks above 512 MB, where the run stalls and
   # times out. Memory also sets the CPU share.
@@ -280,11 +283,12 @@ resource "aws_lambda_function" "quota_collector" {
 
 resource "aws_lambda_function" "reporting" {
   function_name = "qm-reporting"
-  role          = aws_iam_role.lambda_exec.arn
+  role          = aws_iam_role.reporting_exec.arn
   handler       = "functions.reporting.main.lambda_handler"
   runtime       = "python3.14"
   filename      = data.archive_file.reporting_zip.output_path
   timeout       = 900
+  publish       = true
   memory_size   = 512
   architectures = ["x86_64"]
 
@@ -728,8 +732,13 @@ resource "aws_iam_role_policy" "lambda_ec2" {
 }
 
 resource "aws_dynamodb_table" "qm_quotalog" {
-  name         = "qm-quotalog"
-  billing_mode = "PAY_PER_REQUEST"
+  name                        = "qm-quotalog"
+  billing_mode                = "PAY_PER_REQUEST"
+  deletion_protection_enabled = var.enable_data_deletion_protection
+
+  point_in_time_recovery {
+    enabled = var.enable_dynamodb_pitr
+  }
 
   hash_key  = "PK"
   range_key = "SK"
@@ -765,17 +774,29 @@ resource "aws_cloudwatch_event_rule" "quota_collector_schedule" {
 resource "aws_cloudwatch_event_target" "quota_collector_target" {
   rule      = aws_cloudwatch_event_rule.quota_collector_schedule.name
   target_id = "qm-collector-lambda"
-  arn       = aws_lambda_function.quota_collector.arn
+  arn       = aws_lambda_alias.live["collector"].arn
 
-  input = jsonencode({
-    source = "eventbridge-scheduler"
-  })
+  input_transformer {
+    input_paths    = { scheduled_time = "$.time" }
+    input_template = <<-JSON
+      {"source":"eventbridge-scheduler","time":<scheduled_time>}
+    JSON
+  }
+  dead_letter_config {
+    arn = aws_sqs_queue.failed_events.arn
+  }
+  retry_policy {
+    maximum_event_age_in_seconds = 86400
+    maximum_retry_attempts       = 2
+  }
+  depends_on = [aws_sqs_queue_policy.failed_events]
 }
 
 resource "aws_lambda_permission" "allow_eventbridge_collector" {
   statement_id  = "AllowExecutionFromEventBridgeCollector"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.quota_collector.function_name
+  qualifier     = aws_lambda_alias.live["collector"].name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.quota_collector_schedule.arn
 }
@@ -791,7 +812,16 @@ resource "aws_cloudwatch_event_rule" "reporting_schedule" {
 resource "aws_cloudwatch_event_target" "reporting_target" {
   rule      = aws_cloudwatch_event_rule.reporting_schedule.name
   target_id = "qm-reporting-lambda"
-  arn       = aws_lambda_function.reporting.arn
+  arn       = aws_lambda_alias.live["reporting"].arn
+
+  dead_letter_config {
+    arn = aws_sqs_queue.failed_events.arn
+  }
+  retry_policy {
+    maximum_event_age_in_seconds = 86400
+    maximum_retry_attempts       = 2
+  }
+  depends_on = [aws_sqs_queue_policy.failed_events]
 
   input_transformer {
     input_paths    = { scheduled_time = "$.time" }
@@ -805,6 +835,7 @@ resource "aws_lambda_permission" "allow_eventbridge_reporting" {
   statement_id  = "AllowExecutionFromEventBridgeReporting"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.reporting.function_name
+  qualifier     = aws_lambda_alias.live["reporting"].name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.reporting_schedule.arn
 }

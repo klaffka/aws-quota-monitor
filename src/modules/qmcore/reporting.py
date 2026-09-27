@@ -73,6 +73,10 @@ def aggregate_history(items, start, end, metric_peaks=None):
     groups = {}
     metric_peaks = metric_peaks or {}
     for item in items:
+        observed = datetime.fromisoformat(item['collectedAt'].replace('Z', '+00:00'))
+        if item.get('dataSource') != 'official_metric' and not start <= observed < end:
+            # A delayed replay observes inventories now, not at its scheduled key.
+            continue
         key = (item['accountId'], item['region'], item['serviceCode'], item['quotaCode'])
         group = groups.setdefault(key, empty_group())
         if not group['latest'] or item['collectedAt'] > group['latest']['collectedAt']:

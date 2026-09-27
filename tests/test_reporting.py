@@ -162,3 +162,41 @@ def test_report_queries_documented_metric_missing_from_catalog_metadata(aws_db, 
     monkeypatch.setattr(reporting, 'fetch_metrics', fetch)
     build_report(ctx, aws_db[1], [quota], NOW - timedelta(days=1), NOW)
     assert [(q['ServiceCode'], q['QuotaCode']) for q in selected] == [('states', 'L-15D902EC')]
+
+
+def _report_lambda(aws_db, monkeypatch, catalog):
+    main = importlib.import_module('functions.reporting.main')
+    session = aws_db[0]
+    session.client('s3').create_bucket(Bucket='report-test-bucket', CreateBucketConfiguration={'LocationConstraint': 'eu-central-1'})
+    monkeypatch.setenv('QM_REPORT_BUCKET', 'report-test-bucket')
+    monkeypatch.setattr(main, 'session_from_env', lambda: session)
+    monkeypatch.setattr(main, 'get_catalog', catalog)
+    return main
+
+
+def test_complete_report_returns_its_location(aws_db, monkeypatch):
+    import modules.qmcore.reporting as reporting
+    from test_metrics import quota
+    main = _report_lambda(aws_db, monkeypatch, lambda *a, **kw: ([quota('q')], []))
+    metric = measurement('a', 'eu-central-1', 'ec2', 'q', 'quota', 100, 90, now=NOW, source='official_metric')
+    monkeypatch.setattr(reporting, 'fetch_metrics', lambda *a, **kw: [metric])
+    body = json.loads(main.lambda_handler({'days_back': 1}, None)['body'])
+    assert body['report_status'] == 'COMPLETE' and body['quotas_count'] == 1
+    assert body['s3_location'].startswith('s3://report-test-bucket/reports/')
+
+
+def test_unavailable_catalog_is_recorded_in_the_partial_report(aws_db, monkeypatch):
+    main = _report_lambda(aws_db, monkeypatch, Mock(side_effect=RuntimeError('throttled')))
+    with pytest.raises(RuntimeError, match='Partial report saved'):
+        main.lambda_handler({'days_back': 1}, None)
+    s3 = aws_db[0].client('s3')
+    sidecar, = [o['Key'] for o in s3.list_objects_v2(Bucket='report-test-bucket')['Contents'] if o['Key'].endswith('.json')]
+    errors = json.loads(s3.get_object(Bucket='report-test-bucket', Key=sidecar)['Body'].read())['errors']
+    assert errors == ['Catalog unavailable: throttled']
+
+
+def test_report_bucket_must_be_configured(monkeypatch):
+    main = importlib.import_module('functions.reporting.main')
+    monkeypatch.delenv('QM_REPORT_BUCKET', raising=False)
+    with pytest.raises(ValueError, match='QM_REPORT_BUCKET'):
+        main.lambda_handler({'days_back': 1}, None)

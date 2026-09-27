@@ -3,7 +3,7 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Key
 from modules.qmcore.aws import paginate
 
-CATALOG_VERSION = 1
+CATALOG_VERSION = 2
 
 
 def _annotate(quota, level="ACCOUNT"):
@@ -81,9 +81,10 @@ def get_catalog(ctx, db, force=False):
         generation = uuid4().hex
         with db.table.batch_writer() as writer:
             for q in quotas:
+                annotated = _annotate(q)
                 writer.put_item(Item=db._to_dynamodb_compatible({
-                    'PK': pk, 'SK': f"{generation}#{q['ServiceCode']}#{q['QuotaCode']}",
-                    'quota': q, 'ttl': now + 3 * 86400}))
+                    'PK': pk, 'SK': f"{generation}#{annotated['catalogKey']}",
+                    'quota': annotated, 'ttl': now + 3 * 86400}))
         db.put_quota_entry({'PK': pk, 'SK': 'LATEST', 'generation': generation,
                             'count': len(quotas), 'refreshedAt': now,
                             'catalogVersion': CATALOG_VERSION})

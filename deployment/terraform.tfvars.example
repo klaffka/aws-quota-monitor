@@ -20,3 +20,10 @@ cloudwatch_metric_alarms_config_file = "cloudwatch-metric-alarms.example.json"
 report_bucket_name    = ""
 report_retention_days = 90
 report_days_back      = 30
+
+# History protection. PITR is billed per GB-month; see docs/operations.md.
+enable_data_deletion_protection = true
+enable_dynamodb_pitr            = false
+
+# Rollback: pin a live alias to a published version, e.g. { collector = "7" }.
+lambda_version_overrides = {}

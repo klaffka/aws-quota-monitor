@@ -52,13 +52,13 @@ fail with `ResourceAlreadyExistsException`; import it first, for example
 
 ## Validate
 
-Invoke the collector synchronously. An asynchronous invocation is retried
-twice on failure, which triples the metric cost of a failing run.
+Run the opt-in synchronous acceptance check through the published alias. It
+suppresses quota notifications and the current-run heartbeat, but writes the
+normal run and quota records and incurs the usual metric query cost:
 
 ```bash
-aws lambda invoke --function-name qm-quota-collector \
-  --invocation-type RequestResponse --cli-read-timeout 960 \
-  --cli-binary-format raw-in-base64-out --payload '{"source":"manual-validation"}' out.json
+.venv/bin/python scripts/live_acceptance.py \
+  --expected-account 123456789012 --region eu-central-1 --execute
 ```
 
 Then read the run record, which lists every check error:
@@ -70,7 +70,9 @@ aws dynamodb query --table-name qm-quotalog \
   --no-scan-index-forward --limit 1
 ```
 
-A run with any error sends no heartbeat. To tell a missing IAM grant from a
+A run with any error sends no heartbeat. Check errors still return status 200
+with an `errors` count in the body; only catalog and storage failures raise and
+are retried. To tell a missing IAM grant from a
 service the account has not set up, repeat the failing call with administrator
 credentials: the same answer means no grant will help, and the check should
 report `NO_DATA` or `UNSUPPORTED` (`NOT_SET_UP` in `src/modules/qmcore/aws.py`).

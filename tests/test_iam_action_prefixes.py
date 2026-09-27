@@ -228,10 +228,16 @@ PLACEHOLDER_ARN = ('arn:aws:servicename:eu-central-1:123456789012:'
 
 
 def _policy_bodies():
-    """Yield (resource name, the HCL object each policy passes to jsonencode)."""
-    text = POLICY.read_text(encoding='utf-8')
+    """Yield (resource name, roles it attaches to, the HCL object it passes to jsonencode)."""
+    for path in sorted(POLICY.parent.glob('*.tf')):
+        yield from _file_policy_bodies(path.read_text(encoding='utf-8'))
+
+
+def _file_policy_bodies(text):
     for match in re.finditer(r'resource "aws_iam_role_policy" "(\w+)" \{', text):
         start = text.index('jsonencode({', match.end()) + len('jsonencode(')
+        # `role = aws_iam_role.x.name`, or a for_each map over several roles.
+        roles = re.findall(r'aws_iam_role\.(\w+)', text[match.end():start])
         depth, position = 0, start
         while True:
             if text[position] == '{':
@@ -241,7 +247,7 @@ def _policy_bodies():
                 if depth == 0:
                     break
             position += 1
-        yield match.group(1), text[start:position + 1]
+        yield match.group(1), roles, text[start:position + 1]
 
 
 def _as_document(body):
@@ -264,12 +270,19 @@ def _as_document(body):
 
 
 def test_the_inline_policies_fit_in_one_role():
-    sizes = {name: len(json.dumps(_as_document(body), separators=(',', ':')))
-             for name, body in _policy_bodies()}
-    assert sizes, 'no inline role policies found; the resource shape changed'
-    total = sum(sizes.values())
-    largest = max(sizes, key=sizes.get)
-    assert total <= INLINE_POLICY_LIMIT, (
-        f'inline policies total {total} characters against a {INLINE_POLICY_LIMIT} '
-        f'limit; {largest} alone is {sizes[largest]}. Collapse a service\'s read '
-        f'verbs to one wildcard rather than listing every operation.')
+    per_role = {}
+    for name, roles, body in _policy_bodies():
+        assert roles, f'{name}: cannot tell which role the policy attaches to'
+        size = len(json.dumps(_as_document(body), separators=(',', ':')))
+        for role in roles:
+            per_role.setdefault(role, {})[name] = size
+    assert {'lambda_exec', 'reporting_exec'} <= set(per_role), \
+        'inline role policies not found; the resource shape changed'
+    for role, sizes in per_role.items():
+        total = sum(sizes.values())
+        largest = max(sizes, key=sizes.get)
+        assert total <= INLINE_POLICY_LIMIT, (
+            f'{role}: inline policies total {total} characters against a '
+            f'{INLINE_POLICY_LIMIT} limit; {largest} alone is {sizes[largest]}. '
+            f'Collapse a service\'s read verbs to one wildcard rather than '
+            f'listing every operation.')
