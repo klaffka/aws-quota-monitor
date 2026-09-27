@@ -19,4 +19,5 @@ Listed in the order CI runs them, so working down this list reproduces
 - [ ] `terraform -chdir=deployment init -backend=false -lockfile=readonly`, then:
 - [ ] `terraform -chdir=deployment fmt -check -recursive`
 - [ ] `terraform -chdir=deployment validate`
+- [ ] `bash scripts/security_scan.sh`
 - [ ] User-visible changes are documented under `CHANGELOG.md` → `Unreleased`

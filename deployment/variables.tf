@@ -1,3 +1,25 @@
+variable "enable_dynamodb_pitr" {
+  description = "Enable paid point-in-time recovery for quota history. See docs/operations.md for the restore drill."
+  type        = bool
+  default     = false
+}
+
+variable "enable_data_deletion_protection" {
+  description = "Protect the history table against accidental deletion. Disable explicitly before intentional destruction."
+  type        = bool
+  default     = true
+}
+
+variable "lambda_version_overrides" {
+  description = "Reviewed rollback versions for live aliases; empty promotes the newly published versions."
+  type        = map(string)
+  default     = {}
+  validation {
+    condition     = alltrue([for k, v in var.lambda_version_overrides : contains(["collector", "reporting"], k) && can(regex("^[1-9][0-9]*$", v))])
+    error_message = "Only collector/reporting with numbered, published Lambda versions are allowed."
+  }
+}
+
 variable "aws_account_id" {
   description = "Account this deployment belongs to; refuse to run against any other. Empty disables the check."
   type        = string

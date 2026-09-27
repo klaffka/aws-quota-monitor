@@ -1,7 +1,7 @@
 {
-  "src/functions": 96,
+  "src/functions": 95,
   "src/modules/qmalerting": 98,
   "src/modules/qmchecks": 91,
-  "src/modules/qmcore": 92,
+  "src/modules/qmcore": 93,
   "src/modules/qmdb": 95
 }

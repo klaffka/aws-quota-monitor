@@ -5,7 +5,27 @@ All notable changes to this project are recorded here. Versions follow
 
 ## [Unreleased]
 
-<!-- Add release notes here. -->
+### Added
+
+- Stable, idempotent scheduled collector runs, component timing, SDK request
+  telemetry, bounded failure queues, published Lambda aliases, and an opt-in
+  live acceptance check.
+- Pinned CI scanning for dependency vulnerabilities, leaked secrets and
+  Terraform misconfigurations; a separate reporting role and configurable
+  DynamoDB deletion protection/PITR.
+
+### Fixed
+
+- Preserve Service Quotas resource context in DynamoDB catalog keys and report
+  incomplete Bedrock parent inventories as `NO_DATA` instead of zero.
+- Batch measurement writes and retry only DynamoDB entries AWS marks unprocessed.
+- A collector run whose only errors come from individual checks completes
+  without raising; only catalog and storage failures are retried, so a failing
+  check no longer triples the day's metric cost. A delivery that overlaps a
+  running invocation returns instead of landing in the failed-events queue, and
+  lease bookkeeping errors no longer mask or override the run's outcome.
+- The IAM policy-size gate sums inline policies per role across all Terraform
+  files instead of across roles in `main.tf` only.
 
 ## [0.2.0] - 2026-09-23
 

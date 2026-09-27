@@ -63,7 +63,7 @@ def test_partial_cached_generation_refreshes_instead_of_returning_partial(aws_db
     get_catalog(ctx, db)
     pointer = db.get_quota_entry('CATALOG#a#eu-central-1', 'LATEST')
     db.table.delete_item(Key={'PK': 'CATALOG#a#eu-central-1',
-                              'SK': f"{pointer['generation']}#ec2#complete"})
+                              'SK': f"{pointer['generation']}#ec2#complete#ACCOUNT#ACCOUNT"})
     fetch = Mock(return_value=([quota('rebuilt')], []))
     monkeypatch.setattr(catalog, 'fetch_catalog', fetch)
     result, errors = get_catalog(ctx, db)
@@ -76,11 +76,7 @@ def collector_setup(aws_db, monkeypatch, entries, metric_quotas=()):
     session, _db = aws_db
     monkeypatch.setattr(main, 'session_from_env', lambda: session)
     monkeypatch.setattr(main, 'get_catalog', lambda *a: (list(metric_quotas), []))
-    monkeypatch.setattr(main, 'get_current_quotastatus_ec2', lambda **kw: entries)
-    monkeypatch.setattr(main, 'get_current_quotastatus_vpc', lambda **kw: [])
-    monkeypatch.setattr(main, 'get_current_quotastatus_lambda', lambda **kw: [])
-    monkeypatch.setattr(main, 'get_current_quotastatus_account_services', lambda *a, **kw: [])
-    monkeypatch.setattr(main, 'get_current_quotastatus_elb', lambda *a, **kw: [])
+    monkeypatch.setattr(main, 'collectors', lambda: [('ec2', lambda **kw: entries)])
     return main
 
 
@@ -97,21 +93,41 @@ def test_collector_saves_successes_and_errors_then_raises(aws_db, monkeypatch):
 def test_compatible_metric_skips_resource_check_and_alerts_once(aws_db, monkeypatch):
     main = collector_setup(aws_db, monkeypatch, [], [quota('shared')])
     custom = Mock(return_value=[])
-    monkeypatch.setattr(main, 'get_current_quotastatus_ec2', custom)
+    monkeypatch.setattr(main, 'collectors', lambda: [('ec2', custom)])
     metric = measurement('a','eu-central-1','ec2','shared','shared',100,90,now=NOW,source='official_metric')
-    monkeypatch.setattr(main, 'fetch_metrics', lambda *a, **k: [metric])
+    def fetch_daily(_ctx, _quotas, start, end):
+        assert end == _ctx.now.replace(microsecond=0)
+        assert end - start == timedelta(days=1)
+        return [metric]
+    monkeypatch.setattr(main, 'fetch_metrics', fetch_daily)
     alerts = Mock()
     monkeypatch.setattr(main, 'QuotaAlert', lambda *a, **kw: alerts)
     result = main.lambda_handler({}, None)
     assert result['statusCode'] == 200
     assert custom.call_args.kwargs['skip'] == {('ec2','shared')}
     alerts.check_and_alert.assert_called_once_with(metric)
+    runs = [item for item in aws_db[1].table.scan()['Items'] if item['PK'].startswith('RUN#')]
+    assert runs[0]['durationSeconds'] >= 0
+    assert runs[0]['apiByService']['dynamodb']['calls'] > 0
+
+
+def test_failed_batch_storage_never_alerts(aws_db, monkeypatch):
+    metric = measurement('a', 'eu-central-1', 'ec2', 'q', 'quota', 100, 90, now=NOW)
+    main = collector_setup(aws_db, monkeypatch, [], [quota()])
+    monkeypatch.setattr(main, 'fetch_metrics', lambda *a, **k: [metric])
+    monkeypatch.setattr(main.QuotaLogDb, 'put_quota_entries',
+                        lambda self, entries: iter([(metric, 'write unconfirmed')]))
+    alerts = Mock()
+    monkeypatch.setattr(main, 'QuotaAlert', lambda *a, **kw: alerts)
+    with pytest.raises(RuntimeError, match='Collector incomplete'):
+        main.lambda_handler({}, None)
+    alerts.check_and_alert.assert_not_called()
 
 
 def test_compatible_metric_remains_selected_when_resource_registry_has_same_key(aws_db, monkeypatch):
     main = collector_setup(aws_db, monkeypatch, [], [quota('shared')])
     custom = Mock(return_value=[])
-    monkeypatch.setattr(main, 'get_current_quotastatus_ec2', custom)
+    monkeypatch.setattr(main, 'collectors', lambda: [('ec2', custom)])
     metric = measurement('a', 'eu-central-1', 'ec2', 'shared', 'shared', 100, 90,
                          now=NOW, source='official_metric')
     selected = {}
@@ -182,3 +198,31 @@ def test_empty_catalog_is_operational_failure(aws_db, monkeypatch):
     with pytest.raises(RuntimeError, match='Collector incomplete'):
         main.lambda_handler({}, None)
     alerts.check_and_alert.assert_not_called()
+
+
+def test_every_registered_collector_runs_through_the_handler(aws_db, monkeypatch):
+    main = importlib.import_module('functions.quota-collector.main')
+    registered = [name for name, _ in main.collectors()]
+    monkeypatch.setattr(main, 'session_from_env', lambda: aws_db[0])
+    monkeypatch.setattr(main, 'get_catalog', lambda *a: ([quota('shared')], []))
+    monkeypatch.setattr(main, 'fetch_metrics', lambda *a, **k: [])
+    main.lambda_handler({}, None)
+    run, = [i for i in aws_db[1].table.scan()['Items'] if i['PK'].startswith('RUN#')]
+    assert set(run['checkSecondsByModule']) == set(registered)
+    assert not [e for e in run['errors'] if e.startswith('collector:')]
+
+
+def test_a_raising_collector_or_alert_does_not_stop_the_run(aws_db, monkeypatch):
+    metric = measurement('a', 'eu-central-1', 'ec2', 'q', 'quota', 100, 90, now=NOW, source='official_metric')
+    main = collector_setup(aws_db, monkeypatch, [], [quota()])
+    later = Mock(return_value=[])
+    monkeypatch.setattr(main, 'collectors', lambda: [('broken', Mock(side_effect=KeyError('Items'))),
+                                                     ('ec2', later)])
+    monkeypatch.setattr(main, 'fetch_metrics', lambda *a, **k: [metric])
+    alerts = Mock()
+    alerts.check_and_alert.side_effect = RuntimeError('SNS down')
+    monkeypatch.setattr(main, 'QuotaAlert', lambda *a, **kw: alerts)
+    main.lambda_handler({}, None)
+    later.assert_called_once()
+    run, = [i for i in aws_db[1].table.scan()['Items'] if i['PK'].startswith('RUN#')]
+    assert run['errors'] == ["collector:broken: 'Items'", 'alert:q: SNS down']

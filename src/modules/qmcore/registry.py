@@ -2,6 +2,18 @@
 from importlib import import_module
 
 
+def collectors():
+    """Resolve one public collector per registered module, in registry order."""
+    for module_name, _service in _CHECK_MODULES:
+        module = import_module(module_name)
+        candidates = [fn for name, fn in vars(module).items()
+                      if name.startswith('get_current_quotastatus_')
+                      and callable(fn) and getattr(fn, '__module__', None) == module_name]
+        if len(candidates) != 1:
+            raise RuntimeError(f'{module_name}: expected one collector, found {len(candidates)}')
+        yield module_name, candidates[0]
+
+
 _CHECK_MODULES = (
     ('modules.qmchecks.ec2.ec2', 'ec2'),
     ('modules.qmchecks.ebs', 'ebs'),

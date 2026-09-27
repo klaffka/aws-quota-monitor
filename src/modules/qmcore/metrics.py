@@ -1,5 +1,6 @@
 """Resolve exact quota metrics and reduce every CloudWatch page over fixed intervals."""
 from datetime import timedelta
+from math import ceil, floor
 from modules.qmcore.aws import Unsupported
 from modules.qmcore.model import measurement, number, iso, utcnow
 
@@ -100,6 +101,25 @@ def compatible(quota):
         return False
 
 
+def _metric_batches(ready, start, end):
+    """Fit query count and potential datapoints within one CloudWatch page.
+
+    Include boundary buckets for unaligned intervals. A single long query can
+    still exceed the page budget; the existing pagination handles that case.
+    """
+    batch, points = [], 0
+    for item in ready:
+        period = item[1]['Period']
+        estimate = ceil(end.timestamp() / period) - floor(start.timestamp() / period)
+        if batch and (len(batch) == 500 or points + estimate > 100800):
+            yield batch
+            batch, points = [], 0
+        batch.append(item)
+        points += estimate
+    if batch:
+        yield batch
+
+
 def fetch_metrics(ctx, quotas, start, end, historical=False):
     if start >= end:
         raise ValueError('Metric interval must have start < end')
@@ -115,8 +135,7 @@ def fetch_metrics(ctx, quotas, start, end, historical=False):
             ready.append((quota, spec, unit, divisor))
         except Unsupported as exc:
             results.append(_entry(ctx, quota, None, 'UNSUPPORTED', str(exc), start, end, period))
-    for offset in range(0, len(ready), 500):
-        batch = ready[offset:offset + 500]
+    for batch in _metric_batches(ready, start, end):
         queries = [{'Id': f'm{i}', 'MetricStat': spec, 'ReturnData': True}
                    for i, (_, spec, _, _) in enumerate(batch)]
         maxima, timestamps, counts, errors, seen_ids = {}, {}, {}, {}, set()

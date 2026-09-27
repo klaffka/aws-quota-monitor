@@ -23,7 +23,16 @@ answer never becomes a zero that would read as headroom.
 
 - **Collector:** runs once a day. Service Quotas catalog snapshots are cached
   for 24 hours. Compatible `UsageMetric` definitions are queried in batches of up to
-  500 over the 20 minutes before each run. The recommended statistic is used.
+  500 over the 24 hours before each run, preserving one-minute resolution for
+  supported minute-level metrics. Batches also respect the 100,800-datapoint
+  page budget (70 metrics for a minute-aligned day, 69 for an unaligned day).
+  The recommended statistic and quota rate window are used. Alerts therefore
+  reflect the daily peak and recover only once that peak leaves the window.
+  EventBridge's scheduled time fixes that window across delivery retries.
+  A DynamoDB run lease suppresses concurrent and already completed deliveries;
+  quota measurements use the scheduled timestamp as their idempotency key while
+  inventory metadata retains its actual observation time. Delayed replays do
+  not emit stale alerts or heartbeats and are limited to 14 days.
 - **Source selection:** one source per service/quota. A compatible official metric
   takes precedence over a resource check. Missing official data does not trigger a
   switch to a different source or a fabricated zero.
@@ -38,6 +47,13 @@ answer never becomes a zero that would read as headroom.
 - **Failures:** successful checks are stored even when other checks fail. Failed checks
   and collector runs are recorded explicitly. Operational failures raise a Lambda
   exception so asynchronous retries and the Lambda `Errors` metric work.
+- **Efficiency:** measurements are written in batches of up to 25. Only confirmed
+  writes can trigger alerts; unprocessed writes get bounded retries with backoff.
+  Each `RUN#` record and a structured performance log include elapsed seconds and
+  SDK calls, errors, reported retries and API time by service. Pagination counts
+  as separate calls; cached reads do not. API time includes SDK retry waits, not
+  local check computation. The snapshot precedes the final run-record write and
+  success heartbeat. No additional custom CloudWatch metrics are published.
 
 ## Coverage and accounting
 
@@ -619,7 +635,7 @@ History is paginated and reduced incrementally; it never combines accounts or Re
 The compatibility schema still requires a DynamoDB table scan. Large catalogs/tables
 can exceed Lambda's 15-minute budget or incur substantial read/query cost; inspect the
 health alarms and report sidecar before relying on a result. Metrics may be sparse or
-arrive late, and ten-minute resource snapshots can miss changes between runs.
+arrive late, and daily resource snapshots can miss changes between runs.
 
 ## Configuration and local commands
 
@@ -725,9 +741,14 @@ for the complete procedure. The workflow does not deploy infrastructure or invok
 The [deployment runbook](docs/deploying.md) covers cost checks, plan review,
 validation runs and the traps of an existing installation.
 
+Operational readiness and restore, rollback, and live acceptance procedures are
+documented in [docs/operations.md](docs/operations.md). Infrastructure security
+exceptions and reporting guidelines are in [SECURITY.md](SECURITY.md).
+
 `deployment/variables.tf` defines `aws_region` (default `eu-central-1`), `aws_account_id`,
-tags, alert email, threshold, report bucket, S3 retention (90 days) and manual report
-interval (30 days). Use your existing `terraform.tfvars`; optional values can be copied
+tags, alert email, threshold, report bucket, S3 retention (90 days), manual report
+interval (30 days), `enable_data_deletion_protection` (default `true`),
+`enable_dynamodb_pitr` (default `false`) and `lambda_version_overrides` for rollback. Use your existing `terraform.tfvars`; optional values can be copied
 from `deployment/terraform.tfvars.example`.
 
 Set `aws_account_id`. The report bucket and several resource names are derived from the

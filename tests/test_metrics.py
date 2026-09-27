@@ -134,11 +134,46 @@ def test_batching_and_fixed_historical_period():
     client = Mock()
     client.get_metric_data.return_value = response([], [])
     fetch_metrics(ctx_for(client), [quota(str(i)) for i in range(501)], NOW-timedelta(days=30), NOW, historical=True)
-    assert client.get_metric_data.call_count == 2
+    assert client.get_metric_data.call_count == 46
     calls = client.get_metric_data.call_args_list
-    assert len(calls[0].kwargs['MetricDataQueries']) == 500
+    assert len(calls[0].kwargs['MetricDataQueries']) == 11
     assert calls[0].kwargs['MetricDataQueries'][0]['MetricStat']['Period'] == 300
     assert calls[1].kwargs['StartTime'] == calls[0].kwargs['StartTime']
+
+
+@pytest.mark.parametrize('seconds,batch_size', [(0, 70), (17, 69)])
+def test_daily_batches_preserve_minute_peaks_and_page_budget(seconds, batch_size):
+    client = Mock()
+    end = NOW + timedelta(seconds=seconds)
+    start = end - timedelta(days=1)
+    peak = NOW - timedelta(hours=12)
+
+    def fetch(**kwargs):
+        return {'MetricDataResults': [
+            {'Id': query['Id'], 'StatusCode': 'Complete', 'Values': [95, 2],
+             'Timestamps': [peak, NOW - timedelta(minutes=1)]}
+            for query in kwargs['MetricDataQueries']]}
+
+    client.get_metric_data.side_effect = fetch
+    entries = fetch_metrics(ctx_for(client), [quota(str(i)) for i in range(141)], start, end)
+    calls = client.get_metric_data.call_args_list
+    assert len(calls) == 3
+    assert len(calls[0].kwargs['MetricDataQueries']) == batch_size
+    assert len(entries) == 141
+    for call in calls:
+        assert call.kwargs['StartTime'] == start and call.kwargs['EndTime'] == end
+        assert len(call.kwargs['MetricDataQueries']) * (1440 + bool(seconds)) <= 100800
+        assert all(q['MetricStat']['Period'] == 60 for q in call.kwargs['MetricDataQueries'])
+    assert all(e['usageValue'] == 95 and e['sampleCount'] == 2 for e in entries)
+
+
+def test_short_window_still_limits_batches_to_500_queries():
+    client = Mock()
+    client.get_metric_data.return_value = response([], [])
+    fetch_metrics(ctx_for(client), [quota(str(i)) for i in range(501)],
+                  NOW - timedelta(minutes=20), NOW)
+    assert [len(c.kwargs['MetricDataQueries'])
+            for c in client.get_metric_data.call_args_list] == [500, 1]
 
 
 def test_exclusive_end_and_zero_are_distinct_from_missing():

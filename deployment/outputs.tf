@@ -3,6 +3,16 @@ output "quota_collector_function_name" {
   value       = aws_lambda_function.quota_collector.function_name
 }
 
+output "live_aliases" {
+  description = "Invoke these aliases; unqualified calls bypass release promotion and failure destinations."
+  value       = { for name, alias in aws_lambda_alias.live : name => { arn = alias.arn, version = alias.function_version } }
+}
+
+output "failed_events_queue_url" {
+  description = "Queue holding collector and reporting events that failed delivery or retries"
+  value       = aws_sqs_queue.failed_events.url
+}
+
 output "quota_collector_function_arn" {
   description = "ARN of the quota collector Lambda function"
   value       = aws_lambda_function.quota_collector.arn
